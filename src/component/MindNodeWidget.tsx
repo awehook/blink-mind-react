@@ -1,11 +1,13 @@
 import * as React from "react";
-import { MindMapModel } from "../model/MindMapModel";
 import { NodeKeyType } from "../model/NodeModel";
 import { BaseWidget } from "./BaseWidget";
 import "./MindNodeWidget.scss";
-import {node} from 'prop-types';
+import { MindDiagramState } from "./MindDiagramState";
+import { OpType } from "../model/MindMapModelModifier";
+import * as cx from "classnames";
+
 export interface MindNodeWidgetProps {
-  mindMapModel: MindMapModel;
+  diagramState: MindDiagramState;
   nodeKey: NodeKeyType;
 }
 
@@ -19,28 +21,75 @@ export class MindNodeWidget<
     super(props);
   }
 
+  onClickCollapse = () => {
+    this.props.diagramState.op(OpType.TOGGLE_COLLAPSE, this.props.nodeKey);
+  };
+
   renderSubItems() {
-    let { mindMapModel, nodeKey } = this.props;
+    let { diagramState, nodeKey } = this.props;
+    let { mindMapModel } = diagramState;
     let subItems = [];
     let node = mindMapModel.getItem(nodeKey);
-    if(node.getSubItemKeys().size===0 || node.getCollapse())
-      return null;
-    node.getSubItemKeys().forEach((itemKey)=>{
-      subItems.push(<MindNodeWidget key={itemKey} nodeKey={itemKey} mindMapModel={mindMapModel} />)
+    if (node.getSubItemKeys().size === 0) return null;
+    node.getSubItemKeys().forEach(itemKey => {
+      subItems.push(
+        <MindNodeWidget
+          key={itemKey}
+          nodeKey={itemKey}
+          diagramState={diagramState}
+        />
+      );
     });
-    return (
-      <div className="bm-children">
-        {subItems}
-      </div>
-    )
+    return <div className={cx("bm-children",{collapse: node.getCollapse()})}>{subItems}</div>;
   }
 
   render() {
-    let { mindMapModel, nodeKey } = this.props;
+    let { diagramState, nodeKey } = this.props;
+    let { mindMapModel, config: diagramConfig } = diagramState;
     let node = mindMapModel.getItem(nodeKey);
+    let visualLevel = mindMapModel.getItemVisualLevel(nodeKey);
+    let itemStyle;
+    switch (visualLevel) {
+      case 0:
+        itemStyle = diagramConfig.rootItemStyle;
+        break;
+      case 1:
+        itemStyle = diagramConfig.primaryItemStyle;
+        break;
+      default:
+        itemStyle = diagramConfig.normalItemStyle;
+        break;
+    }
     return (
-      <div className="bm-node">
-        <div className="content">{node.getContent()}</div>
+      <div
+        className="bm-node"
+        style={{
+          marginTop: diagramConfig.vMargin,
+          marginBottom: diagramConfig.vMargin,
+          marginLeft: diagramConfig.hMargin
+        }}
+      >
+        <div className={cx("topic")}>
+          <div
+            className={cx("content", {
+              "root-topic": visualLevel === 0,
+              "primary-topic": visualLevel === 1,
+              "normal-topic": visualLevel > 1
+            })}
+
+            style={itemStyle}
+          >
+            {node.getContent()}
+          </div>
+          <div
+            className={cx("collapse-icon", {
+              iconfont: node.getSubItemKeys().size > 0,
+              [`bm-${node.getCollapse() ? "plus" : "minus"}`]:
+                node.getSubItemKeys().size > 0
+            })}
+            onClick={this.onClickCollapse}
+          />
+        </div>
         {this.renderSubItems()}
       </div>
     );

@@ -38,6 +38,23 @@ export class MindMapModel extends Record(defaultMindMapRecord) {
     return this.getItemMap().get(key);
   }
 
+  getParentItem(key: NodeKeyType): MindNodeModel {
+    let item = this.getItem(key);
+    if(item.getParentKey())
+      return this.getItem(item.getParentKey());
+    return null;
+  }
+
+  getItemVisualLevel(key:NodeKeyType) : number {
+    let item = this.getItem(key);
+    let level = 0;
+    while (item && item.getKey() !== this.getEditorRootItemKey()) {
+      level++;
+      item = this.getParentItem(item.getKey());
+    }
+    return level;
+  }
+
   static createWith(obj: any): MindMapModel {
     let model = new MindMapModel();
     model = model.merge({

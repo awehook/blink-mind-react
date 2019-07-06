@@ -20,34 +20,18 @@ export class MindNodeLayerWidget<
     super(props);
   }
 
+  render() {
+    let diagramState = this.props.diagramState;
+    return <div className="bm-node-layer">{this.renderItems()}</div>;
+  }
   renderItems() {
     let mindMapModel = this.props.diagramState.mindMapModel;
     let editorRootItemKey = mindMapModel.getEditorRootItemKey();
     return (
       <MindNodeWidget
-        mindMapModel={mindMapModel}
+        diagramState={this.props.diagramState}
         nodeKey={editorRootItemKey}
       />
-    );
-  }
-
-  render() {
-    let diagramState = this.props.diagramState;
-    return (
-      <div
-        style={{
-          transform:
-            "translate(" +
-            diagramState.offsetX +
-            "px," +
-            diagramState.offsetY +
-            "px) scale(" +
-            diagramState.zoom +
-            ")"
-        }}
-      >
-        {this.renderItems()}
-      </div>
     );
   }
 }

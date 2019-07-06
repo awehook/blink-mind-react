@@ -19,6 +19,7 @@
     "build-storybook": "build-storybook"
   },
   "dependencies": {
+    "classnames": "^2.2.6",
     "closest": "^0.0.1",
     "immutable": "^4.0.0-rc.12",
     "react": "^16.8.6"
