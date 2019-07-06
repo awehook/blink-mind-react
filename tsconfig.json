@@ -1,0 +1,27 @@
+{
+	"compileOnSave": false,
+	"name": "blink-mind-react",
+	"compilerOptions": {
+		"suppressExcessPropertyErrors": true,
+		"declaration": true,
+		"outDir": "@types",
+		"target": "es5",
+		"strictNullChecks": false,
+		"sourceMap": true,
+		"skipLibCheck": true,
+		"jsx": "react",
+		"baseUrl": ".",
+		"paths": {
+			"blink-mind-react": ["src/main.ts"]
+		},
+		"lib": [
+			"dom",
+			"es2015"
+		]
+	},
+	"exclude": [
+		"node_modules",
+		"**/*.spec.ts",
+		"./dist"
+	]
+}

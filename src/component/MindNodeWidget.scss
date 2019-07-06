@@ -1,0 +1,13 @@
+.bm-node {
+  position: absolute;
+  display: flex;
+  align-items: center;
+
+  .content {
+    padding: 8px 12px 8px;
+  }
+}
+
+.bm-children {
+  display: flex;
+}
