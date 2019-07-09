@@ -49,8 +49,8 @@ export class MindNodeModel extends Record(defaultMindNodeRecord)
     return this.get("layout");
   }
 
-  updateLayout(obj:any) : MindNodeModel {
-    return this.update("layout",layout=>layout.merge(obj));
+  updateLayout(obj: any): MindNodeModel {
+    return this.update("layout", layout => layout.merge(obj));
   }
 
   static createWith(obj: any): MindNodeModel {

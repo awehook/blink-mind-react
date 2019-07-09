@@ -1,7 +1,6 @@
 import { NodeKeyType } from "./NodeModel";
 import { Record, Map } from "immutable";
 import { MindNodeModel } from "./MindNodeModel";
-import { MindDiagramLayoutConfig } from "blink-mind-react";
 type MindMapRecordType = {
   rootItemKey: NodeKeyType;
   editorRootItemKey: NodeKeyType;
@@ -40,12 +39,11 @@ export class MindMapModel extends Record(defaultMindMapRecord) {
 
   getParentItem(key: NodeKeyType): MindNodeModel {
     let item = this.getItem(key);
-    if(item.getParentKey())
-      return this.getItem(item.getParentKey());
+    if (item.getParentKey()) return this.getItem(item.getParentKey());
     return null;
   }
 
-  getItemVisualLevel(key:NodeKeyType) : number {
+  getItemVisualLevel(key: NodeKeyType): number {
     let item = this.getItem(key);
     let level = 0;
     while (item && item.getKey() !== this.getEditorRootItemKey()) {

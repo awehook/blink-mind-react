@@ -3,19 +3,21 @@ export enum DiagramLayoutDirection {
   RIGHT_TO_LEFT,
   LEFT_AND_RIGHT
 }
-export type  DiagramConfig = {
-  direction?: DiagramLayoutDirection
+
+export type DiagramConfig = {
+  editable?: boolean;
+  direction?: DiagramLayoutDirection;
   hMargin?: number;
   vMargin?: number;
   theme?: string;
   rootItemStyle?: any;
   primaryItemStyle?: any;
   normalItemStyle?: any;
-}
+};
 
 export const defaultDiagramConfig = {
-  direction: DiagramLayoutDirection.LEFT_TO_RIGHT,
-  hMargin: 30,
+  direction: DiagramLayoutDirection.LEFT_AND_RIGHT,
+  hMargin: 10,
   vMargin: 10,
   theme: "theme-orange",
   rootItemStyle: {

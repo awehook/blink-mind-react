@@ -19,6 +19,8 @@ export default class Demo extends React.Component {
   };
 
   onMouseUp = e => {
+    console.log(e);
+    e.preventDefault();
     window.removeEventListener("mousemove", this.onMouseMove);
     window.removeEventListener("mouseup", this.onMouseUp);
   };

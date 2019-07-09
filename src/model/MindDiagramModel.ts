@@ -1,32 +1,15 @@
 import { MindMapModel } from "./MindMapModel";
-
-export type MindDiagramLayoutConfig = {
-  hMargin: number;
-  vMargin: number;
-};
-
-const defaultLayoutConfig: MindDiagramLayoutConfig = {
-  hMargin: 30,
-  vMargin: 30
-};
+import { defaultDiagramConfig, DiagramConfig } from "../config/DiagramConfig";
 
 export class MindDiagramModel {
   mindMapModel: MindMapModel;
-  layoutConfig: MindDiagramLayoutConfig;
-
-  offsetX: number;
-  offsetY: number;
+  config?: DiagramConfig;
   zoom: number;
   //gridSize: number;
 
-  constructor(
-    mindMapModel: MindMapModel,
-    layoutConfig: MindDiagramLayoutConfig = defaultLayoutConfig
-  ) {
+  constructor(mindMapModel: MindMapModel, config: DiagramConfig = {}) {
     this.mindMapModel = mindMapModel;
-    this.layoutConfig = layoutConfig;
-    this.offsetX = 0;
-    this.offsetY = 0;
+    this.config = Object.assign(defaultDiagramConfig, config);
     this.zoom = 1;
   }
 }

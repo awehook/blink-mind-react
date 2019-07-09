@@ -1,5 +1,5 @@
 import { MindNodeModel } from "./MindNodeModel";
-import { MindDiagramLayoutConfig, MindMapModel } from "blink-mind-react";
+import { MindMapModel } from "./MindMapModel";
 import { NodeKeyType } from "./NodeModel";
 
 export enum OpType {

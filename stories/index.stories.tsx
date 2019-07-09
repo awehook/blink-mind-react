@@ -7,14 +7,16 @@ import { linkTo } from '@storybook/addon-links';
 import { Button, Welcome } from '@storybook/react/demo';
 
 import DemoBlinkMindReact from './demo-blink-mind-react';
-import DemoScrollApi from './demo-scroll-api';
+import DemoScrollApi1 from './demo-scroll-api/Demo1';
+import DemoScrollApi2 from './demo-scroll-api/Demo2';
 
 storiesOf('Welcome', module).add('to Storybook', () => <Welcome showApp={linkTo('Button')} />);
 
 storiesOf('blink-mind-react-demo', module)
-  .add('demo', () => <DemoBlinkMindReact/>)
+  .add('demo1', () => <DemoBlinkMindReact/>)
   ;
 
-storiesOf('scroll-api-demo', module)
-  .add('demo', () => <DemoScrollApi/>)
+storiesOf('drag-scroll-demo', module)
+  .add('demo1', () => <DemoScrollApi1/>)
+  .add('demo2', () => <DemoScrollApi2/>)
 ;

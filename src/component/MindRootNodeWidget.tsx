@@ -1,21 +1,18 @@
 import * as React from "react";
 import { NodeKeyType } from "../model/NodeModel";
 import { BaseWidget } from "./common/BaseWidget";
-import { MindLinkWidget } from "./MindLinkWidget";
 import "./MindNodeWidget.scss";
 import { MindDiagramState } from "./MindDiagramState";
 import { OpType } from "../model/MindMapModelModifier";
 import * as cx from "classnames";
+import { MindNodeModel } from "../model/MindNodeModel";
+import { DiagramLayoutDirection } from "blink-mind-react";
+import { MindNodeWidget, MindNodeWidgetDirection } from "./MindNodeWidget";
+import { MindLinkWidget } from "./MindLinkWidget";
 
-export enum MindNodeWidgetDirection {
-  LEFT,
-  RIGHT
-}
-
-export interface MindNodeWidgetProps {
+export interface MindRootNodeWidgetProps {
   diagramState: MindDiagramState;
   nodeKey: NodeKeyType;
-  dir: MindNodeWidgetDirection;
   saveRef?: Function;
   getRef?: Function;
   setViewBoxScroll: (left: number, top: number) => void;
@@ -24,24 +21,41 @@ export interface MindNodeWidgetProps {
 
 export interface MindNodeWidgetState {}
 
-export class MindNodeWidget<
-  P extends MindNodeWidgetProps,
+export class MindRootNodeWidget<
+  P extends MindRootNodeWidgetProps,
   S extends MindNodeWidgetState
-> extends BaseWidget<MindNodeWidgetProps, MindNodeWidgetState> {
-  constructor(props: MindNodeWidgetProps) {
+> extends BaseWidget<MindRootNodeWidgetProps, MindNodeWidgetState> {
+  constructor(props: MindRootNodeWidgetProps) {
     super(props);
   }
 
-  onClickCollapse = () => {
-    console.log(`onClickCollapse`);
-    this.needRelocation = true;
-    this.oldCollapseIconRect = this.collapseIcon.getBoundingClientRect();
-    this.props.diagramState.op(OpType.TOGGLE_COLLAPSE, this.props.nodeKey);
-  };
+  getNodeModel(): MindNodeModel {
+    let { diagramState, nodeKey } = this.props;
+    let { mindMapModel } = diagramState;
+    return mindMapModel.getItem(nodeKey);
+  }
+
+  getPartItems(dir: DiagramLayoutDirection) {
+    let node = this.getNodeModel();
+    let subItemCount = node.getSubItemKeys().size;
+    let items = node.getSubItemKeys().toArray();
+    switch (dir) {
+      case DiagramLayoutDirection.LEFT_TO_RIGHT:
+        return [[], items];
+      case DiagramLayoutDirection.RIGHT_TO_LEFT:
+        return [items, []];
+      case DiagramLayoutDirection.LEFT_AND_RIGHT:
+        return [
+          items.slice(Math.ceil(subItemCount / 2), subItemCount),
+          items.slice(0, Math.ceil(subItemCount / 2))
+        ];
+    }
+  }
+
   needRelocation: boolean = false;
 
   componentDidUpdate(
-    prevProps: Readonly<MindNodeWidgetProps>,
+    prevProps: Readonly<MindRootNodeWidgetProps>,
     prevState: Readonly<MindNodeWidgetState>,
     snapshot?: any
   ): void {
@@ -74,31 +88,23 @@ export class MindNodeWidget<
     }
   };
 
-  collapseIconRef = ref => {
-    if (ref) {
-      this.collapseIcon = ref;
-    }
-  };
   collapseIcon: HTMLElement;
   oldCollapseIconRect: ClientRect;
 
-  renderSubItems() {
+  renderItems(items: string[], dir: MindNodeWidgetDirection) {
     let {
       diagramState,
-      nodeKey,
-      dir,
       setViewBoxScroll,
       setViewBoxScrollDelta,
       saveRef,
       getRef
     } = this.props;
-    let { mindMapModel } = diagramState;
-    let node = mindMapModel.getItem(nodeKey);
-    if (node.getSubItemKeys().size === 0 || node.getCollapse()) return null;
-    let subItems = [],
-      subLinks = [];
 
-    node.getSubItemKeys().forEach(itemKey => {
+    if (items.length === 0) return null;
+    let subItems = [];
+    let subLinks = [];
+    items.forEach(itemKey => {
+      let linkKey = `link-${this.props.nodeKey}-${itemKey}`;
       subItems.push(
         <MindNodeWidget
           key={itemKey}
@@ -111,33 +117,24 @@ export class MindNodeWidget<
           getRef={getRef}
         />
       );
-      let linkKey = `link-${nodeKey}-${itemKey}`;
       subLinks.push(
         <MindLinkWidget
           key={linkKey}
-          fromNodeKey={nodeKey}
+          ref={saveRef(linkKey)}
+          fromNodeKey={this.props.nodeKey}
           toNodeKey={itemKey}
           dir={dir}
+          saveRef={saveRef}
           getRef={getRef}
-          ref={saveRef(linkKey)}
+          isRoot
         />
       );
     });
-    let diagramConfig = diagramState.config;
-    let inlineStyle =
-      dir === MindNodeWidgetDirection.LEFT
-        ? {
-          paddingTop: diagramConfig.vMargin,
-          paddingBottom: diagramConfig.vMargin,
-          paddingRight: diagramConfig.hMargin
-        }
-        : {
-          paddingTop: diagramConfig.vMargin,
-          paddingBottom: diagramConfig.vMargin,
-          paddingLeft: diagramConfig.hMargin
-        };
+    let cxName = `bm-node-layer-${
+      dir === MindNodeWidgetDirection.LEFT ? "left" : "right"
+    }`;
     return (
-      <div className={cx("bm-children")} style={inlineStyle} ref={saveRef(`children-${nodeKey}`)}>
+      <div className={cxName} ref={saveRef(cxName)}>
         {subItems}
         {subLinks}
       </div>
@@ -145,10 +142,10 @@ export class MindNodeWidget<
   }
 
   render() {
-    let { diagramState, nodeKey, dir, saveRef } = this.props;
+    let { diagramState, nodeKey,saveRef } = this.props;
     let { mindMapModel, config: diagramConfig } = diagramState;
     let node = mindMapModel.getItem(nodeKey);
-    // console.log(node);
+    let [leftItems, rightItems] = this.getPartItems(diagramConfig.direction);
     let visualLevel = mindMapModel.getItemVisualLevel(nodeKey);
     let itemStyle;
     switch (visualLevel) {
@@ -162,26 +159,19 @@ export class MindNodeWidget<
         itemStyle = diagramConfig.normalItemStyle;
         break;
     }
-    let inlineStyle =
-      dir === MindNodeWidgetDirection.LEFT
-        ? {
-            marginTop: diagramConfig.vMargin,
-            marginBottom: diagramConfig.vMargin,
-            marginRight: diagramConfig.hMargin
-          }
-        : {
-            marginTop: diagramConfig.vMargin,
-            marginBottom: diagramConfig.vMargin,
-            marginLeft: diagramConfig.hMargin
-          };
     return (
-      <div className={cx("bm-node", `bm-dir-${dir}`)}>
+      <>
+        {this.renderItems(leftItems, MindNodeWidgetDirection.LEFT)}
         <div
-          className={cx("topic", `bm-dir-${dir}`)}
-          ref={saveRef(`topic-${nodeKey}`)}
+          className={cx("topic")}
+          ref={
+            nodeKey === mindMapModel.getEditorRootItemKey()
+              ? saveRef("root-topic")
+              : null
+          }
         >
           <div
-            className={cx("content", `content-dir-${dir}`, {
+            className={cx("content", {
               "root-topic": visualLevel === 0,
               "primary-topic": visualLevel === 1,
               "normal-topic": visualLevel > 1
@@ -190,28 +180,9 @@ export class MindNodeWidget<
           >
             {node.getContent()}
           </div>
-          {node.getSubItemKeys().size > 0 ? (
-            <div
-              className={cx("collapse-line", {
-                "collapse-line-hide": node.getCollapse(),
-                [`normal-collapse-line-${dir}`]: visualLevel > 1
-              })}
-              ref={saveRef(`line-${nodeKey}`)}
-            >
-              <div
-                ref={this.collapseIconRef}
-                className={cx("collapse-icon", {
-                  iconfont: node.getSubItemKeys().size > 0,
-                  [`bm-${node.getCollapse() ? "plus" : "minus"}`]:
-                    node.getSubItemKeys().size > 0
-                })}
-                onClick={this.onClickCollapse}
-              />
-            </div>
-          ) : null}
         </div>
-        {this.renderSubItems()}
-      </div>
+        {this.renderItems(rightItems, MindNodeWidgetDirection.RIGHT)}
+      </>
     );
   }
 }
