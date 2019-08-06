@@ -6,7 +6,7 @@ import { MindDiagramState } from "./MindDiagramState";
 import { OpType } from "../model/MindMapModelModifier";
 import * as cx from "classnames";
 import { MindNodeModel } from "../model/MindNodeModel";
-import { DiagramLayoutDirection } from "blink-mind-react";
+import { DiagramLayoutDirection } from "../config/DiagramConfig";
 import { MindNodeWidget, MindNodeWidgetDirection } from "./MindNodeWidget";
 import { MindLinkWidget } from "./MindLinkWidget";
 

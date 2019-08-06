@@ -15,10 +15,12 @@
   "typings": "./dist/@types/src/main",
   "scripts": {
     "build": "webpack --watch",
+    "build-prod": "cross-env NODE_ENV=production webpack",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
   "dependencies": {
+    "blink-draft-js": "^0.11.0",
     "classnames": "^2.2.6",
     "closest": "^0.0.1",
     "immutable": "^4.0.0-rc.12",
@@ -58,6 +60,7 @@
     "uglifyjs-webpack-plugin": "^1.2.5",
     "val-loader": "^1.1.0",
     "webpack": "^4.7.0",
-    "webpack-cli": "^3.3.5"
+    "webpack-cli": "^3.3.5",
+    "clean-webpack-plugin": "^3.0.0"
   }
 }

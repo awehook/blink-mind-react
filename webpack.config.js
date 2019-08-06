@@ -1,7 +1,8 @@
 const webpack = require("webpack");
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 var path = require("path");
-var plugins = [];
+var plugins = [new CleanWebpackPlugin()];
 const production = process.env.NODE_ENV === "production";
 
 if (production) {
@@ -19,7 +20,7 @@ module.exports =
     entry: "./src/main.ts",
     output: {
       filename: "main.js",
-      path: __dirname + "/dist",
+      path: __dirname + "/lib",
       libraryTarget: "umd",
       library: "blink-mind-react"
     },
@@ -35,7 +36,19 @@ module.exports =
         commonjs2: "react-dom",
         commonjs: "react-dom",
         amd: "react-dom"
-      }
+      },
+      classnames: {
+        root: "classnames",
+        commonjs2: "classnames",
+        commonjs: "classnames",
+        amd: "classnames"
+      },
+      immutable: {
+        root: "immutable",
+        commonjs2: "immutable",
+        commonjs: "immutable",
+        amd: "immutable"
+      },
     },
     plugins: plugins,
     module: {
