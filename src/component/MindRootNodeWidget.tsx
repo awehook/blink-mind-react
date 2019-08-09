@@ -3,7 +3,6 @@ import { NodeKeyType } from "../model/NodeModel";
 import { BaseWidget } from "./common/BaseWidget";
 import "./MindNodeWidget.scss";
 import { MindDiagramState } from "./MindDiagramState";
-import { OpType } from "../model/MindMapModelModifier";
 import * as cx from "classnames";
 import { MindNodeModel } from "../model/MindNodeModel";
 import { DiagramLayoutDirection } from "../config/DiagramConfig";
@@ -178,7 +177,7 @@ export class MindRootNodeWidget<
             })}
             style={itemStyle}
           >
-            {node.getContent()}
+            {diagramConfig.editorRendererFn(diagramState,nodeKey)}
           </div>
         </div>
         {this.renderItems(rightItems, MindNodeWidgetDirection.RIGHT)}

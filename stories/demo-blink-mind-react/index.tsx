@@ -52,7 +52,7 @@ function generateExampleItems(
 }
 
 function Demo() {
-  let items = generateExampleItems(5,1,'root',4);
+  let items = generateExampleItems(2,1,'root',4);
   let mindModel = MindMapModel.createWith({
     rootItemKey: "root",
     editorRootItemKey: "root",

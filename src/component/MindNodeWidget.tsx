@@ -6,6 +6,7 @@ import "./MindNodeWidget.scss";
 import { MindDiagramState } from "./MindDiagramState";
 import { OpType } from "../model/MindMapModelModifier";
 import * as cx from "classnames";
+import { config } from "@storybook/addon-actions";
 
 export enum MindNodeWidgetDirection {
   LEFT,
@@ -32,11 +33,16 @@ export class MindNodeWidget<
     super(props);
   }
 
-  onClickCollapse = () => {
+  onClickCollapse = e => {
     console.log(`onClickCollapse`);
+    e.stopPropagation();
     this.needRelocation = true;
     this.oldCollapseIconRect = this.collapseIcon.getBoundingClientRect();
     this.props.diagramState.op(OpType.TOGGLE_COLLAPSE, this.props.nodeKey);
+  };
+
+  onClickFocus = () => {
+    this.props.diagramState.op(OpType.FOCUS_ITEM, this.props.nodeKey);
   };
   needRelocation: boolean = false;
 
@@ -81,6 +87,21 @@ export class MindNodeWidget<
   };
   collapseIcon: HTMLElement;
   oldCollapseIconRect: ClientRect;
+
+  shouldComponentUpdate(
+    nextProps: Readonly<MindNodeWidgetProps>,
+    nextState: Readonly<MindNodeWidgetState>,
+    nextContext: any
+  ): boolean {
+    return true;
+    if (nextProps.nodeKey !== this.props.nodeKey) return true;
+    let nextItem = nextProps.diagramState.mindMapModel.getItem(
+      nextProps.nodeKey
+    );
+    let item = this.props.diagramState.mindMapModel.getItem(this.props.nodeKey);
+    if (nextItem !== item) return true;
+    return false;
+  }
 
   renderSubItems() {
     let {
@@ -127,17 +148,21 @@ export class MindNodeWidget<
     let inlineStyle =
       dir === MindNodeWidgetDirection.LEFT
         ? {
-          paddingTop: diagramConfig.vMargin,
-          paddingBottom: diagramConfig.vMargin,
-          paddingRight: diagramConfig.hMargin
-        }
+            paddingTop: diagramConfig.vMargin,
+            paddingBottom: diagramConfig.vMargin,
+            paddingRight: diagramConfig.hMargin
+          }
         : {
-          paddingTop: diagramConfig.vMargin,
-          paddingBottom: diagramConfig.vMargin,
-          paddingLeft: diagramConfig.hMargin
-        };
+            paddingTop: diagramConfig.vMargin,
+            paddingBottom: diagramConfig.vMargin,
+            paddingLeft: diagramConfig.hMargin
+          };
     return (
-      <div className={cx("bm-children")} style={inlineStyle} ref={saveRef(`children-${nodeKey}`)}>
+      <div
+        className={cx("bm-children")}
+        style={inlineStyle}
+        ref={saveRef(`children-${nodeKey}`)}
+      >
         {subItems}
         {subLinks}
       </div>
@@ -146,7 +171,13 @@ export class MindNodeWidget<
 
   render() {
     let { diagramState, nodeKey, dir, saveRef } = this.props;
+    // if(nodeKey==='root_sub1') {
+    //   console.log(`MindNode Render ${nodeKey}`);
+    //   console.log(diagramState.mindMapModel.getItem(nodeKey).getContent());
+    // }
+
     let { mindMapModel, config: diagramConfig } = diagramState;
+
     let node = mindMapModel.getItem(nodeKey);
     // console.log(node);
     let visualLevel = mindMapModel.getItemVisualLevel(nodeKey);
@@ -187,8 +218,10 @@ export class MindNodeWidget<
               "normal-topic": visualLevel > 1
             })}
             style={itemStyle}
+            onClick={this.onClickFocus}
           >
-            {node.getContent()}
+            {/*{node.getContent()}*/}
+            {diagramConfig.editorRendererFn(diagramState, nodeKey)}
           </div>
           {node.getSubItemKeys().size > 0 ? (
             <div

@@ -14,7 +14,6 @@ export default class SaveRef extends React.Component<SaveRefProps> {
   saveRef = name => {
     return node => {
       if (node) {
-        console.log(`saveRef ${name}`);
         this[name] = node;
         this.fireListener(name,node);
       }

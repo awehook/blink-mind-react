@@ -5,6 +5,7 @@ import { MindDragScrollWidget } from "./MindDragScrollWidget";
 import { BaseWidget } from "./common/BaseWidget";
 import "./MindDiagramWidget.scss";
 import SaveRef from "./common/SaveRef";
+import { MindToolbar } from "./MindToolbar";
 
 function log(obj) {
   console.log(obj);
@@ -30,6 +31,7 @@ export class MindDiagramWidget<
               [`${this.props.diagramModel.config.theme}`]: true
             })}
           >
+            <MindToolbar getRef={getRef}/>
             <MindDragScrollWidget
               diagramModel={this.props.diagramModel}
               saveRef={saveRef}

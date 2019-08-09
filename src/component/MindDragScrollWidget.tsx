@@ -37,22 +37,37 @@ export class MindDragScrollWidget<
     );
   }
 
-  dragScrollWidget: DragScrollWidget;
-  dragScrollWidgetRef = ref => {
-    if (ref) {
-      this.dragScrollWidget = ref;
-    }
+  get dragScrollWidget(): DragScrollWidget {
+    return this.props.getRef("DragScrollWidget");
+  }
+  // dragScrollWidgetRef = ref => {
+  //   if (ref) {
+  //     this.dragScrollWidget = ref;
+  //   }
+  // };
+  canDragFunc = () => {
+    let selection = document.getSelection();
+    return (
+      selection.anchorNode === null ||
+      selection.anchorNode.nodeType !== Node.TEXT_NODE
+    );
   };
 
   render() {
+    const { saveRef } = this.props;
     console.log(`MindDragScrollWidget render`);
     return (
-      <DragScrollWidget {...this.state} ref={this.dragScrollWidgetRef}>
+      <DragScrollWidget
+        {...this.state}
+        ref={saveRef("DragScrollWidget")}
+        canDragFunc={this.canDragFunc}
+      >
         {(setViewBoxScroll, setViewBoxScrollDelta) => (
           <MindNodeLayerWidget
             {...this.props}
             setViewBoxScroll={setViewBoxScroll}
             setViewBoxScrollDelta={setViewBoxScrollDelta}
+            ref={saveRef("MindNodeLayerWidget")}
           />
         )}
       </DragScrollWidget>

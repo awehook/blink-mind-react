@@ -5,12 +5,14 @@ type MindMapRecordType = {
   rootItemKey: NodeKeyType;
   editorRootItemKey: NodeKeyType;
   itemMap: Map<NodeKeyType, MindNodeModel>;
+  focusItemKey: NodeKeyType;
 };
 
 const defaultMindMapRecord: MindMapRecordType = {
   rootItemKey: null,
   editorRootItemKey: null,
-  itemMap: Map()
+  itemMap: Map(),
+  focusItemKey: null
 };
 
 export class MindMapModel extends Record(defaultMindMapRecord) {
@@ -31,6 +33,10 @@ export class MindMapModel extends Record(defaultMindMapRecord) {
 
   getItemMap(): Map<NodeKeyType, MindNodeModel> {
     return this.get("itemMap");
+  }
+
+  getFocusItemKey(): NodeKeyType {
+    return this.get("focusItemKey");
   }
 
   getItem(key: NodeKeyType): MindNodeModel {

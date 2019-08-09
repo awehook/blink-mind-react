@@ -25,7 +25,8 @@
     "closest": "^0.0.1",
     "immutable": "^4.0.0-rc.12",
     "react": "^16.8.6",
-    "resize-observer-polyfill": "^1.5.1"
+    "resize-observer-polyfill": "^1.5.1",
+    "awehook-rich-markdown-editor": "^1.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.5.0",
@@ -42,6 +43,7 @@
     "babel-loader": "^8.0.6",
     "babel-plugin-add-module-exports": "^1.0.2",
     "babel-plugin-class-display-name": "^2.1.0",
+    "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^4.5.1",
     "cross-env": "^5.1.4",
     "css-loader": "^0.28.11",
@@ -60,7 +62,6 @@
     "uglifyjs-webpack-plugin": "^1.2.5",
     "val-loader": "^1.1.0",
     "webpack": "^4.7.0",
-    "webpack-cli": "^3.3.5",
-    "clean-webpack-plugin": "^3.0.0"
+    "webpack-cli": "^3.3.5"
   }
 }

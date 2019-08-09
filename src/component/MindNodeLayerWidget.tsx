@@ -39,13 +39,16 @@ export class MindNodeLayerWidget<
   }
 
   op = (opType: OpType, key: NodeKeyType, arg) => {
+    // console.error(`op:${opType}`);
+    if (!key) key = this.state.mindMapModel.getFocusItemKey();
+    let mindMapModel = MindMapModelModifier.op(
+      this.state.mindMapModel,
+      opType,
+      key,
+      arg
+    );
     this.setState({
-      mindMapModel: MindMapModelModifier.op(
-        this.state.mindMapModel,
-        opType,
-        key,
-        arg
-      )
+      mindMapModel
     });
   };
 

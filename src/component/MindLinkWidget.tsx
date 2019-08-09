@@ -34,9 +34,9 @@ export class MindLinkWidget<
   };
 
   public layout() {
-    console.log(
-      `layout link ${this.props.fromNodeKey} ${this.props.toNodeKey}`
-    );
+    // console.log(
+    //   `layout link ${this.props.fromNodeKey} ${this.props.toNodeKey}`
+    // );
     this.props.isRoot ? this.layoutRoot() : this.layoutNormal();
   }
   layoutRoot() {
@@ -73,7 +73,6 @@ export class MindLinkWidget<
   };
   generatePathStringNormal = () => {
     let cornerR = 10;
-    console.log("generatePathStringNormal");
     let { fromNodeKey, toNodeKey, getRef, dir } = this.props;
     let fromElementTopic: HTMLElement = getRef(`topic-${fromNodeKey}`);
     let toElementTopic: HTMLElement = getRef(`topic-${toNodeKey}`);
@@ -136,7 +135,6 @@ export class MindLinkWidget<
 
   generatePathStringRoot = () => {
     let cornerR = 10;
-    console.log("generatePathStringRoot");
     let { toNodeKey, getRef, dir } = this.props;
     let rootTopic: HTMLElement = getRef(`root-topic`);
     let toElementTopic: HTMLElement = getRef(`topic-${toNodeKey}`);
@@ -195,13 +193,13 @@ export class MindLinkWidget<
     }
   };
   render() {
-    console.log(
-      `render link ${this.props.fromNodeKey} ${this.props.toNodeKey}`
-    );
+    // console.log(
+    //   `render link ${this.props.fromNodeKey} ${this.props.toNodeKey}`
+    // );
     if (this.state && this.state.width) {
-      console.log(
-        `render link ${this.props.fromNodeKey} ${this.props.toNodeKey} ==>`
-      );
+      // console.log(
+      //   `render link ${this.props.fromNodeKey} ${this.props.toNodeKey} ==>`
+      // );
       return (
         <div className="bm-link">
           <svg

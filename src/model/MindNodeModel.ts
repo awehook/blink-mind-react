@@ -53,6 +53,17 @@ export class MindNodeModel extends Record(defaultMindNodeRecord)
     return this.update("layout", layout => layout.merge(obj));
   }
 
+  static create(key: NodeKeyType,parentKey=null,content="",subItemKeys=List([]),collapse=false) : MindNodeModel {
+    return MindNodeModel.createWith({
+      key,
+      parentKey,
+      content,
+      subItemKeys,
+      collapse
+    });
+  }
+
+
   static createWith(obj: any): MindNodeModel {
     let node = new MindNodeModel();
     node = node.merge({

@@ -2,10 +2,12 @@ import * as React from "react";
 import { BaseWidget } from "./BaseWidget";
 import ResizeObserver from "resize-observer-polyfill";
 import "./DragScrollWidget.scss";
+import { bool } from "prop-types";
 
 interface DragScrollWidgetProps {
   mouseKey?: "left" | "right";
   needKeyPressed?: boolean;
+  canDragFunc? : ()=> Boolean
   children: (
     setViewBoxScroll: (left: number, top: number) => void,
     setViewBoxScrollDelta: (left: number, top: number) => void
@@ -25,7 +27,7 @@ export class DragScrollWidget extends BaseWidget<DragScrollWidgetProps> {
 
   static defaultProps = {
     mouseKey: "left",
-    needKeyPressed: true
+    needKeyPressed: false
   };
 
   contentResizeCallback = (
@@ -106,7 +108,10 @@ export class DragScrollWidget extends BaseWidget<DragScrollWidgetProps> {
   };
 
   onMouseDown = e => {
-    let { mouseKey, needKeyPressed } = this.props;
+
+    let { mouseKey, needKeyPressed,canDragFunc } = this.props;
+    if(canDragFunc && !canDragFunc())
+      return;
     if (
       (e.button === 0 && mouseKey === "left") ||
       (e.button === 2 && mouseKey === "right")
