@@ -16,6 +16,7 @@
   "scripts": {
     "build": "webpack --watch",
     "build-prod": "cross-env NODE_ENV=production webpack",
+    "prepublish": "yarn build-prod",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
