@@ -1,7 +1,7 @@
 import * as React from "react";
 import { BaseWidget } from "./common/BaseWidget";
-import { MindRootNodeWidget } from "./MindRootNodeWidget";
-import { MindDiagramState } from "./MindDiagramState";
+import { RootNodeWidget } from "./RootNodeWidget";
+import { DiagramState } from "../interface/DiagramState";
 import { defaultDiagramConfig } from "../config/DiagramConfig";
 import { MindDiagramModel } from "../model/MindDiagramModel";
 import { MindMapModel } from "../model/MindMapModel";
@@ -16,10 +16,10 @@ export interface MindNodeLayerWidgetProps {
   setViewBoxScrollDelta: (left: number, top: number) => void;
 }
 
-export class MindNodeLayerWidget<
+export class NodeLayerWidget<
   P extends MindNodeLayerWidgetProps,
-  S extends MindDiagramState
-> extends BaseWidget<MindNodeLayerWidgetProps, MindDiagramState> {
+  S extends DiagramState
+> extends BaseWidget<MindNodeLayerWidgetProps, DiagramState> {
   constructor(props: MindNodeLayerWidgetProps) {
     super(props);
     this.state = {
@@ -39,23 +39,31 @@ export class MindNodeLayerWidget<
   }
 
   op = (opType: OpType, key: NodeKeyType, arg) => {
-    // console.error(`op:${opType}`);
-    if (!key) key = this.state.mindMapModel.getFocusItemKey();
+    console.error(`op:${OpType[opType]}`);
+    if (!key && opType!==OpType.FOCUS_ITEM) key = this.state.mindMapModel.getFocusItemKey();
+    console.log(this.state.mindMapModel);
     let mindMapModel = MindMapModelModifier.op(
       this.state.mindMapModel,
       opType,
       key,
       arg
     );
+    console.log(mindMapModel);
     this.setState({
       mindMapModel
     });
   };
 
+
   render() {
-    let { setViewBoxScroll, setViewBoxScrollDelta } = this.props;
+    // console.error("MindNodeLayer render");
+    let {
+      setViewBoxScroll,
+      setViewBoxScrollDelta,
+      saveRef
+    } = this.props;
     return (
-      <div className="bm-node-layer" ref={this.props.saveRef("node-layer")}>
+      <div className="bm-node-layer" ref={saveRef("node-layer")}>
         {this.renderItems(setViewBoxScroll, setViewBoxScrollDelta)}
       </div>
     );
@@ -64,7 +72,7 @@ export class MindNodeLayerWidget<
     let mindMapModel = this.state.mindMapModel;
     let editorRootItemKey = mindMapModel.getEditorRootItemKey();
     return (
-      <MindRootNodeWidget
+      <RootNodeWidget
         diagramState={this.state}
         nodeKey={editorRootItemKey}
         saveRef={this.props.saveRef}

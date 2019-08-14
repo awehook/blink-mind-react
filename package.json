@@ -1,6 +1,6 @@
 {
   "name": "blink-mind-react",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "a react mind map library written in typescript",
   "author": "rayz awehook",
   "license": "MIT",
@@ -11,8 +11,8 @@
     "react",
     "typescript"
   ],
-  "main": "./dist/main.js",
-  "typings": "./dist/@types/src/main",
+  "main": "./lib/main.js",
+  "files": ["lib/"],
   "scripts": {
     "build-dev": "webpack --watch",
     "build": "cross-env NODE_ENV=production webpack",

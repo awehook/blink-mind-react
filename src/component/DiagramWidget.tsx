@@ -3,9 +3,9 @@ import * as cx from "classnames";
 import { MindDiagramModel } from "../model/MindDiagramModel";
 import { MindDragScrollWidget } from "./MindDragScrollWidget";
 import { BaseWidget } from "./common/BaseWidget";
-import "./MindDiagramWidget.scss";
+import "./DiagramWidget.scss";
 import SaveRef from "./common/SaveRef";
-import { MindToolbar } from "./MindToolbar";
+import { Toolbar } from "./Toolbar";
 
 function log(obj) {
   console.log(obj);
@@ -15,7 +15,7 @@ export interface MindDiagramWidgetProps {
   diagramModel: MindDiagramModel;
 }
 
-export class MindDiagramWidget<
+export class DiagramWidget<
   P extends MindDiagramWidgetProps
 > extends BaseWidget<MindDiagramWidgetProps> {
   constructor(props: MindDiagramWidgetProps) {
@@ -31,7 +31,7 @@ export class MindDiagramWidget<
               [`${this.props.diagramModel.config.theme}`]: true
             })}
           >
-            <MindToolbar getRef={getRef}/>
+            <Toolbar getRef={getRef}/>
             <MindDragScrollWidget
               diagramModel={this.props.diagramModel}
               saveRef={saveRef}

@@ -1,31 +1,34 @@
 import * as React from "react";
 import { BaseWidget } from "./common/BaseWidget";
 import { NodeKeyType } from "../model/NodeModel";
-import { MindNodeWidgetDirection } from "./MindNodeWidget";
+import { NodeWidgetDirection } from "../enums/NodeWidgetDirection";
+import { DiagramState } from "../interface/DiagramState";
+import { MindMapModelModifier } from "../model/MindMapModelModifier";
 
-// import { MindDiagramState } from "./MindDiagramState";
-
-interface MindLinkWidgetProps {
-  // diagramState: MindDiagramState
+interface LinkWidgetProps {
+  diagramState: DiagramState;
   isRoot?: boolean;
   fromNodeKey: NodeKeyType;
   toNodeKey: NodeKeyType;
-  dir: MindNodeWidgetDirection;
+  dir: NodeWidgetDirection;
   saveRef?: Function;
   getRef?: Function;
   registerRefListener?: Function;
 }
 
-interface MindLinkWidgetState {
+interface LinkWidgetState {
   height: number;
   width: number;
+
+  left: number;
+  top: number;
 }
 
-export class MindLinkWidget<
-  P extends MindLinkWidgetProps,
-  S extends MindLinkWidgetState
-> extends BaseWidget<MindLinkWidgetProps, MindLinkWidgetState> {
-  constructor(props: MindLinkWidgetProps) {
+export class LinkWidget<
+  P extends LinkWidgetProps,
+  S extends LinkWidgetState
+> extends BaseWidget<LinkWidgetProps, LinkWidgetState> {
+  constructor(props: LinkWidgetProps) {
     super(props);
   }
 
@@ -42,7 +45,7 @@ export class MindLinkWidget<
   layoutRoot() {
     let { dir, getRef } = this.props;
     let partLayerElement: HTMLElement = getRef(
-      `bm-node-layer-${dir === MindNodeWidgetDirection.LEFT ? "left" : "right"}`
+      `bm-node-layer-${dir === NodeWidgetDirection.LEFT ? "left" : "right"}`
     );
     if (partLayerElement) {
       let partLayerElementRect = partLayerElement.getBoundingClientRect();
@@ -54,9 +57,11 @@ export class MindLinkWidget<
   }
 
   layoutNormal() {
-    let fromNodeChildren: HTMLElement = this.props.getRef(
+    let { getRef } = this.props;
+    let fromNodeChildren: HTMLElement = getRef(
       `children-${this.props.fromNodeKey}`
     );
+
     if (fromNodeChildren) {
       let fromNodeChildrenRect = fromNodeChildren.getBoundingClientRect();
       this.setState({
@@ -73,7 +78,8 @@ export class MindLinkWidget<
   };
   generatePathStringNormal = () => {
     let cornerR = 10;
-    let { fromNodeKey, toNodeKey, getRef, dir } = this.props;
+    let { fromNodeKey, toNodeKey, getRef, dir, diagramState } = this.props;
+    let { mindMapModel } = diagramState;
     let fromElementTopic: HTMLElement = getRef(`topic-${fromNodeKey}`);
     let toElementTopic: HTMLElement = getRef(`topic-${toNodeKey}`);
     if (!fromElementTopic || !toElementTopic) {
@@ -84,7 +90,10 @@ export class MindLinkWidget<
     let toElementTopicRect = toElementTopic.getBoundingClientRect();
     let fromElementLineRect = fromElementLine.getBoundingClientRect();
     let fromElementChildrenRect = fromElementChildren.getBoundingClientRect();
-    if (dir === MindNodeWidgetDirection.RIGHT) {
+
+    let fromItem = mindMapModel.getItem(fromNodeKey);
+
+    if (dir === NodeWidgetDirection.RIGHT) {
       let centerX = 0;
       let centerY = Math.round(
         fromElementLineRect.top - fromElementChildrenRect.top + 1
@@ -98,6 +107,13 @@ export class MindLinkWidget<
       let rightX = Math.round(
         toElementTopicRect.right - fromElementChildrenRect.left - 12
       );
+      if (
+        fromItem.getSubItemKeys().size === 1 &&
+        mindMapModel.getItemVisualLevel(fromNodeKey) > 1
+      ) {
+        return `M${centerX},${cornerY}H${toElementTopicRect.right -
+          fromElementChildrenRect.left}`;
+      }
       if (centerY > cornerY)
         return `M${centerX},${centerY} H${cornerX} V${cornerY +
           cornerR} Q${cornerX},${cornerY} ${cornerX +
@@ -122,6 +138,13 @@ export class MindLinkWidget<
       let rightX = Math.round(
         toElementTopicRect.left - fromElementChildrenRect.left + 12
       );
+      if (
+        fromItem.getSubItemKeys().size === 1 &&
+        mindMapModel.getItemVisualLevel(fromNodeKey) > 1
+      ) {
+        return `M${centerX},${cornerY}H${fromElementLineRect.left -
+          toElementTopicRect.right}`;
+      }
       if (centerY > cornerY)
         return `M${centerX},${centerY} H${cornerX} V${cornerY +
           cornerR} Q${cornerX},${cornerY} ${cornerX -
@@ -134,62 +157,55 @@ export class MindLinkWidget<
   };
 
   generatePathStringRoot = () => {
-    let cornerR = 10;
-    let { toNodeKey, getRef, dir } = this.props;
+    let { fromNodeKey, toNodeKey, getRef, dir, diagramState } = this.props;
     let rootTopic: HTMLElement = getRef(`root-topic`);
     let toElementTopic: HTMLElement = getRef(`topic-${toNodeKey}`);
     if (!rootTopic || !toElementTopic) {
       return "";
     }
 
+    let fromItem = diagramState.mindMapModel.getItem(fromNodeKey);
+
     let toElementTopicRect = toElementTopic.getBoundingClientRect();
     let rootTopicRect = rootTopic.getBoundingClientRect();
-    if (dir === MindNodeWidgetDirection.RIGHT) {
+    let fromX, fromY, toX, toY;
+    if (dir === NodeWidgetDirection.RIGHT) {
       let partLayerElement: HTMLElement = getRef("bm-node-layer-right");
       let partLayerRect = partLayerElement.getBoundingClientRect();
-      let centerX = 0;
-      let centerY = Math.round(
+      fromX = 0;
+      fromY = Math.round(
         rootTopicRect.top - partLayerRect.top + rootTopicRect.height / 2
       );
-
-      let rightX = Math.round(toElementTopicRect.left - partLayerRect.left);
-      let cornerX = (rightX + centerX) / 2;
-      let cornerY = Math.round(
+      toX = toElementTopicRect.left - rootTopicRect.right;
+      toY = Math.round(
         toElementTopicRect.top -
           partLayerRect.top +
           toElementTopicRect.height / 2
       );
-      if (centerY > cornerY)
-        return `M${centerX},${centerY} H${cornerX} V${cornerY +
-          cornerR} Q${cornerX},${cornerY} ${cornerX +
-          cornerR},${cornerY} H${rightX}`;
-      else
-        return `M${centerX},${centerY} H${cornerX} V${cornerY -
-          cornerR} Q${cornerX},${cornerY} ${cornerX +
-          cornerR},${cornerY} H${rightX}`;
     } else {
       let partLayerElement: HTMLElement = getRef("bm-node-layer-left");
       let partLayerRect = partLayerElement.getBoundingClientRect();
-      let centerX = partLayerRect.right - partLayerRect.left;
-      let centerY = Math.round(
+      fromX = partLayerRect.right - partLayerRect.left;
+      fromY = Math.round(
         rootTopicRect.top - partLayerRect.top + rootTopicRect.height / 2
       );
 
-      let rightX = Math.round(toElementTopicRect.right - partLayerRect.left);
-      let cornerX = (rightX + centerX) / 2;
-      let cornerY = Math.round(
+      toX = Math.round(toElementTopicRect.right - partLayerRect.left);
+      toY = Math.round(
         toElementTopicRect.top -
           partLayerRect.top +
           toElementTopicRect.height / 2
       );
-      if (centerY > cornerY)
-        return `M${centerX},${centerY} H${cornerX} V${cornerY +
-          cornerR} Q${cornerX},${cornerY} ${cornerX -
-          cornerR},${cornerY} H${rightX}`;
-      else
-        return `M${centerX},${centerY} H${cornerX} V${cornerY -
-          cornerR} Q${cornerX},${cornerY} ${cornerX -
-          cornerR},${cornerY} H${rightX}`;
+    }
+    if (fromY === toY) return `M${fromX},${fromY}L${toX},${toY}`;
+
+    let centerX = (fromX + toX) / 2;
+    let centerY = (fromY + toY) / 2;
+
+    if (dir === NodeWidgetDirection.RIGHT) {
+      return `M${fromX},${fromY}C${fromX},${centerY},${centerX},${toY},${toX},${toY}`;
+    } else {
+      return `M${toX},${toY}C${centerX},${toY},${fromX},${centerY},${fromX},${fromY}`;
     }
   };
   render() {

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { BaseWidget } from "./common/BaseWidget";
 import { DragScrollWidget } from "./common/DragScrollWidget";
-import { MindNodeLayerWidget } from "./MindNodeLayerWidget";
+import { NodeLayerWidget } from "./NodeLayerWidget";
 import { MindDiagramModel } from "blink-mind-react";
 
 export interface MindDragScrollWidgetProps {
@@ -60,10 +60,10 @@ export class MindDragScrollWidget<
       <DragScrollWidget
         {...this.state}
         ref={saveRef("DragScrollWidget")}
-        canDragFunc={this.canDragFunc}
+        // canDragFunc={this.canDragFunc}
       >
         {(setViewBoxScroll, setViewBoxScrollDelta) => (
-          <MindNodeLayerWidget
+          <NodeLayerWidget
             {...this.props}
             setViewBoxScroll={setViewBoxScroll}
             setViewBoxScrollDelta={setViewBoxScrollDelta}

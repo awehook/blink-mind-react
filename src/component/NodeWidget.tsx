@@ -1,36 +1,38 @@
 import * as React from "react";
 import { NodeKeyType } from "../model/NodeModel";
 import { BaseWidget } from "./common/BaseWidget";
-import { MindLinkWidget } from "./MindLinkWidget";
-import "./MindNodeWidget.scss";
-import { MindDiagramState } from "./MindDiagramState";
+import { LinkWidget } from "./LinkWidget";
+import {TopicContentWidget} from "./TopicContentWidget";
+import "./NodeWidget.scss";
+import { DiagramState } from "../interface/DiagramState";
 import { OpType } from "../model/MindMapModelModifier";
 import * as cx from "classnames";
-import { config } from "@storybook/addon-actions";
+import {NodeWidgetDirection} from "../enums/NodeWidgetDirection";
 
-export enum MindNodeWidgetDirection {
-  LEFT,
-  RIGHT
-}
 
 export interface MindNodeWidgetProps {
-  diagramState: MindDiagramState;
+  diagramState: DiagramState;
   nodeKey: NodeKeyType;
-  dir: MindNodeWidgetDirection;
+  dir: NodeWidgetDirection;
   saveRef?: Function;
   getRef?: Function;
   setViewBoxScroll: (left: number, top: number) => void;
   setViewBoxScrollDelta: (left: number, top: number) => void;
 }
 
-export interface MindNodeWidgetState {}
+export interface MindNodeWidgetState {
+  dragEnter: boolean;
+}
 
-export class MindNodeWidget<
+export class NodeWidget<
   P extends MindNodeWidgetProps,
   S extends MindNodeWidgetState
 > extends BaseWidget<MindNodeWidgetProps, MindNodeWidgetState> {
   constructor(props: MindNodeWidgetProps) {
     super(props);
+    this.state = {
+      dragEnter: false
+    };
   }
 
   onClickCollapse = e => {
@@ -41,9 +43,56 @@ export class MindNodeWidget<
     this.props.diagramState.op(OpType.TOGGLE_COLLAPSE, this.props.nodeKey);
   };
 
-  onClickFocus = () => {
+  // onClickFocus = () => {
+  //   this.props.diagramState.op(OpType.FOCUS_ITEM, this.props.nodeKey);
+  // };
+
+  onMouseEnter = () => {
     this.props.diagramState.op(OpType.FOCUS_ITEM, this.props.nodeKey);
   };
+
+  onMouseLeave = () => {
+    this.props.diagramState.op(OpType.FOCUS_ITEM, undefined);
+  };
+
+  static dragSrcItemKey: NodeKeyType;
+
+  onDragStart = e => {
+    console.log("onDragStart");
+    NodeWidget.dragSrcItemKey = this.props.nodeKey;
+    e.stopPropagation();
+  };
+
+  onDragEnd = () => {};
+
+  onDragEnter = () => {
+    console.log("onDragEnter");
+    this.setState({
+      dragEnter: true
+    });
+  };
+
+  onDragLeave = e => {
+    const { getRef, nodeKey } = this.props;
+    let relatedTarget = e.nativeEvent.relatedTarget;
+    let content = getRef(`content-${nodeKey}`);
+    if (content == relatedTarget || content.contains(relatedTarget)) {
+      return;
+    }
+    this.setState({
+      dragEnter: false
+    });
+  };
+
+  onDrop = e => {
+    console.log("onDrop");
+    let { diagramState, nodeKey } = this.props;
+    diagramState.op(OpType.DRAG_AND_DROP, NodeWidget.dragSrcItemKey, nodeKey);
+    this.setState({
+      dragEnter: false
+    });
+  };
+
   needRelocation: boolean = false;
 
   componentDidUpdate(
@@ -74,7 +123,7 @@ export class MindNodeWidget<
       node.getSubItemKeys().forEach(itemKey => {
         let linkKey = `link-${nodeKey}-${itemKey}`;
         // @ts-ignore
-        let linkWidget: MindLinkWidget = getRef(linkKey);
+        let linkWidget: LinkWidget = getRef(linkKey);
         linkWidget.layout();
       });
     }
@@ -93,14 +142,15 @@ export class MindNodeWidget<
     nextState: Readonly<MindNodeWidgetState>,
     nextContext: any
   ): boolean {
+    // TODO 后面再进行优化
     return true;
-    if (nextProps.nodeKey !== this.props.nodeKey) return true;
-    let nextItem = nextProps.diagramState.mindMapModel.getItem(
-      nextProps.nodeKey
-    );
-    let item = this.props.diagramState.mindMapModel.getItem(this.props.nodeKey);
-    if (nextItem !== item) return true;
-    return false;
+    // if (nextProps.nodeKey !== this.props.nodeKey) return true;
+    // let nextItem = nextProps.diagramState.mindMapModel.getItem(
+    //   nextProps.nodeKey
+    // );
+    // let item = this.props.diagramState.mindMapModel.getItem(this.props.nodeKey);
+    // if (nextItem !== item) return true;
+    // return false;
   }
 
   renderSubItems() {
@@ -121,7 +171,7 @@ export class MindNodeWidget<
 
     node.getSubItemKeys().forEach(itemKey => {
       subItems.push(
-        <MindNodeWidget
+        <NodeWidget
           key={itemKey}
           nodeKey={itemKey}
           dir={dir}
@@ -134,7 +184,8 @@ export class MindNodeWidget<
       );
       let linkKey = `link-${nodeKey}-${itemKey}`;
       subLinks.push(
-        <MindLinkWidget
+        <LinkWidget
+          diagramState={diagramState}
           key={linkKey}
           fromNodeKey={nodeKey}
           toNodeKey={itemKey}
@@ -146,7 +197,7 @@ export class MindNodeWidget<
     });
     let diagramConfig = diagramState.config;
     let inlineStyle =
-      dir === MindNodeWidgetDirection.LEFT
+      dir === NodeWidgetDirection.LEFT
         ? {
             paddingTop: diagramConfig.vMargin,
             paddingBottom: diagramConfig.vMargin,
@@ -170,59 +221,17 @@ export class MindNodeWidget<
   }
 
   render() {
-    let { diagramState, nodeKey, dir, saveRef } = this.props;
-    // if(nodeKey==='root_sub1') {
-    //   console.log(`MindNode Render ${nodeKey}`);
-    //   console.log(diagramState.mindMapModel.getItem(nodeKey).getContent());
-    // }
-
-    let { mindMapModel, config: diagramConfig } = diagramState;
-
+    let { diagramState, nodeKey, dir, saveRef,getRef } = this.props;
+    let { mindMapModel} = diagramState;
     let node = mindMapModel.getItem(nodeKey);
-    // console.log(node);
     let visualLevel = mindMapModel.getItemVisualLevel(nodeKey);
-    let itemStyle;
-    switch (visualLevel) {
-      case 0:
-        itemStyle = diagramConfig.rootItemStyle;
-        break;
-      case 1:
-        itemStyle = diagramConfig.primaryItemStyle;
-        break;
-      default:
-        itemStyle = diagramConfig.normalItemStyle;
-        break;
-    }
-    let inlineStyle =
-      dir === MindNodeWidgetDirection.LEFT
-        ? {
-            marginTop: diagramConfig.vMargin,
-            marginBottom: diagramConfig.vMargin,
-            marginRight: diagramConfig.hMargin
-          }
-        : {
-            marginTop: diagramConfig.vMargin,
-            marginBottom: diagramConfig.vMargin,
-            marginLeft: diagramConfig.hMargin
-          };
     return (
       <div className={cx("bm-node", `bm-dir-${dir}`)}>
         <div
           className={cx("topic", `bm-dir-${dir}`)}
           ref={saveRef(`topic-${nodeKey}`)}
         >
-          <div
-            className={cx("content", `content-dir-${dir}`, {
-              "root-topic": visualLevel === 0,
-              "primary-topic": visualLevel === 1,
-              "normal-topic": visualLevel > 1
-            })}
-            style={itemStyle}
-            onClick={this.onClickFocus}
-          >
-            {/*{node.getContent()}*/}
-            {diagramConfig.editorRendererFn(diagramState, nodeKey)}
-          </div>
+          <TopicContentWidget diagramState={diagramState} nodeKey={nodeKey} dir={dir} draggable saveRef={saveRef} getRef={getRef}/>
           {node.getSubItemKeys().size > 0 ? (
             <div
               className={cx("collapse-line", {
@@ -236,7 +245,7 @@ export class MindNodeWidget<
                 className={cx("collapse-icon", {
                   iconfont: node.getSubItemKeys().size > 0,
                   [`bm-${node.getCollapse() ? "plus" : "minus"}`]:
-                    node.getSubItemKeys().size > 0
+                  node.getSubItemKeys().size > 0
                 })}
                 onClick={this.onClickCollapse}
               />

@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as cx from "classnames";
-import { MindNodeLayerWidget } from "./MindNodeLayerWidget";
+import { NodeLayerWidget } from "./NodeLayerWidget";
 import { OpType } from "../model/MindMapModelModifier";
 
 export type ToolbarItemConfig = {
@@ -17,7 +17,7 @@ interface MindToolbarItemProps {
 
 interface MindToolbarItemState {}
 
-export class MindToolbarItem extends React.Component<
+export class ToolbarItem extends React.Component<
   MindToolbarItemProps,
   MindToolbarItemState
 > {
@@ -26,7 +26,7 @@ export class MindToolbarItem extends React.Component<
   }
   onClick = ()=> {
     // @ts-ignore
-    let mindNodeLayerWidget : MindNodeLayerWidget  =  this.props.getRef("MindNodeLayerWidget");
+    let mindNodeLayerWidget : NodeLayerWidget  =  this.props.getRef("MindNodeLayerWidget");
     mindNodeLayerWidget.op(this.props.config.opType);
   };
   render() {

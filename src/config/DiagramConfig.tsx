@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { DefaultNodeContentEditor } from "./DefaultNodeContentEditor";
+import { DefaultFocusItemBorderSvg } from "./DefaultFocusItemBorderSvg";
 export enum DiagramLayoutDirection {
   LEFT_TO_RIGHT,
   RIGHT_TO_LEFT,
@@ -11,21 +12,28 @@ export type DiagramConfig = {
   direction?: DiagramLayoutDirection;
   hMargin?: number;
   vMargin?: number;
+  focusBorderPadding?: number;
   theme?: string;
   rootItemStyle?: any;
   primaryItemStyle?: any;
   normalItemStyle?: any;
-  editorRendererFn?: (diagramState,nodeKey)=>React.ReactNode;
+  editorRendererFn?: (diagramState,nodeKey,saveRef)=>React.ReactNode;
+  focusItemsBorderRenderFn?: (diagramState,saveRef,getRef)=>React.ReactNode;
 };
 
-const defaultEditorRendererFn = (diagramState,nodeKey)=> {
-  return <DefaultNodeContentEditor diagramState={diagramState} nodeKey={nodeKey}/>
+const defaultEditorRendererFn = (diagramState,nodeKey,saveRef)=> {
+  return <DefaultNodeContentEditor diagramState={diagramState} nodeKey={nodeKey} saveRef={saveRef}/>
+};
+
+const defaultFocusItemsBorderRenderFn = (diagramState,saveRef,getRef)=> {
+  return <DefaultFocusItemBorderSvg diagramState={diagramState} saveRef={saveRef} getRef={getRef} ref={saveRef('focusItemBorderSvg')}/>
 };
 
 export const defaultDiagramConfig : DiagramConfig = {
   direction: DiagramLayoutDirection.LEFT_AND_RIGHT,
   hMargin: 10,
   vMargin: 10,
+  focusBorderPadding: 5,
   theme: "theme-orange",
   rootItemStyle: {
     fontSize: "24px",
@@ -35,7 +43,8 @@ export const defaultDiagramConfig : DiagramConfig = {
   primaryItemStyle: {
     fontSize: "16px",
     borderRadius: "6px",
-    padding: "6px 15px"
+    padding: "0"
   },
-  editorRendererFn: defaultEditorRendererFn
+  editorRendererFn: defaultEditorRendererFn,
+  focusItemsBorderRenderFn: defaultFocusItemsBorderRenderFn
 };

@@ -1,6 +1,6 @@
 import * as React from "react";
-import { MindToolbarItem, ToolbarItemConfig } from "./MindToolbarItem";
-import "./MindToolbar.scss";
+import { ToolbarItem, ToolbarItemConfig } from "./ToolbarItem";
+import "./Toolbar.scss";
 import { OpType } from "../model/MindMapModelModifier";
 
 interface MindToolbarProps {
@@ -11,13 +11,24 @@ interface MindToolbarProps {
 
 interface MindToolbarState {}
 
-export class MindToolbar extends React.Component<MindToolbarProps, MindToolbarState> {
+export class Toolbar extends React.Component<MindToolbarProps, MindToolbarState> {
   constructor(props) {
     super(props);
   }
 
   static defaultProps: MindToolbarProps = {
     items: [
+      // {
+      //   icon: "newfile",
+      //   label: "new file",
+      //   // opType: OpType.REDO
+      // },
+      // {
+      //   icon: "openfile",
+      //   label: "open file",
+      //   // opType: OpType.UNDO
+      // },
+
       {
         icon: "undo",
         label: "undo",
@@ -49,7 +60,7 @@ export class MindToolbar extends React.Component<MindToolbarProps, MindToolbarSt
   render(): React.ReactNode {
     let {getRef, items} = this.props;
     let toolbarItems = items.map(item => (
-      <MindToolbarItem config={item} key={item.label} getRef={getRef} />
+      <ToolbarItem config={item} key={item.label} getRef={getRef} />
     ));
     return <div className="bm-toolbar">{toolbarItems}</div>;
   }

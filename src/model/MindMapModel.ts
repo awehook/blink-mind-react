@@ -1,18 +1,21 @@
-import { NodeKeyType } from "./NodeModel";
-import { Record, Map } from "immutable";
+import { FocusItemMode, NodeKeyType } from "./NodeModel";
+import { Map, Record } from "immutable";
 import { MindNodeModel } from "./MindNodeModel";
+
 type MindMapRecordType = {
   rootItemKey: NodeKeyType;
   editorRootItemKey: NodeKeyType;
   itemMap: Map<NodeKeyType, MindNodeModel>;
   focusItemKey: NodeKeyType;
+  focusItemMode: FocusItemMode;
 };
 
 const defaultMindMapRecord: MindMapRecordType = {
   rootItemKey: null,
   editorRootItemKey: null,
   itemMap: Map(),
-  focusItemKey: null
+  focusItemKey: null,
+  focusItemMode: FocusItemMode.Normal,
 };
 
 export class MindMapModel extends Record(defaultMindMapRecord) {
@@ -37,6 +40,22 @@ export class MindMapModel extends Record(defaultMindMapRecord) {
 
   getFocusItemKey(): NodeKeyType {
     return this.get("focusItemKey");
+  }
+
+  getFocusItemMode(): FocusItemMode {
+    return this.get('focusItemMode');
+  }
+
+  getEditingItemKey(): NodeKeyType {
+    if(this.get('focusItemMode')!== FocusItemMode.Editing)
+      return null;
+    return this.getFocusItemKey();
+  }
+
+  getPopupMenuItemKey(): NodeKeyType {
+    if(this.get('focusItemMode')!== FocusItemMode.PopupMenu)
+      return null;
+    return this.getFocusItemKey();
   }
 
   getItem(key: NodeKeyType): MindNodeModel {

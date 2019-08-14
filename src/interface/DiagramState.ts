@@ -3,7 +3,7 @@ import { DiagramConfig } from "../config/DiagramConfig";
 import { OpType } from "../model/MindMapModelModifier";
 import { NodeKeyType } from "../model/NodeModel";
 
-export interface MindDiagramState {
+export interface DiagramState {
   mindMapModel: MindMapModel;
   zoom: number;
   config: DiagramConfig;

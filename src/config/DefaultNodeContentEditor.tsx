@@ -1,20 +1,19 @@
 import * as React from "react";
-
-import { MindDiagramState } from "../component/MindDiagramState";
+import * as cx from "classnames";
+import { DiagramState } from "../interface/DiagramState";
 import { NodeKeyType } from "../model/NodeModel";
 import RichMarkDownEditor from "awehook-rich-markdown-editor";
 import { OpType } from "../model/MindMapModelModifier";
 import { debounce } from "lodash";
-import './DefaultNodeContentEditor.scss';
+import "./DefaultNodeContentEditor.scss";
 
 interface DefaultNodeContentEditorProps {
-  diagramState: MindDiagramState;
+  diagramState: DiagramState;
   nodeKey: NodeKeyType;
+  saveRef?: Function;
 }
 
-interface DefaultNodeContentEditorState {
-  editMode: boolean;
-}
+interface DefaultNodeContentEditorState {}
 
 export class DefaultNodeContentEditor extends React.Component<
   DefaultNodeContentEditorProps,
@@ -22,9 +21,6 @@ export class DefaultNodeContentEditor extends React.Component<
 > {
   constructor(props) {
     super(props);
-    this.state = {
-      editMode: true
-    };
   }
 
   onChange = (value: () => string) => {
@@ -32,31 +28,76 @@ export class DefaultNodeContentEditor extends React.Component<
     diagramState.op(OpType.SET_ITEM_CONTENT, nodeKey, value);
   };
 
-  onMouseMove = (e)=> {
+  onMouseDown = e => {
+    // console.log('node editor mousedown');
     e.stopPropagation();
   };
 
-  shouldComponentUpdate(nextProps: Readonly<DefaultNodeContentEditorProps>, nextState: Readonly<DefaultNodeContentEditorState>, nextContext: any): boolean {
-    if(nextProps.nodeKey!== this.props.nodeKey)
+  onMouseMove = e => {
+    // console.log('node editor mousemove');
+    e.stopPropagation();
+  };
+
+  shouldComponentUpdate(
+    nextProps: Readonly<DefaultNodeContentEditorProps>,
+    nextState: Readonly<DefaultNodeContentEditorState>,
+    nextContext: any
+  ): boolean {
+    let { nodeKey: nextNodeKey, diagramState: nextDS } = nextProps;
+    let { nodeKey: nodeKey, diagramState: ds } = this.props;
+    if (nextNodeKey !== nodeKey) {
+      console.log("nextNodeKey !== nodeKey");
       return true;
-    let {nodeKey} = nextProps;
-    if(nextProps.diagramState.mindMapModel.getItem(nodeKey).getContent()!==this.props.diagramState.mindMapModel.getItem(nodeKey).getContent())
+    }
+    let editingKey = ds.mindMapModel.getEditingItemKey();
+    let nextEditingKey = nextDS.mindMapModel.getEditingItemKey();
+
+    if (
+      editingKey !== nextEditingKey &&
+      (editingKey === nodeKey || nextEditingKey === nodeKey)
+    )
       return true;
+
+    if (
+      ds.mindMapModel.getItem(nodeKey) !==
+      nextDS.mindMapModel.getItem(nextNodeKey)
+    ) {
+      console.log(
+        "ds.mindMapModel.getItem(nodeKey) !== nextDS.mindMapModel.getItem(nextNodeKey)"
+      );
+      return true;
+    }
     return false;
   }
 
   render(): React.ReactNode {
-    const { nodeKey, diagramState } = this.props;
+    const { nodeKey, diagramState, saveRef } = this.props;
     const { mindMapModel } = diagramState;
     const nodeModel = mindMapModel.getItem(nodeKey);
     const content = nodeModel.getContent();
+
+    // console.log(`edit item key ${mindMapModel.getEditingItemKey()}`);
+    // console.log(`focus item key ${mindMapModel.getFocusItemKey()}`);
+    // console.log(`node key ${nodeKey}`);
+
+    console.log("DefaultNodeContentEditor render");
+    console.log(`getEditingItemKey ${mindMapModel.getEditingItemKey()}`);
+    const readOnly = !(nodeKey === mindMapModel.getEditingItemKey());
     return (
-      <div onMouseMove={this.onMouseMove} className='bm-node-content'>
+      <div
+        className={cx("bm-node-content", {
+          'content-editing': !readOnly,
+          "bm-node-content-cursor": !readOnly
+        })}
+        ref={saveRef(`editor-${nodeKey}`)}
+        onMouseDown={this.onMouseDown}
+        onMouseMove={this.onMouseMove}
+      >
         <RichMarkDownEditor
           // id={nodeKey}
           editorValue={content}
           onChange={debounce(this.onChange)}
-          readOnly={!this.state.editMode}
+          readOnly={readOnly}
         />
       </div>
     );

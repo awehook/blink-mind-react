@@ -1,13 +1,11 @@
 import { INodeModel, NodeKeyType, INodeRecordType } from "./NodeModel";
 import { Record, List } from "immutable";
-import { MindNodeLayoutModel } from "./MindNodeLayoutModel";
 
 interface IMindNodeRecordType extends INodeRecordType {
   parentKey: NodeKeyType;
   content: string;
   subItemKeys?: List<NodeKeyType>;
   collapse: boolean;
-  layout: MindNodeLayoutModel;
 }
 
 const defaultMindNodeRecord: IMindNodeRecordType = {
@@ -16,7 +14,6 @@ const defaultMindNodeRecord: IMindNodeRecordType = {
   content: null,
   subItemKeys: List(),
   collapse: false,
-  layout: new MindNodeLayoutModel()
 };
 
 // @ts-ignore
@@ -45,15 +42,8 @@ export class MindNodeModel extends Record(defaultMindNodeRecord)
     return this.get("collapse");
   }
 
-  getLayout(): MindNodeLayoutModel {
-    return this.get("layout");
-  }
 
-  updateLayout(obj: any): MindNodeModel {
-    return this.update("layout", layout => layout.merge(obj));
-  }
-
-  static create(key: NodeKeyType,parentKey=null,content="",subItemKeys=List([]),collapse=false) : MindNodeModel {
+  static create(key: NodeKeyType,parentKey=null,content="new node",subItemKeys=List([]),collapse=false) : MindNodeModel {
     return MindNodeModel.createWith({
       key,
       parentKey,

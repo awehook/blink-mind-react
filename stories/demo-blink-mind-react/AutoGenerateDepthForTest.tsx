@@ -1,6 +1,6 @@
 import * as React from "react";
 import {
-  MindDiagramWidget,
+  DiagramWidget,
   MindDiagramModel,
   MindMapModel,
   DiagramConfig
@@ -89,7 +89,7 @@ function Demo() {
     hMargin: 10
   };
   let diagramModel = new MindDiagramModel(mindModel,diagramConfig);
-  return <MindDiagramWidget diagramModel={diagramModel} />;
+  return <DiagramWidget diagramModel={diagramModel} />;
 }
 
 export default Demo;

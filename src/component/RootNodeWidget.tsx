@@ -1,16 +1,18 @@
 import * as React from "react";
 import { NodeKeyType } from "../model/NodeModel";
 import { BaseWidget } from "./common/BaseWidget";
-import "./MindNodeWidget.scss";
-import { MindDiagramState } from "./MindDiagramState";
+import "./NodeWidget.scss";
+import { DiagramState } from "../interface/DiagramState";
 import * as cx from "classnames";
 import { MindNodeModel } from "../model/MindNodeModel";
 import { DiagramLayoutDirection } from "../config/DiagramConfig";
-import { MindNodeWidget, MindNodeWidgetDirection } from "./MindNodeWidget";
-import { MindLinkWidget } from "./MindLinkWidget";
+import { NodeWidget } from "./NodeWidget";
+import { LinkWidget } from "./LinkWidget";
+import { TopicContentWidget } from "./TopicContentWidget";
+import { NodeWidgetDirection } from "../enums/NodeWidgetDirection";
 
 export interface MindRootNodeWidgetProps {
-  diagramState: MindDiagramState;
+  diagramState: DiagramState;
   nodeKey: NodeKeyType;
   saveRef?: Function;
   getRef?: Function;
@@ -20,7 +22,7 @@ export interface MindRootNodeWidgetProps {
 
 export interface MindNodeWidgetState {}
 
-export class MindRootNodeWidget<
+export class RootNodeWidget<
   P extends MindRootNodeWidgetProps,
   S extends MindNodeWidgetState
 > extends BaseWidget<MindRootNodeWidgetProps, MindNodeWidgetState> {
@@ -81,7 +83,7 @@ export class MindRootNodeWidget<
       node.getSubItemKeys().forEach(itemKey => {
         let linkKey = `link-${nodeKey}-${itemKey}`;
         // @ts-ignore
-        let linkWidget: MindLinkWidget = getRef(linkKey);
+        let linkWidget: LinkWidget = getRef(linkKey);
         linkWidget.layout();
       });
     }
@@ -90,7 +92,10 @@ export class MindRootNodeWidget<
   collapseIcon: HTMLElement;
   oldCollapseIconRect: ClientRect;
 
-  renderItems(items: string[], dir: MindNodeWidgetDirection) {
+
+
+  // 以左右或者上下部分来分别进行渲染
+  renderPartItems(items: string[], dir: NodeWidgetDirection) {
     let {
       diagramState,
       setViewBoxScroll,
@@ -105,7 +110,7 @@ export class MindRootNodeWidget<
     items.forEach(itemKey => {
       let linkKey = `link-${this.props.nodeKey}-${itemKey}`;
       subItems.push(
-        <MindNodeWidget
+        <NodeWidget
           key={itemKey}
           nodeKey={itemKey}
           dir={dir}
@@ -117,7 +122,8 @@ export class MindRootNodeWidget<
         />
       );
       subLinks.push(
-        <MindLinkWidget
+        <LinkWidget
+          diagramState={diagramState}
           key={linkKey}
           ref={saveRef(linkKey)}
           fromNodeKey={this.props.nodeKey}
@@ -130,7 +136,7 @@ export class MindRootNodeWidget<
       );
     });
     let cxName = `bm-node-layer-${
-      dir === MindNodeWidgetDirection.LEFT ? "left" : "right"
+      dir === NodeWidgetDirection.LEFT ? "left" : "right"
     }`;
     return (
       <div className={cxName} ref={saveRef(cxName)}>
@@ -141,26 +147,12 @@ export class MindRootNodeWidget<
   }
 
   render() {
-    let { diagramState, nodeKey,saveRef } = this.props;
+    let { diagramState, nodeKey,saveRef,getRef } = this.props;
     let { mindMapModel, config: diagramConfig } = diagramState;
-    let node = mindMapModel.getItem(nodeKey);
     let [leftItems, rightItems] = this.getPartItems(diagramConfig.direction);
-    let visualLevel = mindMapModel.getItemVisualLevel(nodeKey);
-    let itemStyle;
-    switch (visualLevel) {
-      case 0:
-        itemStyle = diagramConfig.rootItemStyle;
-        break;
-      case 1:
-        itemStyle = diagramConfig.primaryItemStyle;
-        break;
-      default:
-        itemStyle = diagramConfig.normalItemStyle;
-        break;
-    }
     return (
       <>
-        {this.renderItems(leftItems, MindNodeWidgetDirection.LEFT)}
+        {this.renderPartItems(leftItems, NodeWidgetDirection.LEFT)}
         <div
           className={cx("topic")}
           ref={
@@ -169,18 +161,9 @@ export class MindRootNodeWidget<
               : null
           }
         >
-          <div
-            className={cx("content", {
-              "root-topic": visualLevel === 0,
-              "primary-topic": visualLevel === 1,
-              "normal-topic": visualLevel > 1
-            })}
-            style={itemStyle}
-          >
-            {diagramConfig.editorRendererFn(diagramState,nodeKey)}
-          </div>
+          <TopicContentWidget diagramState={diagramState} nodeKey={nodeKey} dir={NodeWidgetDirection.ROOT} draggable={false} saveRef={saveRef} getRef={getRef}/>
         </div>
-        {this.renderItems(rightItems, MindNodeWidgetDirection.RIGHT)}
+        {this.renderPartItems(rightItems, NodeWidgetDirection.RIGHT)}
       </>
     );
   }

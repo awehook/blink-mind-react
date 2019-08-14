@@ -2,7 +2,6 @@ import * as React from "react";
 import { BaseWidget } from "./BaseWidget";
 import ResizeObserver from "resize-observer-polyfill";
 import "./DragScrollWidget.scss";
-import { bool } from "prop-types";
 
 interface DragScrollWidgetProps {
   mouseKey?: "left" | "right";
@@ -34,8 +33,6 @@ export class DragScrollWidget extends BaseWidget<DragScrollWidgetProps> {
     entries: ResizeObserverEntry[],
     observer: ResizeObserver
   ) => {
-    // console.error("contentResizeCallback");
-    // console.log(`${this.viewBox.scrollLeft} ${this.viewBox.scrollTop}`);
     if (this.oldContentRect) {
       let widgetStyle = {
         width: this.content.clientWidth + this.viewBox.clientWidth * 2,
@@ -55,7 +52,6 @@ export class DragScrollWidget extends BaseWidget<DragScrollWidgetProps> {
     if (ref) {
       this.content = ref;
       this.contentResizeObserver.observe(this.content);
-      this.setWidgetStyle();
     }
   };
 
@@ -63,7 +59,6 @@ export class DragScrollWidget extends BaseWidget<DragScrollWidgetProps> {
   viewBoxRef = ref => {
     if (ref) {
       this.viewBox = ref;
-      this.setWidgetStyle();
       this.setViewBoxScroll(
         this.viewBox.clientWidth,
         this.viewBox.clientHeight
@@ -75,7 +70,6 @@ export class DragScrollWidget extends BaseWidget<DragScrollWidgetProps> {
   bigViewRef = ref => {
     if (ref) {
       this.bigView = ref;
-      this.setWidgetStyle();
     }
   };
 
@@ -108,7 +102,12 @@ export class DragScrollWidget extends BaseWidget<DragScrollWidgetProps> {
   };
 
   onMouseDown = e => {
+    // console.log('Drag Scroll onMouseDown');
+    // console.log(e.nativeEvent.target);
 
+    // mouseKey 表示鼠标按下那个键才可以进行拖动，左键或者右键
+    // needKeyPressed 为了支持是否需要按下ctrl键，才可以进行拖动
+    // canDragFunc是一个函数，它是为了支持使用者以传入函数的方式，这个函数的返回值表示当前的内容是否可以被拖拽而移动
     let { mouseKey, needKeyPressed,canDragFunc } = this.props;
     if(canDragFunc && !canDragFunc())
       return;
@@ -116,25 +115,38 @@ export class DragScrollWidget extends BaseWidget<DragScrollWidgetProps> {
       (e.button === 0 && mouseKey === "left") ||
       (e.button === 2 && mouseKey === "right")
     ) {
+
       if (needKeyPressed) {
         if (!e.ctrlKey) return;
       }
       this._lastCoordX = this.viewBox.scrollLeft + e.nativeEvent.clientX;
       this._lastCoordY = this.viewBox.scrollTop + e.nativeEvent.clientY;
+      // console.log('add listener');
       window.addEventListener("mousemove", this.onMouseMove);
       window.addEventListener("mouseup", this.onMouseUp);
     }
   };
 
   onMouseUp = e => {
+    // console.log('Drag Scroll onMouseUp');
     window.removeEventListener("mousemove", this.onMouseMove);
     window.removeEventListener("mouseup", this.onMouseUp);
   };
 
+  // onDragEnter = e=> {
+  //   console.log('Drag Scroll onDragEnter');
+  //   window.removeEventListener("mousemove", this.onMouseMove);
+  //   window.removeEventListener("mouseup", this.onMouseUp);
+  // };
+
+  // _lastCoordX和_lastCorrdY 是为了在拖动过程中 计算 viewBox的scrollLeft和scrollTop值用到
+  // _lastCoordX和_lastCorrdY 记录下拖动开始时刻viewBox的scroll值和鼠标位置值
   _lastCoordX: number;
   _lastCoordY: number;
 
   onMouseMove = (e: MouseEvent) => {
+    // console.log('onMouseMove');
+
     this.viewBox.scrollLeft = this._lastCoordX - e.clientX;
     this.viewBox.scrollTop = this._lastCoordY - e.clientY;
   };
@@ -144,6 +156,7 @@ export class DragScrollWidget extends BaseWidget<DragScrollWidgetProps> {
   };
 
   componentDidMount(): void {
+    this.setWidgetStyle();
     document.addEventListener("contextmenu", this.handleContextMenu);
   }
 
@@ -156,6 +169,7 @@ export class DragScrollWidget extends BaseWidget<DragScrollWidgetProps> {
       <div
         ref={this.viewBoxRef}
         onMouseDown={this.onMouseDown}
+        // onDragEnter={this.onDragEnter}
         className="drag-scroll-view"
       >
         <div style={this.state.widgetStyle} ref={this.bigViewRef}>
