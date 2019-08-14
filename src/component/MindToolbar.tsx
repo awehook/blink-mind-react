@@ -30,7 +30,8 @@ export class MindToolbar extends React.Component<MindToolbarProps, MindToolbarSt
       },
       {
         icon: "add-sibling",
-        label: "add sibling"
+        label: "add sibling",
+        opType: OpType.ADD_SIBLING
       },
       {
         icon: "add-child",

@@ -32,6 +32,7 @@ export class MindMapModelModifier {
     [OpType.SET_ITEM_CONTENT, MindMapModelModifier.setItemContent],
     [OpType.FOCUS_ITEM, MindMapModelModifier.focusItem],
     [OpType.ADD_CHILD, MindMapModelModifier.addChild],
+    [OpType.ADD_SIBLING,MindMapModelModifier.addSibling],
     [OpType.DELETE_NODE, MindMapModelModifier.deleteNode]
   ]);
 
@@ -41,8 +42,7 @@ export class MindMapModelModifier {
     itemKey: NodeKeyType,
     arg
   ): MindMapModel {
-    if(opType===OpType.DELETE_NODE)
-      console.log(opType);
+    if (opType === OpType.DELETE_NODE) console.log(opType);
     if (MindMapModelModifier.opMap.has(opType)) {
       let opFunc = MindMapModelModifier.opMap.get(opType);
       let res = opFunc(model, itemKey, arg);
@@ -59,7 +59,7 @@ export class MindMapModelModifier {
       console.log(res);
       return res;
     }
-    return model
+    return model;
   }
 
   static undo(model: MindMapModel): MindMapModel {
@@ -74,9 +74,7 @@ export class MindMapModelModifier {
   static redo(model: MindMapModel): MindMapModel {
     if (MindMapModelModifier.redoStack.size > 0) {
       model = MindMapModelModifier.popRedoStack();
-      MindMapModelModifier.pushUndoStack(
-        model
-      );
+      MindMapModelModifier.pushUndoStack(model);
     }
     return model;
   }
@@ -85,7 +83,7 @@ export class MindMapModelModifier {
     MindMapModelModifier.undoStack = MindMapModelModifier.undoStack.push(model);
   }
 
-  static popUndoStack() : MindMapModel {
+  static popUndoStack(): MindMapModel {
     let model = MindMapModelModifier.undoStack.peek();
     MindMapModelModifier.undoStack = MindMapModelModifier.undoStack.pop();
     return model;
@@ -95,12 +93,11 @@ export class MindMapModelModifier {
     MindMapModelModifier.redoStack = MindMapModelModifier.redoStack.push(model);
   }
 
-  static popRedoStack() : MindMapModel {
+  static popRedoStack(): MindMapModel {
     let model = MindMapModelModifier.redoStack.peek();
     MindMapModelModifier.redoStack = MindMapModelModifier.redoStack.pop();
     return model;
   }
-
 
   static toggleCollapse(
     model: MindMapModel,
@@ -137,10 +134,10 @@ export class MindMapModelModifier {
     let item = model.getItem(itemKey);
     let needPush = false;
     if (item) {
-      if(MindMapModelModifier.undoStack.size===0) {
+      if (MindMapModelModifier.undoStack.size === 0) {
         MindMapModelModifier.pushUndoStack(model);
       }
-      if(item.getContent() instanceof Value) {
+      if (item.getContent() instanceof Value) {
         let oldContent = item.getContent() as Value;
         needPush = oldContent.document !== content.document;
       }
@@ -161,18 +158,28 @@ export class MindMapModelModifier {
       item = item
         .set("collapse", false)
         .update("subItemKeys", subItemKeys => subItemKeys.push(child.getKey()));
-      model = MindMapModelModifier.setItem(model, item);
-      model = MindMapModelModifier.setItem(model, child);
+      model = model.update("itemMap", itemMap =>
+        itemMap.set(item.getKey(), item).set(child.getKey(), child)
+      );
       model = model.set("focusItemKey", child.getKey());
     }
     return model;
   }
 
   static addSibling(model: MindMapModel, itemKey: NodeKeyType) {
-    // let item = model.getItem(itemKey);
-    // if (item) {
-    //   model = MindMapModelModifier.setItem(model, item);
-    // }
+    let item = model.getItem(itemKey);
+    if (itemKey === model.getRootItemKey()) return model;
+    if (item) {
+      let sibling = MindNodeModel.create(uuidv4());
+      sibling = sibling.set("parentKey", item.getParentKey());
+      let pItem = model.getParentItem(itemKey);
+      pItem = pItem.update("subItemKeys", subItemKeys =>
+        subItemKeys.insert(subItemKeys.indexOf(itemKey) + 1, sibling.getKey())
+      );
+      model = model.update("itemMap", itemMap =>
+        itemMap.set(pItem.getKey(), pItem).set(sibling.getKey(), sibling)
+      );
+    }
     return model;
   }
   static deleteNode(model: MindMapModel, itemKey: NodeKeyType) {
