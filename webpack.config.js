@@ -1,8 +1,8 @@
 const webpack = require("webpack");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
-var path = require("path");
-var plugins = [new CleanWebpackPlugin()];
+let nodeExternals = require('webpack-node-externals');
+let plugins = [new CleanWebpackPlugin()];
 const production = process.env.NODE_ENV === "production";
 
 if (production) {
@@ -10,6 +10,14 @@ if (production) {
   plugins.push(
     new webpack.DefinePlugin({
       "process.env.NODE_ENV": '"production"'
+    }),
+    new UglifyJsPlugin({
+      uglifyOptions: {
+        compress: true,
+        ecma: 5,
+        mangle: true
+      },
+      sourceMap: true
     })
   );
 }
@@ -24,32 +32,7 @@ module.exports =
       libraryTarget: "umd",
       library: "blink-mind-react"
     },
-    externals: {
-      react: {
-        root: "React",
-        commonjs2: "react",
-        commonjs: "react",
-        amd: "react"
-      },
-      "react-dom": {
-        root: "ReactDOM",
-        commonjs2: "react-dom",
-        commonjs: "react-dom",
-        amd: "react-dom"
-      },
-      classnames: {
-        root: "classnames",
-        commonjs2: "classnames",
-        commonjs: "classnames",
-        amd: "classnames"
-      },
-      immutable: {
-        root: "immutable",
-        commonjs2: "immutable",
-        commonjs: "immutable",
-        amd: "immutable"
-      },
-    },
+    externals: [nodeExternals()],
     plugins: plugins,
     module: {
       rules: [
@@ -77,16 +60,4 @@ module.exports =
     },
     devtool: production ? "source-map" : "cheap-module-eval-source-map",
     mode: production ? "production" : "development",
-    optimization: {
-      minimizer: [
-        new UglifyJsPlugin({
-          uglifyOptions: {
-            compress: false,
-            ecma: 5,
-            mangle: false
-          },
-          sourceMap: true
-        })
-      ]
-    }
   };
