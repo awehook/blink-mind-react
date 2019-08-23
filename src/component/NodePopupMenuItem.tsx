@@ -1,8 +1,9 @@
 import * as React from "react";
 import * as cx from "classnames";
 import { OpType } from "../model/MindMapModelModifier";
-import { DiagramState } from "../interface/DiagramState";
+import { DiagramState } from "../model/DiagramState";
 import { NodeKeyType } from "../model/NodeModel";
+import { OpFunction } from "../types/FunctionType";
 
 export type NodePopupMenuItemConfig = {
   icon: string;
@@ -14,6 +15,7 @@ export type NodePopupMenuItemConfig = {
 interface NodePopupMenuItemProps {
   config: NodePopupMenuItemConfig;
   diagramState: DiagramState;
+  op: OpFunction;
   nodeKey: NodeKeyType;
 }
 
@@ -23,10 +25,10 @@ export class NodePopupMenuItem extends React.Component<
   NodePopupMenuItemProps,
   NodePopupMenuItemState
 > {
-  onClick = (e) => {
+  onClick = e => {
     e.stopPropagation();
-    let { diagramState, nodeKey, config } = this.props;
-    diagramState.op(config.opType, nodeKey);
+    let { nodeKey, config, op } = this.props;
+    op(config.opType, nodeKey);
   };
   render() {
     const { config } = this.props;

@@ -1,4 +1,4 @@
-export type NodeKeyType = string ;
+export type NodeKeyType = string;
 
 export enum FocusItemMode {
   Normal,

@@ -6,7 +6,7 @@ import "./DragScrollWidget.scss";
 interface DragScrollWidgetProps {
   mouseKey?: "left" | "right";
   needKeyPressed?: boolean;
-  canDragFunc? : ()=> Boolean
+  canDragFunc?: () => Boolean;
   children: (
     setViewBoxScroll: (left: number, top: number) => void,
     setViewBoxScrollDelta: (left: number, top: number) => void
@@ -108,14 +108,12 @@ export class DragScrollWidget extends BaseWidget<DragScrollWidgetProps> {
     // mouseKey 表示鼠标按下那个键才可以进行拖动，左键或者右键
     // needKeyPressed 为了支持是否需要按下ctrl键，才可以进行拖动
     // canDragFunc是一个函数，它是为了支持使用者以传入函数的方式，这个函数的返回值表示当前的内容是否可以被拖拽而移动
-    let { mouseKey, needKeyPressed,canDragFunc } = this.props;
-    if(canDragFunc && !canDragFunc())
-      return;
+    let { mouseKey, needKeyPressed, canDragFunc } = this.props;
+    if (canDragFunc && !canDragFunc()) return;
     if (
       (e.button === 0 && mouseKey === "left") ||
       (e.button === 2 && mouseKey === "right")
     ) {
-
       if (needKeyPressed) {
         if (!e.ctrlKey) return;
       }

@@ -1,9 +1,9 @@
 import * as React from "react";
 import { BaseWidget } from "./common/BaseWidget";
 import { NodeKeyType } from "../model/NodeModel";
-import { NodeWidgetDirection } from "../enums/NodeWidgetDirection";
-import { DiagramState } from "../interface/DiagramState";
-import { NodeStyle } from "../enums/NodeStyle";
+import { NodeWidgetDirection } from "../types/NodeWidgetDirection";
+import { DiagramState } from "../model/DiagramState";
+import { NodeStyle } from "../types/NodeStyle";
 
 interface LinkWidgetProps {
   diagramState: DiagramState;
@@ -103,9 +103,7 @@ export class LinkWidget<
       fromY = Math.round(
         fromTopicRect.top + fromTopicRect.height / 2 - fromChildrenRect.top
       );
-      toX =
-        toElementTopicRect.left -
-        fromTopicRect.right;
+      toX = toElementTopicRect.left - fromTopicRect.right;
       toY = Math.round(
         toElementTopicRect.top +
           toElementTopicRect.height / 2 -

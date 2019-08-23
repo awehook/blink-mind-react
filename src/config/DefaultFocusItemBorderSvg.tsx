@@ -1,5 +1,5 @@
 import * as React from "react";
-import { DiagramState } from "../interface/DiagramState";
+import { DiagramState } from "../model/DiagramState";
 
 interface FocusItemBorderSvgProps {
   diagramState: DiagramState;
@@ -14,7 +14,7 @@ export class DefaultFocusItemBorderSvg extends React.Component<
   FocusItemBorderSvgState
 > {
   render() {
-    console.log('DefaultFocusItemBorderSvg render');
+    console.log("DefaultFocusItemBorderSvg render");
     return this.renderFocusItemBorder();
   }
 

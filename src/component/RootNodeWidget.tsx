@@ -2,18 +2,20 @@ import * as React from "react";
 import { NodeKeyType } from "../model/NodeModel";
 import { BaseWidget } from "./common/BaseWidget";
 import "./NodeWidget.scss";
-import { DiagramState } from "../interface/DiagramState";
+import { DiagramState } from "../model/DiagramState";
 import * as cx from "classnames";
 import { MindNodeModel } from "../model/MindNodeModel";
 import { DiagramLayoutDirection } from "../config/DiagramConfig";
 import { NodeWidget } from "./NodeWidget";
 import { LinkWidget } from "./LinkWidget";
 import { TopicContentWidget } from "./TopicContentWidget";
-import { NodeWidgetDirection } from "../enums/NodeWidgetDirection";
-import { NodeStyle } from "../enums/NodeStyle";
+import { NodeWidgetDirection } from "../types/NodeWidgetDirection";
+import { NodeStyle } from "../types/NodeStyle";
+import { OpFunction } from "../types/FunctionType";
 
 export interface MindRootNodeWidgetProps {
   diagramState: DiagramState;
+  op: OpFunction;
   nodeKey: NodeKeyType;
   saveRef?: Function;
   getRef?: Function;
@@ -97,6 +99,7 @@ export class RootNodeWidget<
   renderPartItems(items: string[], dir: NodeWidgetDirection) {
     let {
       diagramState,
+      op,
       setViewBoxScroll,
       setViewBoxScrollDelta,
       saveRef,
@@ -114,6 +117,7 @@ export class RootNodeWidget<
           nodeKey={itemKey}
           dir={dir}
           diagramState={diagramState}
+          op={op}
           setViewBoxScroll={setViewBoxScroll}
           setViewBoxScrollDelta={setViewBoxScrollDelta}
           saveRef={saveRef}
@@ -146,9 +150,9 @@ export class RootNodeWidget<
   }
 
   render() {
-    let { diagramState, nodeKey, saveRef, getRef } = this.props;
-    let { mindMapModel, config: diagramConfig } = diagramState;
-    let [leftItems, rightItems] = this.getPartItems(diagramConfig.direction);
+    let { diagramState, op, nodeKey, saveRef, getRef } = this.props;
+    let { mindMapModel, config } = diagramState;
+    let [leftItems, rightItems] = this.getPartItems(config.direction);
     return (
       <>
         {this.renderPartItems(leftItems, NodeWidgetDirection.LEFT)}
@@ -162,6 +166,7 @@ export class RootNodeWidget<
         >
           <TopicContentWidget
             diagramState={diagramState}
+            op={op}
             nodeKey={nodeKey}
             dir={NodeWidgetDirection.ROOT}
             draggable={false}
@@ -171,12 +176,12 @@ export class RootNodeWidget<
         </div>
         {this.renderPartItems(rightItems, NodeWidgetDirection.RIGHT)}
         {/*{diagramConfig.nodeStyle === NodeStyle.ALL_HAS_BORDER*/}
-          {/*? diagramConfig.focusItemsBorderRenderFn(*/}
-              {/*diagramState,*/}
-              {/*saveRef,*/}
-              {/*getRef*/}
-            {/*)*/}
-          {/*: null}*/}
+        {/*? diagramConfig.focusItemsBorderRenderFn(*/}
+        {/*diagramState,*/}
+        {/*saveRef,*/}
+        {/*getRef*/}
+        {/*)*/}
+        {/*: null}*/}
       </>
     );
   }

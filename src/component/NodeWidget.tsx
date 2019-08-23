@@ -4,14 +4,16 @@ import { BaseWidget } from "./common/BaseWidget";
 import { LinkWidget } from "./LinkWidget";
 import { TopicContentWidget } from "./TopicContentWidget";
 import "./NodeWidget.scss";
-import { DiagramState } from "../interface/DiagramState";
+import { DiagramState } from "../model/DiagramState";
 import { OpType } from "../model/MindMapModelModifier";
 import * as cx from "classnames";
-import { NodeWidgetDirection } from "../enums/NodeWidgetDirection";
-import { NodeStyle } from "../enums/NodeStyle";
+import { NodeWidgetDirection } from "../types/NodeWidgetDirection";
+import { NodeStyle } from "../types/NodeStyle";
+import { OpFunction } from "../types/FunctionType";
 
 export interface MindNodeWidgetProps {
   diagramState: DiagramState;
+  op: OpFunction;
   nodeKey: NodeKeyType;
   dir: NodeWidgetDirection;
   saveRef?: Function;
@@ -40,19 +42,8 @@ export class NodeWidget<
     e.stopPropagation();
     this.needRelocation = true;
     this.oldCollapseIconRect = this.collapseIcon.getBoundingClientRect();
-    this.props.diagramState.op(OpType.TOGGLE_COLLAPSE, this.props.nodeKey);
-  };
 
-  // onClickFocus = () => {
-  //   this.props.diagramState.op(OpType.FOCUS_ITEM, this.props.nodeKey);
-  // };
-
-  onMouseEnter = () => {
-    this.props.diagramState.op(OpType.FOCUS_ITEM, this.props.nodeKey);
-  };
-
-  onMouseLeave = () => {
-    this.props.diagramState.op(OpType.FOCUS_ITEM, undefined);
+    this.props.op(OpType.TOGGLE_COLLAPSE, this.props.nodeKey);
   };
 
   static dragSrcItemKey: NodeKeyType;
@@ -86,8 +77,8 @@ export class NodeWidget<
 
   onDrop = e => {
     console.log("onDrop");
-    let { diagramState, nodeKey } = this.props;
-    diagramState.op(OpType.DRAG_AND_DROP, NodeWidget.dragSrcItemKey, nodeKey);
+    let { op, nodeKey } = this.props;
+    op(OpType.DRAG_AND_DROP, NodeWidget.dragSrcItemKey, nodeKey);
     this.setState({
       dragEnter: false
     });
@@ -156,6 +147,7 @@ export class NodeWidget<
   renderSubItems() {
     let {
       diagramState,
+      op,
       nodeKey,
       dir,
       setViewBoxScroll,
@@ -176,6 +168,7 @@ export class NodeWidget<
           nodeKey={itemKey}
           dir={dir}
           diagramState={diagramState}
+          op={op}
           setViewBoxScroll={setViewBoxScroll}
           setViewBoxScrollDelta={setViewBoxScrollDelta}
           saveRef={saveRef}
@@ -221,7 +214,7 @@ export class NodeWidget<
   }
 
   render() {
-    let { diagramState, nodeKey, dir, saveRef, getRef } = this.props;
+    let { diagramState, op, nodeKey, dir, saveRef, getRef } = this.props;
     let { mindMapModel } = diagramState;
     let node = mindMapModel.getItem(nodeKey);
     let visualLevel = mindMapModel.getItemVisualLevel(nodeKey);
@@ -233,6 +226,7 @@ export class NodeWidget<
         >
           <TopicContentWidget
             diagramState={diagramState}
+            op={op}
             nodeKey={nodeKey}
             dir={dir}
             draggable

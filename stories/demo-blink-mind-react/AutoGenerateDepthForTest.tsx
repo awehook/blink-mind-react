@@ -7,6 +7,7 @@ import {
 } from "blink-mind-react";
 
 import "./demo.css";
+import { DiagramState } from "../../src/model/DiagramState";
 
 function generateSubItemKeys(key:string,subItemCount: number) {
   return Array.from({length: subItemCount}, (x,i) => i+1).map((i)=>`${key}_sub${i}`);
@@ -51,45 +52,40 @@ function generateExampleItems(
   return res;
 }
 
-function Demo() {
-  let items = generateExampleItems(2,1,'root',4);
-  let mindModel = MindMapModel.createWith({
-    rootItemKey: "root",
-    editorRootItemKey: "root",
-    // items: [
-    //   { key: "root", content: "my plan", subItemKeys: ["sub1", "sub2"] },
-    //   {
-    //     key: "sub1",
-    //     parentKey: "root",
-    //     content: "learn front end",
-    //     subItemKeys: ["sub1_1", "sub1_2"],
-    //     collapse: true
-    //   },
-    //   {
-    //     key: "sub2",
-    //     parentKey: "root",
-    //     content: "learn server tech",
-    //     subItemKeys: ["sub2_1", "sub2_2"]
-    //   },
-    //   {
-    //     key: "sub1_1",
-    //     parentKey: "sub1",
-    //     content: "learn webpack",
-    //     subItemKeys: ["sub1_1_1", "sub1_1_2"]
-    //   },
-    //   { key: "sub1_2", content: "learn react", parentKey: "sub1" },
-    //   { key: "sub2_1", content: "learn mysql", parentKey: "sub2" },
-    //   { key: "sub2_2", content: "learn docker", parentKey: "sub2" },
-    //   { key: "sub1_1_1", content: "learn webpack plugin", parentKey: "sub1_1" },
-    //   { key: "sub1_1_2", content: "learn webpack loader", parentKey: "sub1_1" }
-    // ]
-    items: items
-  });
-  let diagramConfig : DiagramConfig = {
-    hMargin: 10
+interface DemoProps {}
+interface DemoState {
+  diagramState: DiagramState;
+}
+export class Demo extends React.Component<DemoProps, DemoState> {
+  constructor(props) {
+    super(props);
+    let items = generateExampleItems(2,1,'root',4);
+    let mindModel = MindMapModel.createWith({
+      rootItemKey: "root",
+      editorRootItemKey: "root",
+      items: items
+    });
+    let diagramConfig : DiagramConfig = {
+      hMargin: 10
+    };
+    let diagramState = DiagramState.createWith(mindModel, diagramConfig);
+    this.state = {
+      diagramState: diagramState
+    };
+  }
+
+  onChange = (diagramState: DiagramState) => {
+    this.setState({ diagramState });
   };
-  let diagramModel = new MindDiagramModel(mindModel,diagramConfig);
-  return <DiagramWidget diagramModel={diagramModel} />;
+
+  render() {
+    return (
+      <DiagramWidget
+        diagramState={this.state.diagramState}
+        onChange={this.onChange}
+      />
+    );
+  }
 }
 
 export default Demo;

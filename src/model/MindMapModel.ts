@@ -15,7 +15,7 @@ const defaultMindMapRecord: MindMapRecordType = {
   editorRootItemKey: null,
   itemMap: Map(),
   focusItemKey: null,
-  focusItemMode: FocusItemMode.Normal,
+  focusItemMode: FocusItemMode.Normal
 };
 
 export class MindMapModel extends Record(defaultMindMapRecord) {
@@ -43,18 +43,16 @@ export class MindMapModel extends Record(defaultMindMapRecord) {
   }
 
   getFocusItemMode(): FocusItemMode {
-    return this.get('focusItemMode');
+    return this.get("focusItemMode");
   }
 
   getEditingItemKey(): NodeKeyType {
-    if(this.get('focusItemMode')!== FocusItemMode.Editing)
-      return null;
+    if (this.get("focusItemMode") !== FocusItemMode.Editing) return null;
     return this.getFocusItemKey();
   }
 
   getPopupMenuItemKey(): NodeKeyType {
-    if(this.get('focusItemMode')!== FocusItemMode.PopupMenu)
-      return null;
+    if (this.get("focusItemMode") !== FocusItemMode.PopupMenu) return null;
     return this.getFocusItemKey();
   }
 

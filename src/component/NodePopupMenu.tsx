@@ -1,15 +1,17 @@
 import * as React from "react";
 import { NodeKeyType } from "../model/NodeModel";
-import { DiagramState } from "../interface/DiagramState";
+import { DiagramState } from "../model/DiagramState";
 import {
   NodePopupMenuItemConfig,
   NodePopupMenuItem
 } from "./NodePopupMenuItem";
 import { OpType } from "../model/MindMapModelModifier";
+import { OpFunction } from "../types/FunctionType";
 
 interface NodePopupMenuProps {
   nodeKey: NodeKeyType;
   diagramState: DiagramState;
+  op: OpFunction;
   visible: boolean;
   handleVisibleChange: Function;
 
@@ -79,7 +81,7 @@ export class NodePopupMenu extends React.Component<
 
   render() {
     console.log("NodePopupMenu render:" + this.props.visible);
-    let { visible, nodeKey, items, diagramState } = this.props;
+    let { visible, nodeKey, items, diagramState, op } = this.props;
     let editorRootKey = diagramState.mindMapModel.getEditorRootItemKey();
     let menuItems = items.map(item =>
       nodeKey === editorRootKey && !item.rootCanUse ? null : (
@@ -88,6 +90,7 @@ export class NodePopupMenu extends React.Component<
           key={`${nodeKey}-${item.label}`}
           nodeKey={nodeKey}
           diagramState={diagramState}
+          op={op}
         />
       )
     );

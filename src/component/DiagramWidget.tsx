@@ -5,22 +5,33 @@ import { MindDragScrollWidget } from "./MindDragScrollWidget";
 import { BaseWidget } from "./common/BaseWidget";
 import "./DiagramWidget.scss";
 import SaveRef from "./common/SaveRef";
-import { Toolbar } from "./Toolbar";
+import { DiagramState } from "../model/DiagramState";
+import { OnChangeFunction } from "../types/FunctionType";
+import { OpType } from "../model/MindMapModelModifier";
+import { NodeKeyType } from "../model/NodeModel";
+// import { Toolbar } from "./Toolbar";
 
 function log(obj) {
   console.log(obj);
 }
 
 export interface MindDiagramWidgetProps {
-  diagramModel: MindDiagramModel;
+  diagramState: DiagramState;
+  onChange: OnChangeFunction;
 }
 
-export class DiagramWidget<
-  P extends MindDiagramWidgetProps
-> extends BaseWidget<MindDiagramWidgetProps> {
+export class DiagramWidget<P extends MindDiagramWidgetProps> extends BaseWidget<
+  MindDiagramWidgetProps
+> {
   constructor(props: MindDiagramWidgetProps) {
     super(props);
   }
+
+  op = (opType: OpType, nodeKey: NodeKeyType, arg?) => {
+    let { diagramState, onChange } = this.props;
+    let newState = DiagramState.op(diagramState, opType, nodeKey, arg);
+    onChange(newState);
+  };
 
   render() {
     return (
@@ -28,12 +39,13 @@ export class DiagramWidget<
         {(saveRef, getRef) => (
           <div
             className={cx("bm-diagram", {
-              [`${this.props.diagramModel.config.theme}`]: true
+              [`${this.props.diagramState.config.theme}`]: true
             })}
           >
-            <Toolbar getRef={getRef}/>
+            {/*<Toolbar getRef={getRef}/>*/}
             <MindDragScrollWidget
-              diagramModel={this.props.diagramModel}
+              diagramState={this.props.diagramState}
+              op={this.op}
               saveRef={saveRef}
               getRef={getRef}
             />

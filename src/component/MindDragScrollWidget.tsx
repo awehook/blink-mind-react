@@ -2,10 +2,12 @@ import * as React from "react";
 import { BaseWidget } from "./common/BaseWidget";
 import { DragScrollWidget } from "./common/DragScrollWidget";
 import { NodeLayerWidget } from "./NodeLayerWidget";
-import { MindDiagramModel } from "blink-mind-react";
+import { DiagramState } from "../model/DiagramState";
+import { OpFunction } from "../types/FunctionType";
 
 export interface MindDragScrollWidgetProps {
-  diagramModel: MindDiagramModel;
+  diagramState: DiagramState;
+  op: OpFunction;
   saveRef?: Function;
   getRef?: Function;
 }
@@ -19,8 +21,11 @@ export class MindDragScrollWidget<
 
   componentDidMount(): void {
     // console.log("componentDidMount");
-    let { getRef,diagramModel } = this.props;
-    let rootTopic: HTMLElement = getRef(`topic-${diagramModel.mindMapModel.getEditorRootItemKey()}`);
+    let { getRef, diagramState } = this.props;
+    let { mindMapModel } = diagramState;
+    let rootTopic: HTMLElement = getRef(
+      `topic-${mindMapModel.getEditorRootItemKey()}`
+    );
     let nodeLayer: HTMLElement = getRef("node-layer");
     let rootTopicRect = rootTopic.getBoundingClientRect();
     let nodeLayerRect = nodeLayer.getBoundingClientRect();

@@ -7,7 +7,7 @@ import { Value } from "slate";
 import { NodeRelationship } from "./NodeRelationship";
 
 export enum OpType {
-  UNDO,
+  UNDO = 1,
   REDO,
   TOGGLE_COLLAPSE,
   SET_ITEM_CONTENT,
@@ -36,7 +36,7 @@ export class MindMapModelModifier {
     [OpType.TOGGLE_COLLAPSE, MindMapModelModifier.toggleCollapse],
     [OpType.SET_ITEM_CONTENT, MindMapModelModifier.setItemContent],
     [OpType.FOCUS_ITEM, MindMapModelModifier.focusItem],
-    [OpType.SET_FOCUS_ITEM_MODE,MindMapModelModifier.setFocusItemMode],
+    [OpType.SET_FOCUS_ITEM_MODE, MindMapModelModifier.setFocusItemMode],
     [OpType.SET_EDIT_ITEM_KEY, MindMapModelModifier.setEditingItemKey],
     [OpType.SET_POPUP_MENU_ITEM_KEY, MindMapModelModifier.setPopupMenuItemKey],
     [OpType.ADD_CHILD, MindMapModelModifier.addChild],
@@ -131,13 +131,17 @@ export class MindMapModelModifier {
     if (itemKey !== model.getFocusItemKey()) {
       model = model.set("focusItemKey", itemKey);
     }
-    if(itemKey===null) {
+    if (itemKey === null) {
       model = model.set("focusItemMode", FocusItemMode.Normal);
     }
     return model;
   }
 
-  static setFocusItemMode(model: MindMapModel, itemKey: NodeKeyType, mode: FocusItemMode) {
+  static setFocusItemMode(
+    model: MindMapModel,
+    itemKey: NodeKeyType,
+    mode: FocusItemMode
+  ) {
     // console.log(`set focus item key ${itemKey}`);
     if (mode !== model.getFocusItemMode())
       model = model.set("focusItemMode", mode);
@@ -147,9 +151,9 @@ export class MindMapModelModifier {
   static setEditingItemKey(model: MindMapModel, itemKey: NodeKeyType) {
     console.log(`set editing item key ${itemKey}`);
     if (itemKey !== model.getEditingItemKey()) {
-      if(itemKey !== model.getFocusItemKey())
+      if (itemKey !== model.getFocusItemKey())
         model = model.set("focusItemKey", itemKey);
-      if(model.get('focusItemMode')!== FocusItemMode.Editing)
+      if (model.get("focusItemMode") !== FocusItemMode.Editing)
         model = model.set("focusItemMode", FocusItemMode.Editing);
     }
     return model;
@@ -158,9 +162,9 @@ export class MindMapModelModifier {
   static setPopupMenuItemKey(model: MindMapModel, itemKey: NodeKeyType) {
     console.log(`set popup menu item key ${itemKey}`);
     if (itemKey !== model.getPopupMenuItemKey()) {
-      if(itemKey !== model.getFocusItemKey())
+      if (itemKey !== model.getFocusItemKey())
         model = model.set("focusItemKey", itemKey);
-      if(model.get('focusItemMode')!== FocusItemMode.PopupMenu)
+      if (model.get("focusItemMode") !== FocusItemMode.PopupMenu)
         model = model.set("focusItemMode", FocusItemMode.PopupMenu);
     }
     return model;
@@ -201,7 +205,7 @@ export class MindMapModelModifier {
       model = model.update("itemMap", itemMap =>
         itemMap.set(item.getKey(), item).set(child.getKey(), child)
       );
-      model = MindMapModelModifier.setEditingItemKey(model,child.getKey());
+      model = MindMapModelModifier.setEditingItemKey(model, child.getKey());
     }
     return model;
   }
@@ -219,7 +223,7 @@ export class MindMapModelModifier {
       model = model.update("itemMap", itemMap =>
         itemMap.set(pItem.getKey(), pItem).set(sibling.getKey(), sibling)
       );
-      model = MindMapModelModifier.setEditingItemKey(model,sibling.getKey());
+      model = MindMapModelModifier.setEditingItemKey(model, sibling.getKey());
     }
     return model;
   }

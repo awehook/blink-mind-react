@@ -2,15 +2,17 @@ import * as React from "react";
 import * as cx from "classnames";
 import { BaseWidget } from "./common/BaseWidget";
 import { FocusItemMode, NodeKeyType } from "../model/NodeModel";
-import { DiagramState } from "../interface/DiagramState";
+import { DiagramState } from "../model/DiagramState";
 
 import { OpType } from "../model/MindMapModelModifier";
-import { NodeWidgetDirection } from "../enums/NodeWidgetDirection";
+import { NodeWidgetDirection } from "../types/NodeWidgetDirection";
 
 import { NodePopupMenu } from "./NodePopupMenu";
+import { OpFunction } from "../types/FunctionType";
 
 interface TopicContentWidgetProps {
   diagramState: DiagramState;
+  op: OpFunction;
   nodeKey: NodeKeyType;
   dir: NodeWidgetDirection;
   draggable: boolean;
@@ -67,8 +69,8 @@ export class TopicContentWidget extends BaseWidget<
 
   onDrop = e => {
     console.log("onDrop");
-    let { diagramState, nodeKey } = this.props;
-    diagramState.op(OpType.DRAG_AND_DROP, dragSrcItemKey, nodeKey);
+    let { diagramState, nodeKey, op } = this.props;
+    op(OpType.DRAG_AND_DROP, dragSrcItemKey, nodeKey);
     this.setState({
       dragEnter: false
     });
@@ -76,10 +78,10 @@ export class TopicContentWidget extends BaseWidget<
 
   onClick = () => {
     console.log("TopicContentWidget onClick");
-    let { diagramState, nodeKey } = this.props;
+    let { diagramState, op, nodeKey } = this.props;
     if (diagramState.mindMapModel.getEditingItemKey() === nodeKey) return;
     // diagramState.op(OpType.SET_POPUP_MENU_ITEM_KEY, nodeKey);
-    diagramState.op(OpType.SET_POPUP_MENU_ITEM_KEY, nodeKey);
+    op(OpType.SET_POPUP_MENU_ITEM_KEY, nodeKey);
     this.setState({ showPopMenu: true });
   };
 
@@ -110,12 +112,20 @@ export class TopicContentWidget extends BaseWidget<
     let { getRef, nodeKey, diagramState } = this.props;
     let content = getRef(`content-${nodeKey}`);
     if (!content.contains(e.target)) {
-      diagramState.op(OpType.FOCUS_ITEM, null);
+      // diagramState.op(OpType.FOCUS_ITEM, null);
     }
   };
 
   render() {
-    let { diagramState, nodeKey, dir, draggable, saveRef, getRef } = this.props;
+    let {
+      diagramState,
+      op,
+      nodeKey,
+      dir,
+      draggable,
+      saveRef,
+      getRef
+    } = this.props;
     let { mindMapModel, config: diagramConfig } = diagramState;
     let visualLevel = mindMapModel.getItemVisualLevel(nodeKey);
     let itemStyle;
@@ -153,10 +163,11 @@ export class TopicContentWidget extends BaseWidget<
         onDrop={this.onDrop}
         onClick={this.onClick}
       >
-        {diagramConfig.editorRendererFn(diagramState, nodeKey, saveRef)}
+        {diagramConfig.editorRendererFn(diagramState, op, nodeKey, saveRef)}
         {showPopMenu ? (
           <NodePopupMenu
             diagramState={diagramState}
+            op={op}
             nodeKey={nodeKey}
             visible
             handleVisibleChange={this.handlePopMenuVisibleChange}

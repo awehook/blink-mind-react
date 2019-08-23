@@ -1,7 +1,7 @@
 import * as React from "react";
 import { DefaultNodeContentEditor } from "./DefaultNodeContentEditor";
 import { DefaultFocusItemBorderSvg } from "./DefaultFocusItemBorderSvg";
-import { NodeStyle } from "../enums/NodeStyle";
+import { NodeStyle } from "../types/NodeStyle";
 
 export enum DiagramLayoutDirection {
   LEFT_TO_RIGHT,
@@ -20,19 +20,33 @@ export type DiagramConfig = {
   rootItemStyle?: any;
   primaryItemStyle?: any;
   normalItemStyle?: any;
-  editorRendererFn?: (diagramState,nodeKey,saveRef)=>React.ReactNode;
-  focusItemsBorderRenderFn?: (diagramState,saveRef,getRef)=>React.ReactNode;
+  editorRendererFn?: (diagramState, op, nodeKey, saveRef) => React.ReactNode;
+  focusItemsBorderRenderFn?: (diagramState, saveRef, getRef) => React.ReactNode;
 };
 
-const defaultEditorRendererFn = (diagramState,nodeKey,saveRef)=> {
-  return <DefaultNodeContentEditor diagramState={diagramState} nodeKey={nodeKey} saveRef={saveRef}/>
+const defaultEditorRendererFn = (diagramState, op, nodeKey, saveRef) => {
+  return (
+    <DefaultNodeContentEditor
+      diagramState={diagramState}
+      op={op}
+      nodeKey={nodeKey}
+      saveRef={saveRef}
+    />
+  );
 };
 
-const defaultFocusItemsBorderRenderFn = (diagramState,saveRef,getRef)=> {
-  return <DefaultFocusItemBorderSvg diagramState={diagramState} saveRef={saveRef} getRef={getRef} ref={saveRef('focusItemBorderSvg')}/>
+const defaultFocusItemsBorderRenderFn = (diagramState, saveRef, getRef) => {
+  return (
+    <DefaultFocusItemBorderSvg
+      diagramState={diagramState}
+      saveRef={saveRef}
+      getRef={getRef}
+      ref={saveRef("focusItemBorderSvg")}
+    />
+  );
 };
 
-export const defaultDiagramConfig : DiagramConfig = {
+export const defaultDiagramConfig: DiagramConfig = {
   direction: DiagramLayoutDirection.LEFT_AND_RIGHT,
   nodeStyle: NodeStyle.ALL_HAS_BORDER,
   hMargin: 10,

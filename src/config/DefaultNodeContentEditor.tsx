@@ -1,14 +1,16 @@
 import * as React from "react";
 import * as cx from "classnames";
-import { DiagramState } from "../interface/DiagramState";
+import { DiagramState } from "../model/DiagramState";
 import { NodeKeyType } from "../model/NodeModel";
 import RichMarkDownEditor from "awehook-rich-markdown-editor";
 import { OpType } from "../model/MindMapModelModifier";
 import { debounce } from "lodash";
 import "./DefaultNodeContentEditor.scss";
+import { OpFunction } from "../types/FunctionType";
 
 interface DefaultNodeContentEditorProps {
   diagramState: DiagramState;
+  op: OpFunction;
   nodeKey: NodeKeyType;
   saveRef?: Function;
 }
@@ -24,8 +26,8 @@ export class DefaultNodeContentEditor extends React.Component<
   }
 
   onChange = (value: () => string) => {
-    const { nodeKey, diagramState } = this.props;
-    diagramState.op(OpType.SET_ITEM_CONTENT, nodeKey, value);
+    const { op, nodeKey } = this.props;
+    op(OpType.SET_ITEM_CONTENT, nodeKey, value);
   };
 
   onMouseDown = e => {
@@ -86,7 +88,7 @@ export class DefaultNodeContentEditor extends React.Component<
     return (
       <div
         className={cx("bm-node-content", {
-          'content-editing': !readOnly,
+          "content-editing": !readOnly,
           "bm-node-content-cursor": !readOnly
         })}
         ref={saveRef(`editor-${nodeKey}`)}

@@ -13,7 +13,7 @@ const defaultMindNodeRecord: IMindNodeRecordType = {
   parentKey: null,
   content: null,
   subItemKeys: List(),
-  collapse: false,
+  collapse: false
 };
 
 // @ts-ignore
@@ -42,8 +42,13 @@ export class MindNodeModel extends Record(defaultMindNodeRecord)
     return this.get("collapse");
   }
 
-
-  static create(key: NodeKeyType,parentKey=null,content="new node",subItemKeys=List([]),collapse=false) : MindNodeModel {
+  static create(
+    key: NodeKeyType,
+    parentKey = null,
+    content = "new node",
+    subItemKeys = List([]),
+    collapse = false
+  ): MindNodeModel {
     return MindNodeModel.createWith({
       key,
       parentKey,
@@ -52,7 +57,6 @@ export class MindNodeModel extends Record(defaultMindNodeRecord)
       collapse
     });
   }
-
 
   static createWith(obj: any): MindNodeModel {
     let node = new MindNodeModel();
