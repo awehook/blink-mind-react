@@ -19,8 +19,8 @@ export class MindDragScrollWidget<
 
   componentDidMount(): void {
     // console.log("componentDidMount");
-    let { getRef } = this.props;
-    let rootTopic: HTMLElement = getRef("root-topic");
+    let { getRef,diagramModel } = this.props;
+    let rootTopic: HTMLElement = getRef(`topic-${diagramModel.mindMapModel.getEditorRootItemKey()}`);
     let nodeLayer: HTMLElement = getRef("node-layer");
     let rootTopicRect = rootTopic.getBoundingClientRect();
     let nodeLayerRect = nodeLayer.getBoundingClientRect();

@@ -103,14 +103,14 @@ export class TopicContentWidget extends BaseWidget<
   }
 
   _handleClick = e => {
-    // console.log(`_handleClick ${this.props.nodeKey}`);
+    console.log(`_handleClick ${this.props.nodeKey}`);
     // console.log(e);
     // console.log(e.target);
 
     let { getRef, nodeKey, diagramState } = this.props;
     let content = getRef(`content-${nodeKey}`);
     if (!content.contains(e.target)) {
-      diagramState.op(OpType.SET_FOCUS_ITEM_MODE, nodeKey,FocusItemMode.Normal );
+      diagramState.op(OpType.FOCUS_ITEM, null);
     }
   };
 

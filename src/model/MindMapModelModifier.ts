@@ -128,8 +128,12 @@ export class MindMapModelModifier {
 
   static focusItem(model: MindMapModel, itemKey: NodeKeyType) {
     // console.log(`set focus item key ${itemKey}`);
-    if (itemKey !== model.getFocusItemKey())
+    if (itemKey !== model.getFocusItemKey()) {
       model = model.set("focusItemKey", itemKey);
+    }
+    if(itemKey===null) {
+      model = model.set("focusItemMode", FocusItemMode.Normal);
+    }
     return model;
   }
 

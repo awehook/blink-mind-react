@@ -14,6 +14,7 @@ export class DefaultFocusItemBorderSvg extends React.Component<
   FocusItemBorderSvgState
 > {
   render() {
+    console.log('DefaultFocusItemBorderSvg render');
     return this.renderFocusItemBorder();
   }
 
@@ -28,9 +29,7 @@ export class DefaultFocusItemBorderSvg extends React.Component<
 
     const focusItemKey = mindMapModel.getFocusItemKey();
     if (focusItemKey) {
-      let visualLevel = mindMapModel.getItemVisualLevel(focusItemKey);
-      let focusTopic: HTMLElement =
-        visualLevel === 1 ? getRef(`content-${focusItemKey}`) : getRef(`editor-${focusItemKey}`);
+      let focusTopic: HTMLElement = getRef(`content-${focusItemKey}`);
       let nodeLayer: HTMLElement = getRef("node-layer");
       if (focusTopic && nodeLayer) {
         let focusTopicRect = focusTopic.getBoundingClientRect();
@@ -48,11 +47,11 @@ export class DefaultFocusItemBorderSvg extends React.Component<
             >
               <rect
                 x={`${focusTopicRect.left -
-                nodeLayerRect.left -
-                focusBorderPadding}`}
+                  nodeLayerRect.left -
+                  focusBorderPadding}`}
                 y={`${focusTopicRect.top -
-                nodeLayerRect.top -
-                focusBorderPadding}`}
+                  nodeLayerRect.top -
+                  focusBorderPadding}`}
                 rx="10"
                 ry="10"
                 width={`${focusTopicRect.width + 2 * focusBorderPadding}`}

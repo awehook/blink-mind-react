@@ -3,7 +3,7 @@ import { BaseWidget } from "./common/BaseWidget";
 import { NodeKeyType } from "../model/NodeModel";
 import { NodeWidgetDirection } from "../enums/NodeWidgetDirection";
 import { DiagramState } from "../interface/DiagramState";
-import { MindMapModelModifier } from "../model/MindMapModelModifier";
+import { NodeStyle } from "../enums/NodeStyle";
 
 interface LinkWidgetProps {
   diagramState: DiagramState;
@@ -72,10 +72,73 @@ export class LinkWidget<
   }
 
   generatePathString = () => {
-    return this.props.isRoot
-      ? this.generatePathStringRoot()
-      : this.generatePathStringNormal();
+    if (this.props.isRoot) return this.generatePathStringRoot();
+    if (
+      this.props.diagramState.config.nodeStyle ===
+      NodeStyle.PRIMARY_HAS_BORDER_NORMAL_NO_BORDER
+    )
+      return this.generatePathStringNormal();
+    return this.generatePathStringForBorderNode();
   };
+
+  generatePathStringForBorderNode = () => {
+    let { fromNodeKey, toNodeKey, getRef, dir, diagramState } = this.props;
+    let { mindMapModel } = diagramState;
+    let fromItem = diagramState.mindMapModel.getItem(fromNodeKey);
+    let fromItemChildrenCount = fromItem.getSubItemKeys().size;
+    let fromTopic: HTMLElement = getRef(`topic-${fromNodeKey}`);
+    let toElementTopic: HTMLElement = getRef(`topic-${toNodeKey}`);
+    if (!fromTopic || !toElementTopic) {
+      return "";
+    }
+    let fromChildrenRect = getRef(
+      `children-${fromNodeKey}`
+    ).getBoundingClientRect();
+
+    let toElementTopicRect = toElementTopic.getBoundingClientRect();
+    let fromTopicRect = fromTopic.getBoundingClientRect();
+    let fromX, fromY, toX, toY;
+    if (dir === NodeWidgetDirection.RIGHT) {
+      fromX = fromItemChildrenCount > 1 ? 1 : 0;
+      fromY = Math.round(
+        fromTopicRect.top + fromTopicRect.height / 2 - fromChildrenRect.top
+      );
+      toX =
+        toElementTopicRect.left -
+        fromTopicRect.right;
+      toY = Math.round(
+        toElementTopicRect.top +
+          toElementTopicRect.height / 2 -
+          fromChildrenRect.top
+      );
+    } else {
+      fromX =
+        fromTopicRect.left -
+        fromChildrenRect.left -
+        (fromItemChildrenCount > 1 ? 1 : 0);
+      fromY = Math.round(
+        fromTopicRect.top + fromTopicRect.height / 2 - fromChildrenRect.top
+      );
+
+      toX = Math.round(toElementTopicRect.right - fromChildrenRect.left);
+      toY = Math.round(
+        toElementTopicRect.top +
+          toElementTopicRect.height / 2 -
+          fromChildrenRect.top
+      );
+    }
+    if (fromY === toY) return `M${fromX},${fromY}L${toX},${toY}`;
+
+    let centerX = (fromX + toX) / 2;
+    let centerY = (fromY + toY) / 2;
+
+    if (dir === NodeWidgetDirection.RIGHT) {
+      return `M${fromX},${fromY}C${fromX},${centerY},${centerX},${toY},${toX},${toY}`;
+    } else {
+      return `M${toX},${toY}C${centerX},${toY},${fromX},${centerY},${fromX},${fromY}`;
+    }
+  };
+
   generatePathStringNormal = () => {
     let cornerR = 10;
     let { fromNodeKey, toNodeKey, getRef, dir, diagramState } = this.props;
@@ -157,14 +220,12 @@ export class LinkWidget<
   };
 
   generatePathStringRoot = () => {
-    let { fromNodeKey, toNodeKey, getRef, dir, diagramState } = this.props;
-    let rootTopic: HTMLElement = getRef(`root-topic`);
+    let { fromNodeKey, toNodeKey, getRef, dir } = this.props;
+    let rootTopic: HTMLElement = getRef(`topic-${fromNodeKey}`);
     let toElementTopic: HTMLElement = getRef(`topic-${toNodeKey}`);
     if (!rootTopic || !toElementTopic) {
       return "";
     }
-
-    let fromItem = diagramState.mindMapModel.getItem(fromNodeKey);
 
     let toElementTopicRect = toElementTopic.getBoundingClientRect();
     let rootTopicRect = rootTopic.getBoundingClientRect();

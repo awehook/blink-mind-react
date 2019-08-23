@@ -10,6 +10,7 @@ import { NodeWidget } from "./NodeWidget";
 import { LinkWidget } from "./LinkWidget";
 import { TopicContentWidget } from "./TopicContentWidget";
 import { NodeWidgetDirection } from "../enums/NodeWidgetDirection";
+import { NodeStyle } from "../enums/NodeStyle";
 
 export interface MindRootNodeWidgetProps {
   diagramState: DiagramState;
@@ -92,8 +93,6 @@ export class RootNodeWidget<
   collapseIcon: HTMLElement;
   oldCollapseIconRect: ClientRect;
 
-
-
   // 以左右或者上下部分来分别进行渲染
   renderPartItems(items: string[], dir: NodeWidgetDirection) {
     let {
@@ -147,7 +146,7 @@ export class RootNodeWidget<
   }
 
   render() {
-    let { diagramState, nodeKey,saveRef,getRef } = this.props;
+    let { diagramState, nodeKey, saveRef, getRef } = this.props;
     let { mindMapModel, config: diagramConfig } = diagramState;
     let [leftItems, rightItems] = this.getPartItems(diagramConfig.direction);
     return (
@@ -157,13 +156,27 @@ export class RootNodeWidget<
           className={cx("topic")}
           ref={
             nodeKey === mindMapModel.getEditorRootItemKey()
-              ? saveRef("root-topic")
+              ? saveRef(`topic-${nodeKey}`)
               : null
           }
         >
-          <TopicContentWidget diagramState={diagramState} nodeKey={nodeKey} dir={NodeWidgetDirection.ROOT} draggable={false} saveRef={saveRef} getRef={getRef}/>
+          <TopicContentWidget
+            diagramState={diagramState}
+            nodeKey={nodeKey}
+            dir={NodeWidgetDirection.ROOT}
+            draggable={false}
+            saveRef={saveRef}
+            getRef={getRef}
+          />
         </div>
         {this.renderPartItems(rightItems, NodeWidgetDirection.RIGHT)}
+        {/*{diagramConfig.nodeStyle === NodeStyle.ALL_HAS_BORDER*/}
+          {/*? diagramConfig.focusItemsBorderRenderFn(*/}
+              {/*diagramState,*/}
+              {/*saveRef,*/}
+              {/*getRef*/}
+            {/*)*/}
+          {/*: null}*/}
       </>
     );
   }

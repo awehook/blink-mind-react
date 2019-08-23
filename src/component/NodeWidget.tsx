@@ -2,13 +2,13 @@ import * as React from "react";
 import { NodeKeyType } from "../model/NodeModel";
 import { BaseWidget } from "./common/BaseWidget";
 import { LinkWidget } from "./LinkWidget";
-import {TopicContentWidget} from "./TopicContentWidget";
+import { TopicContentWidget } from "./TopicContentWidget";
 import "./NodeWidget.scss";
 import { DiagramState } from "../interface/DiagramState";
 import { OpType } from "../model/MindMapModelModifier";
 import * as cx from "classnames";
-import {NodeWidgetDirection} from "../enums/NodeWidgetDirection";
-
+import { NodeWidgetDirection } from "../enums/NodeWidgetDirection";
+import { NodeStyle } from "../enums/NodeStyle";
 
 export interface MindNodeWidgetProps {
   diagramState: DiagramState;
@@ -221,8 +221,8 @@ export class NodeWidget<
   }
 
   render() {
-    let { diagramState, nodeKey, dir, saveRef,getRef } = this.props;
-    let { mindMapModel} = diagramState;
+    let { diagramState, nodeKey, dir, saveRef, getRef } = this.props;
+    let { mindMapModel } = diagramState;
     let node = mindMapModel.getItem(nodeKey);
     let visualLevel = mindMapModel.getItemVisualLevel(nodeKey);
     return (
@@ -231,12 +231,22 @@ export class NodeWidget<
           className={cx("topic", `bm-dir-${dir}`)}
           ref={saveRef(`topic-${nodeKey}`)}
         >
-          <TopicContentWidget diagramState={diagramState} nodeKey={nodeKey} dir={dir} draggable saveRef={saveRef} getRef={getRef}/>
+          <TopicContentWidget
+            diagramState={diagramState}
+            nodeKey={nodeKey}
+            dir={dir}
+            draggable
+            saveRef={saveRef}
+            getRef={getRef}
+          />
           {node.getSubItemKeys().size > 0 ? (
             <div
               className={cx("collapse-line", {
                 "collapse-line-hide": node.getCollapse(),
-                [`normal-collapse-line-${dir}`]: visualLevel > 1
+                [`normal-collapse-line-${dir}`]:
+                  diagramState.config.nodeStyle ===
+                    NodeStyle.PRIMARY_HAS_BORDER_NORMAL_NO_BORDER &&
+                  visualLevel > 1
               })}
               ref={saveRef(`line-${nodeKey}`)}
             >
@@ -245,7 +255,7 @@ export class NodeWidget<
                 className={cx("collapse-icon", {
                   iconfont: node.getSubItemKeys().size > 0,
                   [`bm-${node.getCollapse() ? "plus" : "minus"}`]:
-                  node.getSubItemKeys().size > 0
+                    node.getSubItemKeys().size > 0
                 })}
                 onClick={this.onClickCollapse}
               />

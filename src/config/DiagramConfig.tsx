@@ -1,6 +1,8 @@
-import * as React from 'react';
+import * as React from "react";
 import { DefaultNodeContentEditor } from "./DefaultNodeContentEditor";
 import { DefaultFocusItemBorderSvg } from "./DefaultFocusItemBorderSvg";
+import { NodeStyle } from "../enums/NodeStyle";
+
 export enum DiagramLayoutDirection {
   LEFT_TO_RIGHT,
   RIGHT_TO_LEFT,
@@ -10,6 +12,7 @@ export enum DiagramLayoutDirection {
 export type DiagramConfig = {
   editable?: boolean;
   direction?: DiagramLayoutDirection;
+  nodeStyle?: NodeStyle;
   hMargin?: number;
   vMargin?: number;
   focusBorderPadding?: number;
@@ -31,9 +34,10 @@ const defaultFocusItemsBorderRenderFn = (diagramState,saveRef,getRef)=> {
 
 export const defaultDiagramConfig : DiagramConfig = {
   direction: DiagramLayoutDirection.LEFT_AND_RIGHT,
+  nodeStyle: NodeStyle.ALL_HAS_BORDER,
   hMargin: 10,
   vMargin: 10,
-  focusBorderPadding: 5,
+  focusBorderPadding: 4,
   theme: "theme-orange",
   rootItemStyle: {
     fontSize: "24px",
@@ -41,6 +45,11 @@ export const defaultDiagramConfig : DiagramConfig = {
     padding: "10px 25px"
   },
   primaryItemStyle: {
+    fontSize: "16px",
+    borderRadius: "6px",
+    padding: "0"
+  },
+  normalItemStyle: {
     fontSize: "16px",
     borderRadius: "6px",
     padding: "0"
