@@ -76,13 +76,27 @@ export class TopicContentWidget extends BaseWidget<
     });
   };
 
+  isDoubleClick : boolean;
+
   onClick = () => {
-    console.log("TopicContentWidget onClick");
+    this.isDoubleClick = false;
+    setTimeout(()=> {
+      if(!this.isDoubleClick) {
+        // console.log("TopicContentWidget onClick");
+        let { diagramState, op, nodeKey } = this.props;
+        if (diagramState.mindMapModel.getEditingItemKey() === nodeKey) return;
+        op(OpType.SET_POPUP_MENU_ITEM_KEY, nodeKey);
+        this.setState({ showPopMenu: true });
+      }
+    },200);
+  };
+
+  onDoubleClick = () => {
+    this.isDoubleClick = true;
+    // console.log('TopicContentWidget onDoubleClick');
     let { diagramState, op, nodeKey } = this.props;
     if (diagramState.mindMapModel.getEditingItemKey() === nodeKey) return;
-    // diagramState.op(OpType.SET_POPUP_MENU_ITEM_KEY, nodeKey);
-    op(OpType.SET_POPUP_MENU_ITEM_KEY, nodeKey);
-    this.setState({ showPopMenu: true });
+    op(OpType.SET_EDIT_ITEM_KEY, nodeKey);
   };
 
   handlePopMenuVisibleChange = visible => {
@@ -162,6 +176,7 @@ export class TopicContentWidget extends BaseWidget<
         onDragOver={this.onDragOver}
         onDrop={this.onDrop}
         onClick={this.onClick}
+        onDoubleClick={this.onDoubleClick}
       >
         {diagramConfig.editorRendererFn(diagramState, op, nodeKey, saveRef)}
         {showPopMenu ? (

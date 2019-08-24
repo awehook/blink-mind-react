@@ -30,7 +30,7 @@ yarn add blink-mind-react
 ### Run the Demo
 ```
 yarn
-yanr storybook
+yarn storybook
 ```
 Then open http://localhost:6006/ .
 Click the demo1 menu item.
