@@ -1,5 +1,7 @@
 import { INodeModel, NodeKeyType, INodeRecordType } from "./NodeModel";
 import { Record, List } from "immutable";
+// @ts-ignore
+import MarkdownSerializer from './encoding/MarkdownSerializer';
 
 interface IMindNodeRecordType extends INodeRecordType {
   parentKey: NodeKeyType;
@@ -40,6 +42,29 @@ export class MindNodeModel extends Record(defaultMindNodeRecord)
 
   getCollapse(): boolean {
     return this.get("collapse");
+  }
+
+  contentToString() {
+    let content  = this.getContent();
+    if(typeof content === 'string')
+      return content;
+    else {
+      return MarkdownSerializer.serialize(content);
+    }
+  }
+
+  toString()  {
+    return this.toJSON().toString();
+  }
+
+  toJSON() {
+    return {
+      key: this.getKey(),
+      parentKey: this.getParentKey(),
+      subItemKeys: this.getSubItemKeys(),
+      collapse: this.getCollapse(),
+      content: this.contentToString(),
+    }
   }
 
   static create(

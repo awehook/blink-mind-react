@@ -26,6 +26,10 @@ export class MindMapModel extends Record(defaultMindMapRecord) {
     return this.get("rootItemKey");
   }
 
+  getRootItem() : MindNodeModel {
+    return this.getItem(this.getRootItemKey());
+  }
+
   getEditorRootItemKey(): NodeKeyType {
     return this.get("editorRootItemKey");
   }
@@ -75,6 +79,10 @@ export class MindMapModel extends Record(defaultMindMapRecord) {
     }
     return level;
   }
+
+  // serialize() {
+  //   return JSON.stringify(this);
+  // }
 
   static createWith(obj: any): MindMapModel {
     let model = new MindMapModel();

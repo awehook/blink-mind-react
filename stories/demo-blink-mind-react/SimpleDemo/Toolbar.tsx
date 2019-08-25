@@ -21,17 +21,21 @@ export class Toolbar extends React.Component<MindToolbarProps, MindToolbarState>
 
   static defaultProps: MindToolbarProps = {
     items: [
-      // {
-      //   icon: "newfile",
-      //   label: "new file",
-      //   // opType: OpType.REDO
-      // },
-      // {
-      //   icon: "openfile",
-      //   label: "open file",
-      //   // opType: OpType.UNDO
-      // },
-
+      {
+        icon: "newfile",
+        label: "new file",
+        // opType: OpType.REDO
+      },
+      {
+        icon: "openfile",
+        label: "open file",
+        // opType: OpType.UNDO
+      },
+      {
+        icon: "export",
+        label: "export file",
+        // opType: OpType.UNDO
+      },
       {
         icon: "undo",
         label: "undo",

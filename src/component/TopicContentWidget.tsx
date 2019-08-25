@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as cx from "classnames";
 import { BaseWidget } from "./common/BaseWidget";
-import { FocusItemMode, NodeKeyType } from "../model/NodeModel";
+import { NodeKeyType } from "../model/NodeModel";
 import { DiagramState } from "../model/DiagramState";
 
 import { OpType } from "../model/MindMapModelModifier";
@@ -67,9 +67,9 @@ export class TopicContentWidget extends BaseWidget<
     });
   };
 
-  onDrop = e => {
+  onDrop = () => {
     console.log("onDrop");
-    let { diagramState, nodeKey, op } = this.props;
+    let { nodeKey, op } = this.props;
     op(OpType.DRAG_AND_DROP, dragSrcItemKey, nodeKey);
     this.setState({
       dragEnter: false
@@ -123,7 +123,7 @@ export class TopicContentWidget extends BaseWidget<
     // console.log(e);
     // console.log(e.target);
 
-    let { getRef, nodeKey, diagramState } = this.props;
+    let { getRef, nodeKey } = this.props;
     let content = getRef(`content-${nodeKey}`);
     if (!content.contains(e.target)) {
       // diagramState.op(OpType.FOCUS_ITEM, null);
