@@ -5,3 +5,4 @@ export * from "./model/MindDiagramModel";
 export * from "./config/DiagramConfig";
 export * from './model/encoding/DataEncoding';
 export * from './model/MindMapModelModifier';
+export * from './types/Node';

@@ -3,7 +3,8 @@ export type NodeKeyType = string;
 export enum FocusItemMode {
   Normal,
   PopupMenu,
-  Editing
+  Editing,
+  EditingDesc,
 }
 
 export enum NodeWidgetDirection {

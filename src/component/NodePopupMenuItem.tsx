@@ -10,6 +10,7 @@ export type NodePopupMenuItemConfig = {
   label: string;
   rootCanUse?: boolean;
   opType?: OpType;
+  arg?: any;
 };
 
 interface NodePopupMenuItemProps {
@@ -28,8 +29,9 @@ export class NodePopupMenuItem extends React.Component<
   onClick = e => {
     e.stopPropagation();
     let { nodeKey, config, op } = this.props;
-    op(config.opType, nodeKey);
+    if (config.opType) op(config.opType, nodeKey, config.arg);
   };
+
   render() {
     const { config } = this.props;
     return (

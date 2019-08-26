@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as cx from "classnames";
 import { BaseWidget } from "./common/BaseWidget";
-import { NodeKeyType,NodeWidgetDirection } from "../types/Node";
+import { NodeKeyType, NodeWidgetDirection } from "../types/Node";
 import { DiagramState } from "../model/DiagramState";
 import { OpType } from "../model/MindMapModelModifier";
 import { NodePopupMenu } from "./NodePopupMenu";
@@ -73,19 +73,19 @@ export class TopicContentWidget extends BaseWidget<
     });
   };
 
-  isDoubleClick : boolean;
+  isDoubleClick: boolean;
 
   onClick = () => {
     this.isDoubleClick = false;
-    setTimeout(()=> {
-      if(!this.isDoubleClick) {
+    setTimeout(() => {
+      if (!this.isDoubleClick) {
         // console.log("TopicContentWidget onClick");
         let { diagramState, op, nodeKey } = this.props;
         if (diagramState.mindMapModel.getEditingItemKey() === nodeKey) return;
         op(OpType.SET_POPUP_MENU_ITEM_KEY, nodeKey);
         this.setState({ showPopMenu: true });
       }
-    },200);
+    }, 200);
   };
 
   onDoubleClick = () => {
@@ -121,9 +121,18 @@ export class TopicContentWidget extends BaseWidget<
     // console.log(e.target);
 
     let { getRef, nodeKey } = this.props;
-    let content = getRef(`content-${nodeKey}`);
-    if (!content.contains(e.target)) {
-      // diagramState.op(OpType.FOCUS_ITEM, null);
+    let content: HTMLElement = getRef(`content-${nodeKey}`);
+    let contentRect = content.getBoundingClientRect();
+    // console.log(contentRect);
+    let extend = 40;
+    let isInExtendBox =
+      e.clientX > contentRect.left - extend &&
+      e.clientX < contentRect.right + extend &&
+      e.clientY > contentRect.top &&
+      e.clientY < contentRect.bottom;
+    if (!isInExtendBox) {
+      // TODO 需要对编辑器进行修改，现在暂时有bug
+      // this.props.op(OpType.FOCUS_ITEM, null);
     }
   };
 

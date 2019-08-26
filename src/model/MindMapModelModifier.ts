@@ -11,6 +11,8 @@ export enum OpType {
   REDO,
   TOGGLE_COLLAPSE,
   SET_ITEM_CONTENT,
+  SET_ITEM_DESC,
+  START_EDITING_DESC,
   FOCUS_ITEM,
   SET_EDIT_ITEM_KEY,
   SET_FOCUS_ITEM_MODE,
@@ -35,6 +37,8 @@ export class MindMapModelModifier {
     [OpType.REDO, MindMapModelModifier.redo],
     [OpType.TOGGLE_COLLAPSE, MindMapModelModifier.toggleCollapse],
     [OpType.SET_ITEM_CONTENT, MindMapModelModifier.setItemContent],
+    [OpType.SET_ITEM_DESC, MindMapModelModifier.setItemDesc],
+    [OpType.START_EDITING_DESC,MindMapModelModifier.startEditingDesc],
     [OpType.FOCUS_ITEM, MindMapModelModifier.focusItem],
     [OpType.SET_FOCUS_ITEM_MODE, MindMapModelModifier.setFocusItemMode],
     [OpType.SET_EDIT_ITEM_KEY, MindMapModelModifier.setEditingItemKey],
@@ -174,7 +178,7 @@ export class MindMapModelModifier {
     model: MindMapModel,
     itemKey: NodeKeyType,
     content: any
-  ) {
+  ) : MindMapModel {
     let item = model.getItem(itemKey);
     let needPush = false;
     if (item) {
@@ -191,6 +195,43 @@ export class MindMapModelModifier {
     }
     model = model.set("focusItemKey", itemKey);
     if (needPush) MindMapModelModifier.pushUndoStack(model);
+    return model;
+  }
+
+  static setItemDesc(model: MindMapModel, itemKey: NodeKeyType, desc: any) : MindMapModel{
+    let item = model.getItem(itemKey);
+    let needPush = false;
+    if (item) {
+      if (MindMapModelModifier.undoStack.size === 0) {
+        MindMapModelModifier.pushUndoStack(model);
+      }
+      if (item.getContent() instanceof Value) {
+        let oldContent = item.getContent() as Value;
+        needPush = oldContent.document !== desc.document;
+      }
+
+      item = item.merge({ desc });
+      model = MindMapModelModifier.setItem(model, item);
+    }
+    model = model
+      .set("focusItemKey", itemKey)
+      .set("focusItemMode", FocusItemMode.EditingDesc);
+    if (needPush) MindMapModelModifier.pushUndoStack(model);
+    return model;
+  }
+
+  static startEditingDesc(
+    model: MindMapModel,
+    itemKey: NodeKeyType,
+  ) : MindMapModel {
+    let item = model.getItem(itemKey);
+    if (item) {
+      let desc = item.getDesc();
+      if (desc===null || desc===undefined) {
+        model = MindMapModelModifier.setItemDesc(model,itemKey,"");
+      }
+    }
+    model = MindMapModelModifier.setFocusItemMode(model,itemKey,FocusItemMode.EditingDesc);
     return model;
   }
 

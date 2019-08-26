@@ -5,7 +5,8 @@ import MarkdownSerializer from './encoding/MarkdownSerializer';
 
 interface IMindNodeRecordType extends INodeRecordType {
   parentKey: NodeKeyType;
-  content: string;
+  content: any;
+  desc: any;
   subItemKeys?: List<NodeKeyType>;
   collapse: boolean;
 }
@@ -14,6 +15,7 @@ const defaultMindNodeRecord: IMindNodeRecordType = {
   key: null,
   parentKey: null,
   content: null,
+  desc: null,
   subItemKeys: List(),
   collapse: false
 };
@@ -36,6 +38,10 @@ export class MindNodeModel extends Record(defaultMindNodeRecord)
     return this.get("content");
   }
 
+  getDesc(): any {
+    return this.get("desc");
+  }
+
   getSubItemKeys(): List<NodeKeyType> {
     return this.get("subItemKeys");
   }
@@ -53,6 +59,17 @@ export class MindNodeModel extends Record(defaultMindNodeRecord)
     }
   }
 
+  descToString() {
+    let desc  = this.getDesc();
+    if(desc=== null)
+      return null;
+    if(typeof desc === 'string')
+      return desc;
+    else {
+      return MarkdownSerializer.serialize(desc);
+    }
+  }
+
   toString()  {
     return this.toJSON().toString();
   }
@@ -64,6 +81,7 @@ export class MindNodeModel extends Record(defaultMindNodeRecord)
       subItemKeys: this.getSubItemKeys(),
       collapse: this.getCollapse(),
       content: this.contentToString(),
+      desc: this.descToString(),
     }
   }
 
@@ -89,6 +107,7 @@ export class MindNodeModel extends Record(defaultMindNodeRecord)
       key: obj.key,
       parentKey: obj.parentKey,
       content: obj.content,
+      desc: obj.desc,
       subItemKeys: List(obj.subItemKeys),
       collapse: obj.collapse
     });

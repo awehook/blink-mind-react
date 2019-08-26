@@ -1,9 +1,19 @@
-@import url("//at.alicdn.com/t/font_1280682_13b9x7m6y9i.css");
+@import url("//at.alicdn.com/t/font_1280682_7jhel6ckep6.css");
 @import "DiagramTheme";
 
 .bm-diagram {
   width: 100%;
   height: 100%;
+}
+
+.bm-desc-editor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 800px;
+  height: 800px;
+  border: orange;
+  z-index: 10;
 }
 
 .iconfont {

@@ -5,7 +5,9 @@
 // IMPORTANT
 // When you add this file, we won't add the default configurations which is similar
 // to "React Create App". This only has babel loader to load JavaScript.
-const path = require('path');
+const path = require("path");
+const createStyledComponentsTransformer = require('typescript-plugin-styled-components').default;
+const styledComponentsTransformer = createStyledComponentsTransformer();
 module.exports = {
   plugins: [
     // your custom plugins
@@ -16,30 +18,33 @@ module.exports = {
       {
         test: /\.scss$/,
         loaders: ["style-loader", "css-loader", "sass-loader"],
-        include: path.resolve(__dirname, '../')
+        include: path.resolve(__dirname, "../")
       },
       {
-        test: /\.css/,
+        test: /\.css$/,
         loaders: ["style-loader", "css-loader"],
-        include: path.resolve(__dirname, '../')
+        include: path.resolve(__dirname, "../")
       },
       {
-        enforce: 'pre',
+        enforce: "pre",
         test: /\.js$/,
         loader: "source-map-loader",
-        exclude: [
-          /node_modules\//
-        ]
+        exclude: [/node_modules\//]
       },
       {
         test: /\.tsx?$/,
-        loader: 'awesome-typescript-loader?declaration=false',
-      },
-    ],
+        loader: "awesome-typescript-loader?declaration=false",
+        options: {
+          declaration: false,
+          getCustomTransformers: () => ({ before: [styledComponentsTransformer] })
+        }
+      }
+    ]
   },
   resolve: {
     alias: {
-      'blink-mind-react': path.join(__dirname, "..", "src", "main")
+      "blink-mind-react": path.join(__dirname, "..", "src", "main"),
+      "styled-components": path.join(__dirname,"..", "node_modules", "styled-components"),
     },
     extensions: [".tsx", ".ts", ".js"]
   }

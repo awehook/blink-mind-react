@@ -1,6 +1,9 @@
 const webpack = require("webpack");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+const createStyledComponentsTransformer = require('typescript-plugin-styled-components').default;
+const styledComponentsTransformer = createStyledComponentsTransformer();
+
 let nodeExternals = require('webpack-node-externals');
 let plugins = [new CleanWebpackPlugin()];
 const production = process.env.NODE_ENV === "production";
@@ -46,7 +49,11 @@ module.exports =
         },
         {
           test: /\.tsx?$/,
-          loader: "ts-loader"
+          loader: "awesome-typescript-loader",
+          options: {
+            declaration: false,
+            getCustomTransformers: () => ({ before: [styledComponentsTransformer] })
+          }
         },
         {
           test: /\.scss?$/,

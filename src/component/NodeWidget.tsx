@@ -188,13 +188,13 @@ export class NodeWidget<
     let inlineStyle =
       dir === NodeWidgetDirection.LEFT
         ? {
-            paddingTop: diagramConfig.vMargin,
-            paddingBottom: diagramConfig.vMargin,
+            // paddingTop: diagramConfig.vMargin,
+            // paddingBottom: diagramConfig.vMargin,
             paddingRight: diagramConfig.hMargin
           }
         : {
-            paddingTop: diagramConfig.vMargin,
-            paddingBottom: diagramConfig.vMargin,
+            // paddingTop: diagramConfig.vMargin,
+            // paddingBottom: diagramConfig.vMargin,
             paddingLeft: diagramConfig.hMargin
           };
     return (

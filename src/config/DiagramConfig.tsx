@@ -1,5 +1,6 @@
 import * as React from "react";
 import { DefaultNodeContentEditor } from "./DefaultNodeContentEditor";
+import { DefaultNodeDescEditor } from "./DefaultNodeDescEditor";
 import { DefaultFocusItemBorderSvg } from "./DefaultFocusItemBorderSvg";
 import { NodeStyle } from "../types/Node";
 
@@ -21,12 +22,24 @@ export type DiagramConfig = {
   primaryItemStyle?: any;
   normalItemStyle?: any;
   editorRendererFn?: (diagramState, op, nodeKey, saveRef) => React.ReactNode;
+  descEditorRenderFn?: (diagramState, op, nodeKey, saveRef) => React.ReactNode;
   focusItemsBorderRenderFn?: (diagramState, saveRef, getRef) => React.ReactNode;
 };
 
 const defaultEditorRendererFn = (diagramState, op, nodeKey, saveRef) => {
   return (
     <DefaultNodeContentEditor
+      diagramState={diagramState}
+      op={op}
+      nodeKey={nodeKey}
+      saveRef={saveRef}
+    />
+  );
+};
+
+const defaultDescEditorRendererFn = (diagramState, op, nodeKey, saveRef) => {
+  return (
+    <DefaultNodeDescEditor
       diagramState={diagramState}
       op={op}
       nodeKey={nodeKey}
@@ -69,5 +82,6 @@ export const defaultDiagramConfig: DiagramConfig = {
     padding: "0"
   },
   editorRendererFn: defaultEditorRendererFn,
+  descEditorRenderFn: defaultDescEditorRendererFn,
   focusItemsBorderRenderFn: defaultFocusItemsBorderRenderFn
 };

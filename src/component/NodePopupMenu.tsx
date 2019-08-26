@@ -1,10 +1,7 @@
 import * as React from "react";
 import { NodeKeyType } from "../types/Node";
 import { DiagramState } from "../model/DiagramState";
-import {
-  NodePopupMenuItemConfig,
-  NodePopupMenuItem
-} from "./NodePopupMenuItem";
+import { NodePopupMenuItem, NodePopupMenuItemConfig } from "./NodePopupMenuItem";
 import { OpType } from "../model/MindMapModelModifier";
 import { OpFunction } from "../types/FunctionType";
 
@@ -44,6 +41,11 @@ export class NodePopupMenu extends React.Component<
         label: "add child",
         rootCanUse: true,
         opType: OpType.ADD_CHILD
+      },
+      {
+        icon: "notes",
+        label: "edit notes",
+        opType: OpType.START_EDITING_DESC,
       },
       {
         icon: "delete-node",
