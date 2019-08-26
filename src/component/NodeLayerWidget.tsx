@@ -2,15 +2,9 @@ import * as React from "react";
 import { BaseWidget } from "./common/BaseWidget";
 import { RootNodeWidget } from "./RootNodeWidget";
 import { DiagramState } from "../model/DiagramState";
-import { defaultDiagramConfig } from "../config/DiagramConfig";
-import { MindDiagramModel } from "../model/MindDiagramModel";
-import { MindMapModel } from "../model/MindMapModel";
-import { MindMapModelModifier, OpType } from "../model/MindMapModelModifier";
-import { NodeKeyType } from "../model/NodeModel";
 import { OpFunction } from "../types/FunctionType";
 
 export interface MindNodeLayerWidgetProps {
-  // diagramModel: MindDiagramModel;
   diagramState: DiagramState;
   op: OpFunction;
   saveRef?: Function;

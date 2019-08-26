@@ -1,7 +1,7 @@
 import { MindMapModel } from "./MindMapModel";
 import { defaultDiagramConfig, DiagramConfig } from "../config/DiagramConfig";
 import { MindMapModelModifier, OpType } from "./MindMapModelModifier";
-import { NodeKeyType } from "./NodeModel";
+import { NodeKeyType } from "../types/Node";
 
 export class DiagramState {
   mindMapModel: MindMapModel;
@@ -43,12 +43,4 @@ export class DiagramState {
     let diagramState = new DiagramState(mindMapModel, config);
     return diagramState;
   }
-
-  // static createWith(diagramModel: MindDiagramModel): DiagramState {
-  //   let diagramState = new DiagramState(
-  //     diagramModel.mindMapModel,
-  //     diagramModel.config
-  //   );
-  //   return diagramState;
-  // }
 }

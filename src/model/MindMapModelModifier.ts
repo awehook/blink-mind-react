@@ -1,6 +1,6 @@
 import { MindNodeModel } from "./MindNodeModel";
 import { MindMapModel } from "./MindMapModel";
-import { FocusItemMode, NodeKeyType } from "./NodeModel";
+import { FocusItemMode, NodeKeyType } from "../types/Node";
 import { uuidv4 } from "../util";
 import { Stack } from "immutable";
 import { Value } from "slate";

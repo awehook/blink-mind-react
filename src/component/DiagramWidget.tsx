@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as cx from "classnames";
-import { MindDiagramModel } from "../model/MindDiagramModel";
 import { MindDragScrollWidget } from "./MindDragScrollWidget";
 import { BaseWidget } from "./common/BaseWidget";
 import "./DiagramWidget.scss";
@@ -8,8 +7,7 @@ import SaveRef from "./common/SaveRef";
 import { DiagramState } from "../model/DiagramState";
 import { OnChangeFunction } from "../types/FunctionType";
 import { OpType } from "../model/MindMapModelModifier";
-import { NodeKeyType } from "../model/NodeModel";
-// import { Toolbar } from "./Toolbar";
+import { NodeKeyType } from "../types/Node";
 
 function log(obj) {
   console.log(obj);

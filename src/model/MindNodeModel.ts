@@ -1,4 +1,4 @@
-import { INodeModel, NodeKeyType, INodeRecordType } from "./NodeModel";
+import { INodeModel, NodeKeyType, INodeRecordType } from "../types/Node";
 import { Record, List } from "immutable";
 // @ts-ignore
 import MarkdownSerializer from './encoding/MarkdownSerializer';

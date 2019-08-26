@@ -13,9 +13,12 @@ if (production) {
     }),
     new UglifyJsPlugin({
       uglifyOptions: {
-        compress: true,
+        compress: {
+          drop_console: true,
+        },
         ecma: 5,
-        mangle: true
+        mangle: true,
+        warnings: false,
       },
       sourceMap: true
     })

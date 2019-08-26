@@ -1,4 +1,0 @@
-export enum NodeStyle {
-  PRIMARY_HAS_BORDER_NORMAL_NO_BORDER,
-  ALL_HAS_BORDER
-}

@@ -1,4 +1,4 @@
-import { FocusItemMode, NodeKeyType } from "./NodeModel";
+import { FocusItemMode, NodeKeyType } from "../types/Node";
 import { Map, Record } from "immutable";
 import { MindNodeModel } from "./MindNodeModel";
 

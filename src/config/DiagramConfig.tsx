@@ -1,7 +1,7 @@
 import * as React from "react";
 import { DefaultNodeContentEditor } from "./DefaultNodeContentEditor";
 import { DefaultFocusItemBorderSvg } from "./DefaultFocusItemBorderSvg";
-import { NodeStyle } from "../types/NodeStyle";
+import { NodeStyle } from "../types/Node";
 
 export enum DiagramLayoutDirection {
   LEFT_TO_RIGHT,

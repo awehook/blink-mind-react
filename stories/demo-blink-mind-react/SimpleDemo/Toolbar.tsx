@@ -4,7 +4,7 @@ import "./Toolbar.scss";
 import { OpType } from "../../../src/model/MindMapModelModifier";
 import { DiagramState } from "../../../src/model/DiagramState";
 import { OnChangeFunction } from "../../../src/types/FunctionType";
-import { NodeKeyType } from "../../../src/model/NodeModel";
+import { NodeKeyType } from "../../../src/types/Node";
 
 interface MindToolbarProps {
   items?: Array<ToolbarItemConfig>;

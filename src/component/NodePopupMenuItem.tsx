@@ -2,7 +2,7 @@ import * as React from "react";
 import * as cx from "classnames";
 import { OpType } from "../model/MindMapModelModifier";
 import { DiagramState } from "../model/DiagramState";
-import { NodeKeyType } from "../model/NodeModel";
+import { NodeKeyType } from "../types/Node";
 import { OpFunction } from "../types/FunctionType";
 
 export type NodePopupMenuItemConfig = {

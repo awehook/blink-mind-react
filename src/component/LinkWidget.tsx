@@ -1,9 +1,8 @@
 import * as React from "react";
 import { BaseWidget } from "./common/BaseWidget";
-import { NodeKeyType } from "../model/NodeModel";
-import { NodeWidgetDirection } from "../types/NodeWidgetDirection";
+import { NodeKeyType,NodeStyle,NodeWidgetDirection } from "../types/Node";
 import { DiagramState } from "../model/DiagramState";
-import { NodeStyle } from "../types/NodeStyle";
+
 
 interface LinkWidgetProps {
   diagramState: DiagramState;
@@ -83,7 +82,6 @@ export class LinkWidget<
 
   generatePathStringForBorderNode = () => {
     let { fromNodeKey, toNodeKey, getRef, dir, diagramState } = this.props;
-    let { mindMapModel } = diagramState;
     let fromItem = diagramState.mindMapModel.getItem(fromNodeKey);
     let fromItemChildrenCount = fromItem.getSubItemKeys().size;
     let fromTopic: HTMLElement = getRef(`topic-${fromNodeKey}`);

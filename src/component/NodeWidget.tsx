@@ -1,14 +1,12 @@
 import * as React from "react";
-import { NodeKeyType } from "../model/NodeModel";
+import { NodeKeyType } from "../types/Node";
 import { BaseWidget } from "./common/BaseWidget";
 import { LinkWidget } from "./LinkWidget";
 import { TopicContentWidget } from "./TopicContentWidget";
-import "./NodeWidget.scss";
 import { DiagramState } from "../model/DiagramState";
 import { OpType } from "../model/MindMapModelModifier";
 import * as cx from "classnames";
-import { NodeWidgetDirection } from "../types/NodeWidgetDirection";
-import { NodeStyle } from "../types/NodeStyle";
+import { NodeWidgetDirection,NodeStyle } from "../types/Node";
 import { OpFunction } from "../types/FunctionType";
 
 export interface MindNodeWidgetProps {
@@ -53,8 +51,6 @@ export class NodeWidget<
     NodeWidget.dragSrcItemKey = this.props.nodeKey;
     e.stopPropagation();
   };
-
-  onDragEnd = () => {};
 
   onDragEnter = () => {
     console.log("onDragEnter");

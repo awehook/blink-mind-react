@@ -1,12 +1,9 @@
 import * as React from "react";
 import * as cx from "classnames";
 import { BaseWidget } from "./common/BaseWidget";
-import { NodeKeyType } from "../model/NodeModel";
+import { NodeKeyType,NodeWidgetDirection } from "../types/Node";
 import { DiagramState } from "../model/DiagramState";
-
 import { OpType } from "../model/MindMapModelModifier";
-import { NodeWidgetDirection } from "../types/NodeWidgetDirection";
-
 import { NodePopupMenu } from "./NodePopupMenu";
 import { OpFunction } from "../types/FunctionType";
 
