@@ -94,7 +94,7 @@ export class DragScrollWidget extends BaseWidget<DragScrollWidgetProps> {
   };
 
   setViewBoxScrollDelta = (deltaLeft: number, deltaTop: number) => {
-    // console.log(`setViewBoxScrollDelta ${deltaLeft} ${deltaTop}`);
+    // log(`setViewBoxScrollDelta ${deltaLeft} ${deltaTop}`);
     if (this.viewBox) {
       this.viewBox.scrollLeft += deltaLeft;
       this.viewBox.scrollTop += deltaTop;
@@ -102,8 +102,8 @@ export class DragScrollWidget extends BaseWidget<DragScrollWidgetProps> {
   };
 
   onMouseDown = e => {
-    // console.log('Drag Scroll onMouseDown');
-    // console.log(e.nativeEvent.target);
+    // log('Drag Scroll onMouseDown');
+    // log(e.nativeEvent.target);
 
     // mouseKey 表示鼠标按下那个键才可以进行拖动，左键或者右键
     // needKeyPressed 为了支持是否需要按下ctrl键，才可以进行拖动
@@ -126,13 +126,13 @@ export class DragScrollWidget extends BaseWidget<DragScrollWidgetProps> {
   };
 
   onMouseUp = e => {
-    // console.log('Drag Scroll onMouseUp');
+    // log('Drag Scroll onMouseUp');
     window.removeEventListener("mousemove", this.onMouseMove);
     window.removeEventListener("mouseup", this.onMouseUp);
   };
 
   // onDragEnter = e=> {
-  //   console.log('Drag Scroll onDragEnter');
+  //   log('Drag Scroll onDragEnter');
   //   window.removeEventListener("mousemove", this.onMouseMove);
   //   window.removeEventListener("mouseup", this.onMouseUp);
   // };

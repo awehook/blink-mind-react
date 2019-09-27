@@ -26,11 +26,13 @@
     "build-w": "cross-env NODE_ENV=production webpack --watch",
     "prepublish": "yarn build",
     "storybook": "start-storybook -p 6006",
+    "dev": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
   "dependencies": {
     "awehook-rich-markdown-editor": "^1.0.1",
     "classnames": "^2.2.6",
+    "debug": "^4.1.1",
     "fbjs": "^1.0.0",
     "immutable": "^4.0.0-rc.12",
     "lodash": "^4.17.15",

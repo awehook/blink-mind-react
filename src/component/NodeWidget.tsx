@@ -8,6 +8,8 @@ import { OpType } from "../model/MindMapModelModifier";
 import * as cx from "classnames";
 import { NodeWidgetDirection,NodeStyle } from "../types/Node";
 import { OpFunction } from "../types/FunctionType";
+import debug from "debug";
+const log = debug("node:NodeWidget");
 
 export interface MindNodeWidgetProps {
   diagramState: DiagramState;
@@ -36,48 +38,11 @@ export class NodeWidget<
   }
 
   onClickCollapse = e => {
-    console.log(`onClickCollapse`);
     e.stopPropagation();
     this.needRelocation = true;
     this.oldCollapseIconRect = this.collapseIcon.getBoundingClientRect();
 
     this.props.op(OpType.TOGGLE_COLLAPSE, this.props.nodeKey);
-  };
-
-  static dragSrcItemKey: NodeKeyType;
-
-  onDragStart = e => {
-    console.log("onDragStart");
-    NodeWidget.dragSrcItemKey = this.props.nodeKey;
-    e.stopPropagation();
-  };
-
-  onDragEnter = () => {
-    console.log("onDragEnter");
-    this.setState({
-      dragEnter: true
-    });
-  };
-
-  onDragLeave = e => {
-    const { getRef, nodeKey } = this.props;
-    let relatedTarget = e.nativeEvent.relatedTarget;
-    let content = getRef(`content-${nodeKey}`);
-    if (content == relatedTarget || content.contains(relatedTarget)) {
-      return;
-    }
-    this.setState({
-      dragEnter: false
-    });
-  };
-
-  onDrop = e => {
-    console.log("onDrop");
-    let { op, nodeKey } = this.props;
-    op(OpType.DRAG_AND_DROP, NodeWidget.dragSrcItemKey, nodeKey);
-    this.setState({
-      dragEnter: false
-    });
   };
 
   needRelocation: boolean = false;
@@ -211,6 +176,7 @@ export class NodeWidget<
 
   render() {
     let { diagramState, op, nodeKey, dir, saveRef, getRef } = this.props;
+    log('render:',nodeKey);
     let { mindMapModel } = diagramState;
     let node = mindMapModel.getItem(nodeKey);
     let visualLevel = mindMapModel.getItemVisualLevel(nodeKey);

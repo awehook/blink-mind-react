@@ -1,8 +1,9 @@
 import * as React from "react";
 import { BaseWidget } from "./common/BaseWidget";
-import { NodeKeyType,NodeStyle,NodeWidgetDirection } from "../types/Node";
+import { NodeKeyType, NodeStyle, NodeWidgetDirection } from "../types/Node";
 import { DiagramState } from "../model/DiagramState";
-
+import debug from "debug";
+const log = debug("node:LinkWidget");
 
 interface LinkWidgetProps {
   diagramState: DiagramState;
@@ -36,9 +37,7 @@ export class LinkWidget<
   };
 
   public layout() {
-    // console.log(
-    //   `layout link ${this.props.fromNodeKey} ${this.props.toNodeKey}`
-    // );
+    log("layout link %s => %s", this.props.fromNodeKey, this.props.toNodeKey);
     this.props.isRoot ? this.layoutRoot() : this.layoutNormal();
   }
   layoutRoot() {
@@ -266,13 +265,8 @@ export class LinkWidget<
     }
   };
   render() {
-    // console.log(
-    //   `render link ${this.props.fromNodeKey} ${this.props.toNodeKey}`
-    // );
     if (this.state && this.state.width) {
-      // console.log(
-      //   `render link ${this.props.fromNodeKey} ${this.props.toNodeKey} ==>`
-      // );
+      log("render link %s => %s", this.props.fromNodeKey, this.props.toNodeKey);
       return (
         <div className="bm-link">
           <svg

@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as cx from "classnames";
-import { NodeLayerWidget } from "../../../src/component/NodeLayerWidget";
 import { OpType } from "../../../src/model/MindMapModelModifier";
 import { DiagramState } from "../../../src/model/DiagramState";
 import { OpFunction } from "../../../src/types/FunctionType";
@@ -29,7 +28,6 @@ export class ToolbarItem extends React.Component<
     super(props);
   }
   onClick = () => {
-    console.log("toolbar item click");
     let config = this.props.config;
     if (config.opType) {
       this.props.op(config.opType, null);

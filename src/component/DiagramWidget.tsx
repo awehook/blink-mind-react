@@ -11,10 +11,6 @@ import { OpType } from "../model/MindMapModelModifier";
 import { NodeKeyType } from "../types/Node";
 import "./DiagramWidget.scss";
 
-function log(obj) {
-  console.log(obj);
-}
-
 export interface MindDiagramWidgetProps {
   diagramState: DiagramState;
   onChange: OnChangeFunction;
@@ -34,7 +30,7 @@ export class DiagramWidget<P extends MindDiagramWidgetProps> extends BaseWidget<
   };
 
   // onKeyUp = e => {
-  //   console.log('DiagramWidget keyup');
+  //   log('DiagramWidget keyup');
   //   switch (e.which) {
   //     case Keys.TAB:
   //       this.op(OpType.ADD_CHILD);
@@ -49,7 +45,6 @@ export class DiagramWidget<P extends MindDiagramWidgetProps> extends BaseWidget<
   render() {
     let { diagramState } = this.props;
     let editingDescKey = diagramState.mindMapModel.getEditingDescItemKey();
-    console.log(`editingDescKey ${editingDescKey}`);
     return (
       <SaveRef>
         {(saveRef, getRef) => (
@@ -67,13 +62,6 @@ export class DiagramWidget<P extends MindDiagramWidgetProps> extends BaseWidget<
               getRef={getRef}
             />
             <Modals diagramState={diagramState} op={this.op}/>
-            {/*{editingDescKey &&*/}
-            {/*  diagramState.config.descEditorRenderFn(*/}
-            {/*    diagramState,*/}
-            {/*    this.op,*/}
-            {/*    editingDescKey,*/}
-            {/*    saveRef*/}
-            {/*  )}*/}
           </div>
         )}
       </SaveRef>

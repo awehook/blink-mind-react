@@ -7,7 +7,8 @@ import { OpType } from "../model/MindMapModelModifier";
 import { debounce } from "lodash";
 import "./DefaultNodeContentEditor.scss";
 import { OpFunction } from "../types/FunctionType";
-
+import debug from 'debug'
+const log = debug('node:content-editor');
 interface DefaultNodeContentEditorProps {
   diagramState: DiagramState;
   op: OpFunction;
@@ -31,12 +32,12 @@ export class DefaultNodeContentEditor extends React.Component<
   };
 
   onMouseDown = e => {
-    // console.log('node editor mousedown');
+    // log('node editor mousedown');
     e.stopPropagation();
   };
 
   onMouseMove = e => {
-    // console.log('node editor mousemove');
+    // log('node editor mousemove');
     e.stopPropagation();
   };
 
@@ -48,7 +49,7 @@ export class DefaultNodeContentEditor extends React.Component<
     let { nodeKey: nextNodeKey, diagramState: nextDS } = nextProps;
     let { nodeKey: nodeKey, diagramState: ds } = this.props;
     if (nextNodeKey !== nodeKey) {
-      console.log("nextNodeKey !== nodeKey");
+      log("nextNodeKey !== nodeKey");
       return true;
     }
     let editingKey = ds.mindMapModel.getEditingItemKey();
@@ -64,7 +65,7 @@ export class DefaultNodeContentEditor extends React.Component<
       ds.mindMapModel.getItem(nodeKey) !==
       nextDS.mindMapModel.getItem(nextNodeKey)
     ) {
-      console.log(
+      log(
         "ds.mindMapModel.getItem(nodeKey) !== nextDS.mindMapModel.getItem(nextNodeKey)"
       );
       return true;
@@ -73,18 +74,15 @@ export class DefaultNodeContentEditor extends React.Component<
   }
 
   render(): React.ReactNode {
+    log("render");
     const { nodeKey, diagramState, saveRef } = this.props;
     const { mindMapModel } = diagramState;
     const nodeModel = mindMapModel.getItem(nodeKey);
     const content = nodeModel.getContent();
+    const editingItemKey = mindMapModel.getEditingItemKey();
 
-    // console.log(`edit item key ${mindMapModel.getEditingItemKey()}`);
-    // console.log(`focus item key ${mindMapModel.getFocusItemKey()}`);
-    // console.log(`node key ${nodeKey}`);
-
-    console.log("DefaultNodeContentEditor render");
-    console.log(`getEditingItemKey ${mindMapModel.getEditingItemKey()}`);
-    const readOnly = !(nodeKey === mindMapModel.getEditingItemKey());
+    log('getEditingItemKey', editingItemKey);
+    const readOnly = !(nodeKey === editingItemKey);
     return (
       <div
         className={cx("bm-node-content", {

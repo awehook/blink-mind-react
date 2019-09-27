@@ -1,6 +1,8 @@
 import { MindMapModel } from "../MindMapModel";
 import MarkdownSerializer from "./MarkdownSerializer";
 import { MindNodeModel } from "../MindNodeModel";
+import debug from 'debug'
+const log = debug('model:encoding');
 
 export function convertMindMapModelToRaw(model:MindMapModel) {
   let obj: any = {};
@@ -20,7 +22,7 @@ export function convertRawToMindMapModel(obj) : MindMapModel {
     rootItemKey: obj.rootItemKey,
     editorRootItemKey: obj.rootItemKey
   });
-  console.log('convertRawToMindMapModel');
+  log('convertRawToMindMapModel');
   model = model.withMutations(model => {
     Object.keys(obj.items).forEach(key=>{
       let itemObj = obj.items[key];

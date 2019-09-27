@@ -5,7 +5,8 @@ import { uuidv4 } from "../util";
 import { Stack } from "immutable";
 import { Value } from "slate";
 import { NodeRelationship } from "./NodeRelationship";
-
+import debug from 'debug'
+const log = debug('model:modifier');
 export enum OpType {
   UNDO = 1,
   REDO,
@@ -55,7 +56,7 @@ export class MindMapModelModifier {
     itemKey: NodeKeyType,
     arg
   ): MindMapModel {
-    if (opType === OpType.DELETE_NODE) console.log(opType);
+    if (opType === OpType.DELETE_NODE) log(opType);
     if (MindMapModelModifier.opMap.has(opType)) {
       let opFunc = MindMapModelModifier.opMap.get(opType);
       let res = opFunc(model, itemKey, arg);
@@ -69,7 +70,6 @@ export class MindMapModelModifier {
           res
         );
       }
-      // console.log(res);
       return res;
     }
     return model;
@@ -131,7 +131,7 @@ export class MindMapModelModifier {
   }
 
   static focusItem(model: MindMapModel, itemKey: NodeKeyType) {
-    // console.log(`set focus item key ${itemKey}`);
+    // log(`set focus item key ${itemKey}`);
     if (itemKey !== model.getFocusItemKey()) {
       model = model.set("focusItemKey", itemKey);
     }
@@ -146,14 +146,13 @@ export class MindMapModelModifier {
     itemKey: NodeKeyType,
     mode: FocusItemMode
   ) {
-    // console.log(`set focus item key ${itemKey}`);
     if (mode !== model.getFocusItemMode())
       model = model.set("focusItemMode", mode);
     return model;
   }
 
   static setEditingItemKey(model: MindMapModel, itemKey: NodeKeyType) {
-    console.log(`set editing item key ${itemKey}`);
+    log('set editing item key ', itemKey);
     if (itemKey !== model.getEditingItemKey()) {
       if (itemKey !== model.getFocusItemKey())
         model = model.set("focusItemKey", itemKey);
@@ -164,7 +163,7 @@ export class MindMapModelModifier {
   }
 
   static setPopupMenuItemKey(model: MindMapModel, itemKey: NodeKeyType) {
-    console.log(`set popup menu item key ${itemKey}`);
+    log('set popup menu item key ' ,itemKey);
     if (itemKey !== model.getPopupMenuItemKey()) {
       if (itemKey !== model.getFocusItemKey())
         model = model.set("focusItemKey", itemKey);
@@ -269,7 +268,7 @@ export class MindMapModelModifier {
     return model;
   }
   static deleteNode(model: MindMapModel, itemKey: NodeKeyType) {
-    console.log(`deleteItem ${itemKey}`);
+    log('deleteItem ',itemKey);
     if (itemKey === model.getRootItemKey()) {
       return model;
     }

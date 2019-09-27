@@ -1,5 +1,4 @@
 import * as React from "react";
-import * as cx from "classnames";
 import { DiagramState } from "../model/DiagramState";
 import { NodeKeyType } from "../types/Node";
 import RichMarkDownEditor from "awehook-rich-markdown-editor";
@@ -8,9 +7,10 @@ import { debounce } from "lodash";
 import "./DefaultNodeContentEditor.scss";
 import { OpFunction } from "../types/FunctionType";
 import styled from "styled-components";
+import debug from "debug";
+const log = debug("node:desc-editor");
 
-const DescEditor = styled.div`
-`;
+const DescEditor = styled.div``;
 
 interface DefaultNodeDescEditorProps {
   diagramState: DiagramState;
@@ -35,12 +35,10 @@ export class DefaultNodeDescEditor extends React.PureComponent<
   };
 
   onMouseDown = e => {
-    // console.log('node editor mousedown');
     e.stopPropagation();
   };
 
   onMouseMove = e => {
-    // console.log('node editor mousemove');
     e.stopPropagation();
   };
 
@@ -49,16 +47,11 @@ export class DefaultNodeDescEditor extends React.PureComponent<
     const { mindMapModel } = diagramState;
     const nodeModel = mindMapModel.getItem(nodeKey);
     const desc = nodeModel.getDesc();
-
-    // console.log(`edit item key ${mindMapModel.getEditingItemKey()}`);
-    // console.log(`focus item key ${mindMapModel.getFocusItemKey()}`);
-    // console.log(`node key ${nodeKey}`);
-
-    console.log("DefaultNodeDescEditor render");
-    console.log(
-      `getEditingDescItemKey ${mindMapModel.getEditingDescItemKey()}`
+    log(
+      "DefaultNodeDescEditor render",
+      mindMapModel.getEditingDescItemKey(),
+      desc
     );
-    console.log(desc);
     //"" && 3 = "" 由于空字符
     return (
       desc !== undefined &&

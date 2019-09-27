@@ -2,6 +2,8 @@ import { MindMapModel } from "./MindMapModel";
 import { defaultDiagramConfig, DiagramConfig } from "../config/DiagramConfig";
 import { MindMapModelModifier, OpType } from "./MindMapModelModifier";
 import { NodeKeyType } from "../types/Node";
+import debug from "debug";
+const log = debug("model:DiagramState");
 
 export class DiagramState {
   mindMapModel: MindMapModel;
@@ -25,17 +27,17 @@ export class DiagramState {
     key: NodeKeyType,
     arg?
   ): DiagramState {
-    console.error(`op:${OpType[opType]}`);
+    log(`op:${OpType[opType]}`);
     if (!key && opType !== OpType.FOCUS_ITEM)
       key = state.mindMapModel.getFocusItemKey();
-    console.log(state.mindMapModel);
+    log("start:", state.mindMapModel);
     let mindMapModel = MindMapModelModifier.op(
       state.mindMapModel,
       opType,
       key,
       arg
     );
-    console.log(mindMapModel);
+    log("end:", mindMapModel);
     return new DiagramState(mindMapModel, state.config);
   }
   static createWith(mindMapModel, config): DiagramState {

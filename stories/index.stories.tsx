@@ -21,6 +21,14 @@ import DragDropDemo6 from "./demo-drag-drop/Demo6";
 import DragDropDemo7 from "./demo-drag-drop/Demo7";
 import DragDropDemo8 from "./demo-drag-drop/Demo8";
 
+let debugNameSpaces = [
+  "node:*",
+  "model:*",
+  // "-node:LinkWidget"
+];
+
+localStorage.debug = debugNameSpaces.join(',');
+
 storiesOf("Welcome", module).add("to Storybook", () => (
   <Welcome showApp={linkTo("Button")} />
 ));

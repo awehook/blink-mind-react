@@ -20,7 +20,6 @@ export class MindDragScrollWidget<
   }
 
   componentDidMount(): void {
-    // console.log("componentDidMount");
     let { getRef, diagramState } = this.props;
     let { mindMapModel } = diagramState;
     let rootTopic: HTMLElement = getRef(
@@ -29,10 +28,6 @@ export class MindDragScrollWidget<
     let nodeLayer: HTMLElement = getRef("node-layer");
     let rootTopicRect = rootTopic.getBoundingClientRect();
     let nodeLayerRect = nodeLayer.getBoundingClientRect();
-    // console.log(rootTopic.getBoundingClientRect());
-    // console.log(rootItem.getBoundingClientRect());
-    // console.log(this.dragScrollWidget.viewBox.getBoundingClientRect());
-    // console.log(this.dragScrollWidget);
     this.dragScrollWidget.setViewBoxScrollDelta(
       0,
       rootTopicRect.top -
@@ -45,11 +40,6 @@ export class MindDragScrollWidget<
   get dragScrollWidget(): DragScrollWidget {
     return this.props.getRef("DragScrollWidget");
   }
-  // dragScrollWidgetRef = ref => {
-  //   if (ref) {
-  //     this.dragScrollWidget = ref;
-  //   }
-  // };
   canDragFunc = () => {
     let selection = document.getSelection();
     return (
@@ -60,7 +50,6 @@ export class MindDragScrollWidget<
 
   render() {
     const { saveRef } = this.props;
-    console.log(`MindDragScrollWidget render`);
     return (
       <DragScrollWidget
         {...this.state}

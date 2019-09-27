@@ -7,6 +7,9 @@ import { OpType } from "../model/MindMapModelModifier";
 import { NodePopupMenu } from "./NodePopupMenu";
 import { OpFunction } from "../types/FunctionType";
 
+import debug from 'debug'
+const log = debug('node:topic');
+
 interface TopicContentWidgetProps {
   diagramState: DiagramState;
   op: OpFunction;
@@ -37,7 +40,7 @@ export class TopicContentWidget extends BaseWidget<
   }
 
   onDragStart = e => {
-    console.log("onDragStart");
+    log("onDragStart");
     dragSrcItemKey = this.props.nodeKey;
     e.stopPropagation();
   };
@@ -65,7 +68,7 @@ export class TopicContentWidget extends BaseWidget<
   };
 
   onDrop = () => {
-    console.log("onDrop");
+    log("onDrop");
     let { nodeKey, op } = this.props;
     op(OpType.DRAG_AND_DROP, dragSrcItemKey, nodeKey);
     this.setState({
@@ -79,7 +82,7 @@ export class TopicContentWidget extends BaseWidget<
     this.isDoubleClick = false;
     setTimeout(() => {
       if (!this.isDoubleClick) {
-        // console.log("TopicContentWidget onClick");
+        // log("TopicContentWidget onClick");
         let { diagramState, op, nodeKey } = this.props;
         if (diagramState.mindMapModel.getEditingItemKey() === nodeKey) return;
         op(OpType.SET_POPUP_MENU_ITEM_KEY, nodeKey);
@@ -90,7 +93,7 @@ export class TopicContentWidget extends BaseWidget<
 
   onDoubleClick = () => {
     this.isDoubleClick = true;
-    // console.log('TopicContentWidget onDoubleClick');
+    // log('TopicContentWidget onDoubleClick');
     let { diagramState, op, nodeKey } = this.props;
     if (diagramState.mindMapModel.getEditingItemKey() === nodeKey) return;
     op(OpType.SET_EDIT_ITEM_KEY, nodeKey);
@@ -116,14 +119,10 @@ export class TopicContentWidget extends BaseWidget<
   }
 
   _handleClick = e => {
-    console.log(`_handleClick ${this.props.nodeKey}`);
-    // console.log(e);
-    // console.log(e.target);
-
+    log(`_handleClick ${this.props.nodeKey}`);
     let { getRef, nodeKey } = this.props;
     let content: HTMLElement = getRef(`content-${nodeKey}`);
     let contentRect = content.getBoundingClientRect();
-    // console.log(contentRect);
     let extend = 40;
     let isInExtendBox =
       e.clientX > contentRect.left - extend &&

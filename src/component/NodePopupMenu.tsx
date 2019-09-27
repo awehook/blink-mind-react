@@ -4,7 +4,8 @@ import { DiagramState } from "../model/DiagramState";
 import { NodePopupMenuItem, NodePopupMenuItemConfig } from "./NodePopupMenuItem";
 import { OpType } from "../model/MindMapModelModifier";
 import { OpFunction } from "../types/FunctionType";
-
+import debug from 'debug'
+const log = debug('node:popup-menu');
 interface NodePopupMenuProps {
   nodeKey: NodeKeyType;
   diagramState: DiagramState;
@@ -63,11 +64,11 @@ export class NodePopupMenu extends React.Component<
   }
 
   _handleClick = event => {
-    console.log("_handleClick");
+    log("_handleClick");
     const { visible } = this.props;
     const wasOutside = !(event.target.contains === this.root);
 
-    console.log(`wasOutside ${wasOutside}`);
+    log(`wasOutside ${wasOutside}`);
 
     wasOutside &&
       visible &&
@@ -82,7 +83,7 @@ export class NodePopupMenu extends React.Component<
   };
 
   render() {
-    console.log("NodePopupMenu render:" + this.props.visible);
+    log("render:", this.props.visible);
     let { visible, nodeKey, items, diagramState, op } = this.props;
     let editorRootKey = diagramState.mindMapModel.getEditorRootItemKey();
     let menuItems = items.map(item =>
