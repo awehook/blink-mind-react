@@ -4,6 +4,21 @@ import { OpType } from "../model/MindMapModelModifier";
 import { DiagramState } from "../model/DiagramState";
 import { NodeKeyType } from "../types/Node";
 import { OpFunction } from "../types/FunctionType";
+import styled from "styled-components";
+
+const MenuItem = styled.div`
+  display: inline-block;
+  margin: 10px;
+  &:hover {
+    color: orange;
+  }
+  .icon {
+    text-align: center;
+  }
+  .label {
+    font-size: 20%;
+  }
+`;
 
 export type NodePopupMenuItemConfig = {
   icon: string;
@@ -35,13 +50,13 @@ export class NodePopupMenuItem extends React.Component<
   render() {
     const { config } = this.props;
     return (
-      <div className="popup-menu-item" onClick={this.onClick}>
+      <MenuItem onClick={this.onClick}>
         <div
           className={cx("icon", "iconfont", `bm-${config.icon}`)}
           onClick={this.onClick}
         />
         <div className="label">{config.label}</div>
-      </div>
+      </MenuItem>
     );
   }
 }

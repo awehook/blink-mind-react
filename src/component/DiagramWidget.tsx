@@ -3,13 +3,20 @@ import * as cx from "classnames";
 import * as Keys from "fbjs/lib/Keys";
 import { MindDragScrollWidget } from "./MindDragScrollWidget";
 import { BaseWidget } from "./common/BaseWidget";
-import {Modals} from "./Modals";
+import { Modals } from "./Modals";
 import SaveRef from "./common/SaveRef";
 import { DiagramState } from "../model/DiagramState";
 import { OnChangeFunction } from "../types/FunctionType";
 import { OpType } from "../model/MindMapModelModifier";
 import { NodeKeyType } from "../types/Node";
+import Theme from "./Theme";
+import styled from "styled-components";
 import "./DiagramWidget.scss";
+
+const Diagram = styled.div`
+  width: 100%;
+  height: 100%;
+`;
 
 export interface MindDiagramWidgetProps {
   diagramState: DiagramState;
@@ -48,21 +55,23 @@ export class DiagramWidget<P extends MindDiagramWidgetProps> extends BaseWidget<
     return (
       <SaveRef>
         {(saveRef, getRef) => (
-          <div
-            className={cx("bm-diagram", {
-              [`${diagramState.config.theme}`]: true
-            })}
-            // onKeyUp={this.onKeyUp}
-          >
-            {/*<Toolbar getRef={getRef}/>*/}
-            <MindDragScrollWidget
-              diagramState={diagramState}
-              op={this.op}
-              saveRef={saveRef}
-              getRef={getRef}
-            />
-            <Modals diagramState={diagramState} op={this.op}/>
-          </div>
+          <Theme>
+            <Diagram
+              className={cx({
+                [`${diagramState.config.theme}`]: true
+              })}
+              // onKeyUp={this.onKeyUp}
+            >
+              {/*<Toolbar getRef={getRef}/>*/}
+              <MindDragScrollWidget
+                diagramState={diagramState}
+                op={this.op}
+                saveRef={saveRef}
+                getRef={getRef}
+              />
+              <Modals diagramState={diagramState} op={this.op} />
+            </Diagram>
+          </Theme>
         )}
       </SaveRef>
     );

@@ -6,9 +6,22 @@ import { DiagramState } from "../model/DiagramState";
 import { OpType } from "../model/MindMapModelModifier";
 import { NodePopupMenu } from "./NodePopupMenu";
 import { OpFunction } from "../types/FunctionType";
+import styled from "styled-components";
+import debug from "debug";
+const log = debug("node:topic");
 
-import debug from 'debug'
-const log = debug('node:topic');
+const TopicContent = styled.div`
+  word-wrap: break-word;
+  white-space: pre-line;
+  cursor: pointer;
+  overflow: hidden;
+  background: ${props =>
+    //@ts-ignore
+    props.dragEnter ? "brown" : props.isRoot ? "orange" : null};
+  //@ts-ignore
+  padding: ${props => (props.isRoot ? "6px 0 6px 20px" : "6px 20px 6px 0")};
+  border: 2px solid orange;
+`;
 
 interface TopicContentWidgetProps {
   diagramState: DiagramState;
@@ -164,15 +177,18 @@ export class TopicContentWidget extends BaseWidget<
       // mindMapModel.getPopupMenuItemKey() === nodeKey &&
       this.state.showPopMenu;
     return (
-      <div
+      <TopicContent
+        //@ts-ignore
+        isRoot={dir === NodeWidgetDirection.ROOT}
+        dragEnter={this.state.dragEnter}
         draggable={draggable}
-        className={cx("content", {
-          [`content-dir-${dir}`]: dir !== NodeWidgetDirection.ROOT,
-          "root-topic": visualLevel === 0,
-          "primary-topic": visualLevel === 1,
-          "normal-topic": visualLevel > 1,
-          "content-drag-enter": this.state.dragEnter
-        })}
+        // className={cx("content", {
+        //   [`content-dir-${dir}`]: dir !== NodeWidgetDirection.ROOT,
+        //   "root-topic": visualLevel === 0,
+        //   "primary-topic": visualLevel === 1,
+        //   "normal-topic": visualLevel > 1,
+        //   "content-drag-enter": this.state.dragEnter
+        // })}
         style={itemStyle}
         ref={saveRef(`content-${nodeKey}`)}
         onDragStart={this.onDragStart}
@@ -194,7 +210,7 @@ export class TopicContentWidget extends BaseWidget<
             getRef={getRef}
           />
         ) : null}
-      </div>
+      </TopicContent>
     );
   }
 }

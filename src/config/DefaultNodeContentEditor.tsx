@@ -5,10 +5,19 @@ import { NodeKeyType } from "../types/Node";
 import RichMarkDownEditor from "awehook-rich-markdown-editor";
 import { OpType } from "../model/MindMapModelModifier";
 import { debounce } from "lodash";
-import "./DefaultNodeContentEditor.scss";
 import { OpFunction } from "../types/FunctionType";
-import debug from 'debug'
-const log = debug('node:content-editor');
+import styled from "styled-components";
+import debug from "debug";
+const log = debug("node:content-editor");
+
+const NodeContent = styled.div`
+  padding: 6px 6px;
+  //@ts-ignore
+  background-color: ${props => (props.readOnly ? null : "#e0e0e0")};
+  //@ts-ignore
+  cursor: ${props => (props.readOnly ? "pointer" : "text")};
+`;
+
 interface DefaultNodeContentEditorProps {
   diagramState: DiagramState;
   op: OpFunction;
@@ -81,14 +90,12 @@ export class DefaultNodeContentEditor extends React.Component<
     const content = nodeModel.getContent();
     const editingItemKey = mindMapModel.getEditingItemKey();
 
-    log('getEditingItemKey', editingItemKey);
+    log("getEditingItemKey", editingItemKey);
     const readOnly = !(nodeKey === editingItemKey);
     return (
-      <div
-        className={cx("bm-node-content", {
-          "content-editing": !readOnly,
-          "bm-node-content-cursor": !readOnly
-        })}
+      <NodeContent
+        //@ts-ignore
+        readOnly={readOnly}
         ref={saveRef(`editor-${nodeKey}`)}
         onMouseDown={this.onMouseDown}
         onMouseMove={this.onMouseMove}
@@ -99,7 +106,7 @@ export class DefaultNodeContentEditor extends React.Component<
           onChange={debounce(this.onChange)}
           readOnly={readOnly}
         />
-      </div>
+      </NodeContent>
     );
   }
 }

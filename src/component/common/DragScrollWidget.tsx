@@ -1,7 +1,19 @@
 import * as React from "react";
 import { BaseWidget } from "./BaseWidget";
 import ResizeObserver from "resize-observer-polyfill";
-import "./DragScrollWidget.scss";
+import styled from "styled-components";
+
+const DragScrollView = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: scroll;
+`;
+
+const DragScrollContent = styled.div`
+  position: relative;
+  width: max-content;
+`;
 
 interface DragScrollWidgetProps {
   mouseKey?: "left" | "right";
@@ -164,15 +176,13 @@ export class DragScrollWidget extends BaseWidget<DragScrollWidgetProps> {
 
   render() {
     return (
-      <div
+      <DragScrollView
         ref={this.viewBoxRef}
         onMouseDown={this.onMouseDown}
         // onDragEnter={this.onDragEnter}
-        className="drag-scroll-view"
       >
         <div style={this.state.widgetStyle} ref={this.bigViewRef}>
-          <div
-            className="drag-scroll-content"
+          <DragScrollContent
             ref={this.contentRef}
             style={this.state.contentStyle}
           >
@@ -180,9 +190,9 @@ export class DragScrollWidget extends BaseWidget<DragScrollWidgetProps> {
               this.setViewBoxScroll,
               this.setViewBoxScrollDelta
             )}
-          </div>
+          </DragScrollContent>
         </div>
-      </div>
+      </DragScrollView>
     );
   }
 }

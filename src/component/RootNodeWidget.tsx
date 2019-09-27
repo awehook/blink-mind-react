@@ -1,5 +1,5 @@
 import * as React from "react";
-import { NodeKeyType } from "../types/Node";
+import { NodeKeyType, NodeWidgetDirection } from "../types/Node";
 import { BaseWidget } from "./common/BaseWidget";
 import { DiagramState } from "../model/DiagramState";
 import * as cx from "classnames";
@@ -8,8 +8,30 @@ import { DiagramLayoutDirection } from "../config/DiagramConfig";
 import { NodeWidget } from "./NodeWidget";
 import { LinkWidget } from "./LinkWidget";
 import { TopicContentWidget } from "./TopicContentWidget";
-import { NodeWidgetDirection, NodeStyle } from "../types/Node";
 import { OpFunction } from "../types/FunctionType";
+import styled from "styled-components";
+
+const NodeLayerPart = styled.div`
+  display: flex;
+  position: relative;
+
+  align-items: ${props =>
+    //@ts-ignore
+    props.dir === NodeWidgetDirection.LEFT ? "flex-end" : "flex-start"};
+  flex-direction: column;
+
+  padding: ${props =>
+    //@ts-ignore
+    props.dir === NodeWidgetDirection.LEFT
+      ? "0px 60px 0px 0px"
+      : "0px 0px 0px 60px"};
+`;
+
+const Topic = styled.div`
+  display: flex;
+  position: relative;
+  align-items: center;
+`;
 
 export interface MindRootNodeWidgetProps {
   diagramState: DiagramState;
@@ -140,10 +162,11 @@ export class RootNodeWidget<
       dir === NodeWidgetDirection.LEFT ? "left" : "right"
     }`;
     return (
-      <div className={cxName} ref={saveRef(cxName)}>
+      //@ts-ignore
+      <NodeLayerPart dir={dir} ref={saveRef(cxName)}>
         {subItems}
         {subLinks}
-      </div>
+      </NodeLayerPart>
     );
   }
 
@@ -154,8 +177,7 @@ export class RootNodeWidget<
     return (
       <>
         {this.renderPartItems(leftItems, NodeWidgetDirection.LEFT)}
-        <div
-          className={cx("topic")}
+        <Topic
           ref={
             nodeKey === mindMapModel.getEditorRootItemKey()
               ? saveRef(`topic-${nodeKey}`)
@@ -171,15 +193,8 @@ export class RootNodeWidget<
             saveRef={saveRef}
             getRef={getRef}
           />
-        </div>
+        </Topic>
         {this.renderPartItems(rightItems, NodeWidgetDirection.RIGHT)}
-        {/*{diagramConfig.nodeStyle === NodeStyle.ALL_HAS_BORDER*/}
-        {/*? diagramConfig.focusItemsBorderRenderFn(*/}
-        {/*diagramState,*/}
-        {/*saveRef,*/}
-        {/*getRef*/}
-        {/*)*/}
-        {/*: null}*/}
       </>
     );
   }

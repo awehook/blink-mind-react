@@ -2,8 +2,16 @@ import * as React from "react";
 import { BaseWidget } from "./common/BaseWidget";
 import { NodeKeyType, NodeStyle, NodeWidgetDirection } from "../types/Node";
 import { DiagramState } from "../model/DiagramState";
+import styled from "styled-components";
 import debug from "debug";
 const log = debug("node:LinkWidget");
+
+const Link = styled.div`
+  z-index: -1;
+  position: absolute;
+  left: 0;
+  top: 0;
+`;
 
 interface LinkWidgetProps {
   diagramState: DiagramState;
@@ -268,7 +276,7 @@ export class LinkWidget<
     if (this.state && this.state.width) {
       log("render link %s => %s", this.props.fromNodeKey, this.props.toNodeKey);
       return (
-        <div className="bm-link">
+        <Link>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             version="1.1"
@@ -281,7 +289,7 @@ export class LinkWidget<
               <path d={this.generatePathString()} />
             </g>
           </svg>
-        </div>
+        </Link>
       );
     }
     return null;

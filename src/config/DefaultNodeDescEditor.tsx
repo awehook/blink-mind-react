@@ -4,7 +4,6 @@ import { NodeKeyType } from "../types/Node";
 import RichMarkDownEditor from "awehook-rich-markdown-editor";
 import { OpType } from "../model/MindMapModelModifier";
 import { debounce } from "lodash";
-import "./DefaultNodeContentEditor.scss";
 import { OpFunction } from "../types/FunctionType";
 import styled from "styled-components";
 import debug from "debug";

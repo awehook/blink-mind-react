@@ -3,6 +3,13 @@ import { BaseWidget } from "./common/BaseWidget";
 import { RootNodeWidget } from "./RootNodeWidget";
 import { DiagramState } from "../model/DiagramState";
 import { OpFunction } from "../types/FunctionType";
+import styled from "styled-components";
+
+const NodeLayer = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+`;
 
 export interface MindNodeLayerWidgetProps {
   diagramState: DiagramState;
@@ -25,9 +32,9 @@ export class NodeLayerWidget<
 
     let { setViewBoxScroll, setViewBoxScrollDelta, saveRef } = this.props;
     return (
-      <div className="bm-node-layer" ref={saveRef("node-layer")}>
+      <NodeLayer ref={saveRef("node-layer")}>
         {this.renderItems(setViewBoxScroll, setViewBoxScrollDelta)}
-      </div>
+      </NodeLayer>
     );
   }
   renderItems(setViewBoxScroll, setViewBoxScrollDelta) {

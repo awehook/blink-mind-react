@@ -4,8 +4,25 @@ import { DiagramState } from "../model/DiagramState";
 import { NodePopupMenuItem, NodePopupMenuItemConfig } from "./NodePopupMenuItem";
 import { OpType } from "../model/MindMapModelModifier";
 import { OpFunction } from "../types/FunctionType";
+import styled from "styled-components";
 import debug from 'debug'
 const log = debug('node:popup-menu');
+
+const PopupMenu = styled.div`
+  position: absolute;
+  bottom: calc(100% + 5px);
+  left: 0;
+  padding: 0 8px;
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: rgb(170, 170, 170) 5px 5px 10px;
+  cursor: pointer;
+  z-index: 1;
+
+  width: max-content;
+  height: 50px;
+`;
+
 interface NodePopupMenuProps {
   nodeKey: NodeKeyType;
   diagramState: DiagramState;
@@ -99,9 +116,9 @@ export class NodePopupMenu extends React.Component<
     );
     return (
       visible && (
-        <div className="bm-node-popup-menu" ref={this.rootRef}>
+        <PopupMenu ref={this.rootRef}>
           {menuItems}
-        </div>
+        </PopupMenu>
       )
     );
   }

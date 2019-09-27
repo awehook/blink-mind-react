@@ -12,17 +12,16 @@ interface ModalsProps {
   saveRef?: Function;
 }
 interface ModalsState {}
-const ModalTitle = styled.div`
-  color: black;
-  text-align: center;
-`;
 const DescWrapper = styled.div`
-  padding: 2rem;
+  border: 1px solid #d9d9d9;
+  height: calc(100% - 50px);
+  padding: 0 1rem;
+  overflow: auto;
+  margin: 0.5rem 0.5rem 0 0.5rem;
 `;
 const EditDescModal = ({ diagramState, op, nodeKey, saveRef }) => {
   return (
     <React.Fragment>
-      <ModalTitle>Edit note</ModalTitle>
       <DescWrapper>
         {diagramState.config.descEditorRenderFn(diagramState, op, nodeKey, saveRef)}
       </DescWrapper>
@@ -61,7 +60,7 @@ export class Modals extends React.Component<ModalsProps, ModalsState> {
 
     return (
       <span>
-        <Modal name="edit-desc" title="edit notes">
+        <Modal name="edit-desc" title="Edit Notes">
           <EditDescModal
             diagramState={diagramState}
             op={op}

@@ -1,15 +1,61 @@
 import * as React from "react";
-import { NodeKeyType } from "../types/Node";
+import { NodeKeyType, NodeStyle, NodeWidgetDirection } from "../types/Node";
 import { BaseWidget } from "./common/BaseWidget";
 import { LinkWidget } from "./LinkWidget";
 import { TopicContentWidget } from "./TopicContentWidget";
 import { DiagramState } from "../model/DiagramState";
 import { OpType } from "../model/MindMapModelModifier";
 import * as cx from "classnames";
-import { NodeWidgetDirection,NodeStyle } from "../types/Node";
 import { OpFunction } from "../types/FunctionType";
+import styled from "styled-components";
 import debug from "debug";
+
 const log = debug("node:NodeWidget");
+
+const Node = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  flex-direction: ${props =>
+    //@ts-ignore
+    props.dir === NodeWidgetDirection.RIGHT ? "row" : "row-reverse"};
+`;
+
+const NodeChildren = styled.div`
+  position: relative;
+`;
+
+const NodeTopic = styled.div`
+  display: flex;
+  position: relative;
+  align-items: center;
+  flex-direction: ${props =>
+    //@ts-ignore
+    props.dir === NodeWidgetDirection.RIGHT ? "row" : "row-reverse"};
+`;
+
+const CollapseLine = styled.div`
+  height: 2px;
+  width: 30px;
+  //@ts-ignore
+  background: ${props => (props.hide ? "transparent" : "orange")};
+`;
+
+const Icon = styled.div`
+  position: relative;
+  top: -8px;
+  left: 5px;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  background-color: orange;
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+  line-height: 20px;
+  border: 0;
+`;
 
 export interface MindNodeWidgetProps {
   diagramState: DiagramState;
@@ -97,11 +143,25 @@ export class NodeWidget<
     // TODO 后面再进行优化
     return true;
     // if (nextProps.nodeKey !== this.props.nodeKey) return true;
-    // let nextItem = nextProps.diagramState.mindMapModel.getItem(
-    //   nextProps.nodeKey
+    // let nodeKey = nextProps.nodeKey;
+    // let nextModel = nextProps.diagramState.mindMapModel;
+    // let model = this.props.diagramState.mindMapModel;
+    // let nextItem = nextModel.getItem(
+    //   nodeKey
     // );
-    // let item = this.props.diagramState.mindMapModel.getItem(this.props.nodeKey);
+    // let item = model.getItem(nodeKey);
+    //
     // if (nextItem !== item) return true;
+    //
+    // let nextFocusKey = nextModel.getFocusItemKey();
+    // let focusKey = model.getFocusItemKey();
+    // if(nextFocusKey!==focusKey && (nodeKey===nextFocusKey || nodeKey ===focusKey))
+    //   return  true;
+    //
+    // let nextFocusMode = nextModel.getFocusItemMode();
+    // let focusMode = model.getFocusItemMode();
+    // if(nextFocusMode!==focusMode && (nodeKey===nextFocusKey || nodeKey ===focusKey))
+    //   return true;
     // return false;
   }
 
@@ -163,27 +223,27 @@ export class NodeWidget<
             paddingLeft: diagramConfig.hMargin
           };
     return (
-      <div
-        className={cx("bm-children")}
-        style={inlineStyle}
-        ref={saveRef(`children-${nodeKey}`)}
-      >
+      <NodeChildren style={inlineStyle} ref={saveRef(`children-${nodeKey}`)}>
         {subItems}
         {subLinks}
-      </div>
+      </NodeChildren>
     );
   }
 
   render() {
     let { diagramState, op, nodeKey, dir, saveRef, getRef } = this.props;
-    log('render:',nodeKey);
+    log("render:", nodeKey);
     let { mindMapModel } = diagramState;
     let node = mindMapModel.getItem(nodeKey);
     let visualLevel = mindMapModel.getItemVisualLevel(nodeKey);
     return (
-      <div className={cx("bm-node", `bm-dir-${dir}`)}>
-        <div
-          className={cx("topic", `bm-dir-${dir}`)}
+      <Node
+        //@ts-ignore
+        dir={dir}
+      >
+        <NodeTopic
+          //@ts-ignore
+          dir={dir}
           ref={saveRef(`topic-${nodeKey}`)}
         >
           <TopicContentWidget
@@ -196,30 +256,25 @@ export class NodeWidget<
             getRef={getRef}
           />
           {node.getSubItemKeys().size > 0 ? (
-            <div
-              className={cx("collapse-line", {
-                "collapse-line-hide": node.getCollapse(),
-                [`normal-collapse-line-${dir}`]:
-                  diagramState.config.nodeStyle ===
-                    NodeStyle.PRIMARY_HAS_BORDER_NORMAL_NO_BORDER &&
-                  visualLevel > 1
-              })}
+            <CollapseLine
+              //@ts-ignore
+              hide={node.getCollapse()}
               ref={saveRef(`line-${nodeKey}`)}
             >
-              <div
+              <Icon
                 ref={this.collapseIconRef}
-                className={cx("collapse-icon", {
+                className={cx({
                   iconfont: node.getSubItemKeys().size > 0,
                   [`bm-${node.getCollapse() ? "plus" : "minus"}`]:
                     node.getSubItemKeys().size > 0
                 })}
                 onClick={this.onClickCollapse}
               />
-            </div>
+            </CollapseLine>
           ) : null}
-        </div>
+        </NodeTopic>
         {this.renderSubItems()}
-      </div>
+      </Node>
     );
   }
 }
