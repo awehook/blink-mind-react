@@ -1,5 +1,4 @@
 import * as React from "react";
-import * as cx from "classnames";
 import { BaseWidget } from "./common/BaseWidget";
 import { NodeKeyType, NodeWidgetDirection } from "../types/Node";
 import { DiagramState } from "../model/DiagramState";
@@ -8,9 +7,12 @@ import { NodePopupMenu } from "./NodePopupMenu";
 import { OpFunction } from "../types/FunctionType";
 import styled from "styled-components";
 import debug from "debug";
+
 const log = debug("node:topic");
 
 const TopicContent = styled.div`
+  display: flex;
+  align-items: center;
   word-wrap: break-word;
   white-space: pre-line;
   cursor: pointer;
@@ -21,6 +23,12 @@ const TopicContent = styled.div`
   //@ts-ignore
   padding: ${props => (props.isRoot ? "6px 0 6px 20px" : "6px 20px 6px 0")};
   border: 2px solid orange;
+`;
+
+const DescIcon = styled.div`
+  &:hover {
+    color: orange;
+  }
 `;
 
 interface TopicContentWidgetProps {
@@ -173,9 +181,14 @@ export class TopicContentWidget extends BaseWidget<
         break;
     }
 
+    const item = mindMapModel.getItem(nodeKey);
+
     const showPopMenu =
       // mindMapModel.getPopupMenuItemKey() === nodeKey &&
       this.state.showPopMenu;
+    const descString = item.descToString();
+    const showDescIcon = descString !== null && descString !== "";
+
     return (
       <TopicContent
         //@ts-ignore
@@ -200,7 +213,16 @@ export class TopicContentWidget extends BaseWidget<
         onDoubleClick={this.onDoubleClick}
       >
         {diagramConfig.editorRendererFn(diagramState, op, nodeKey, saveRef)}
-        {showPopMenu ? (
+        {showDescIcon && (
+          <DescIcon
+            className="iconfont bm-notes"
+            onClick={(e) => {
+              e.stopPropagation();
+              op(OpType.START_EDITING_DESC);
+            }}
+          />
+        )}
+        {showPopMenu && (
           <NodePopupMenu
             diagramState={diagramState}
             op={op}
@@ -209,7 +231,7 @@ export class TopicContentWidget extends BaseWidget<
             handleVisibleChange={this.handlePopMenuVisibleChange}
             getRef={getRef}
           />
-        ) : null}
+        )}
       </TopicContent>
     );
   }
