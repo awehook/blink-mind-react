@@ -105,7 +105,7 @@ export class TopicContentWidget extends BaseWidget<
       if (!this.isDoubleClick) {
         // log("TopicContentWidget onClick");
         let { diagramState, op, nodeKey } = this.props;
-        if (diagramState.mindMapModel.getEditingItemKey() === nodeKey) return;
+        if (diagramState.mindMapModel.getEditingContentItemKey() === nodeKey) return;
         op(OpType.SET_POPUP_MENU_ITEM_KEY, nodeKey);
         this.setState({ showPopMenu: true });
       }
@@ -116,8 +116,8 @@ export class TopicContentWidget extends BaseWidget<
     this.isDoubleClick = true;
     // log('TopicContentWidget onDoubleClick');
     let { diagramState, op, nodeKey } = this.props;
-    if (diagramState.mindMapModel.getEditingItemKey() === nodeKey) return;
-    op(OpType.SET_EDIT_ITEM_KEY, nodeKey);
+    if (diagramState.mindMapModel.getEditingContentItemKey() === nodeKey) return;
+    op(OpType.START_EDITING_CONTENT, nodeKey);
   };
 
   handlePopMenuVisibleChange = visible => {
@@ -132,7 +132,7 @@ export class TopicContentWidget extends BaseWidget<
     snapshot?: any
   ): void {
     let { diagramState, nodeKey } = this.props;
-    if (diagramState.mindMapModel.getEditingItemKey() === nodeKey) {
+    if (diagramState.mindMapModel.getEditingContentItemKey() === nodeKey) {
       document.addEventListener("click", this._handleClick);
     } else {
       document.removeEventListener("click", this._handleClick);
@@ -218,7 +218,7 @@ export class TopicContentWidget extends BaseWidget<
             className="iconfont bm-notes"
             onClick={(e) => {
               e.stopPropagation();
-              op(OpType.START_EDITING_DESC);
+              op(OpType.START_EDITING_DESC,nodeKey);
             }}
           />
         )}

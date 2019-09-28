@@ -47,7 +47,7 @@ export class NodePopupMenu extends React.Component<
         icon: "edit",
         label: "edit",
         rootCanUse: true,
-        opType: OpType.SET_EDIT_ITEM_KEY
+        opType: OpType.START_EDITING_CONTENT
       },
       {
         icon: "add-sibling",

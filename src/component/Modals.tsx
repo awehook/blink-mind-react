@@ -31,7 +31,7 @@ const EditDescModal = ({ diagramState, op, nodeKey, saveRef }) => {
 
 export class Modals extends React.Component<ModalsProps, ModalsState> {
   handleClose = () => {
-    this.props.op(OpType.SET_FOCUS_ITEM_MODE, null, FocusItemMode.Normal);
+    this.props.op(OpType.END_EDITING);
   };
 
   getActiveModalName = () => {

@@ -50,8 +50,8 @@ export class MindMapModel extends Record(defaultMindMapRecord) {
     return this.get("focusItemMode");
   }
 
-  getEditingItemKey(): NodeKeyType {
-    if (this.get("focusItemMode") !== FocusItemMode.Editing) return null;
+  getEditingContentItemKey(): NodeKeyType {
+    if (this.get("focusItemMode") !== FocusItemMode.EditingContent) return null;
     return this.getFocusItemKey();
   }
 
