@@ -11,6 +11,7 @@ import styled from "styled-components";
 import debug from "debug";
 
 const log = debug("node:NodeWidget");
+const logr = debug("render:NodeWidget");
 
 const Node = styled.div`
   display: flex;
@@ -232,7 +233,7 @@ export class NodeWidget<
 
   render() {
     let { diagramState, op, nodeKey, dir, saveRef, getRef } = this.props;
-    log("render:", nodeKey);
+    logr(nodeKey);
     let { mindMapModel } = diagramState;
     let node = mindMapModel.getItem(nodeKey);
     let visualLevel = mindMapModel.getItemVisualLevel(nodeKey);

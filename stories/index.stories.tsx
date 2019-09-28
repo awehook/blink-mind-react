@@ -24,6 +24,7 @@ import DragDropDemo8 from "./demo-drag-drop/Demo8";
 let debugNameSpaces = [
   "node:*",
   "model:*",
+  "render:*"
   // "-node:LinkWidget"
 ];
 

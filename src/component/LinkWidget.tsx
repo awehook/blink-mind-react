@@ -2,9 +2,11 @@ import * as React from "react";
 import { BaseWidget } from "./common/BaseWidget";
 import { NodeKeyType, NodeStyle, NodeWidgetDirection } from "../types/Node";
 import { DiagramState } from "../model/DiagramState";
+import { isRectEqual } from "../util";
 import styled from "styled-components";
 import debug from "debug";
 const log = debug("node:LinkWidget");
+const logr = debug("render:LinkWidget");
 
 const Link = styled.div`
   z-index: -1;
@@ -48,33 +50,89 @@ export class LinkWidget<
     log("layout link %s => %s", this.props.fromNodeKey, this.props.toNodeKey);
     this.props.isRoot ? this.layoutRoot() : this.layoutNormal();
   }
+
+  prevPartLayerRect;
+  prevFromChildrenRect;
+  prevFromTopicRect;
+  prevToTopicRect;
+
+  partLayerRect;
+  fromChildrenRect;
+  fromTopicRect;
+  toTopicRect;
+
   layoutRoot() {
     let { dir, getRef } = this.props;
     let partLayerElement: HTMLElement = getRef(
       `bm-node-layer-${dir === NodeWidgetDirection.LEFT ? "left" : "right"}`
     );
     if (partLayerElement) {
-      let partLayerElementRect = partLayerElement.getBoundingClientRect();
+      this.partLayerRect = partLayerElement.getBoundingClientRect();
       this.setState({
-        width: partLayerElementRect.width,
-        height: partLayerElementRect.height
+        width: this.partLayerRect.width,
+        height: this.partLayerRect.height
       });
     }
   }
 
   layoutNormal() {
-    let { getRef } = this.props;
-    let fromNodeChildren: HTMLElement = getRef(
-      `children-${this.props.fromNodeKey}`
-    );
-
+    let { getRef, fromNodeKey } = this.props;
+    // log('layoutNormal %s -> %s',fromNodeKey, toNodeKey);
+    let fromNodeChildren: HTMLElement = getRef(`children-${fromNodeKey}`);
     if (fromNodeChildren) {
-      let fromNodeChildrenRect = fromNodeChildren.getBoundingClientRect();
+      this.fromChildrenRect = fromNodeChildren.getBoundingClientRect();
       this.setState({
-        width: fromNodeChildrenRect.width,
-        height: fromNodeChildrenRect.height
+        width: this.fromChildrenRect.width,
+        height: this.fromChildrenRect.height
       });
     }
+  }
+
+  shouldComponentUpdate(
+    nextProps: Readonly<LinkWidgetProps>,
+    nextState: Readonly<LinkWidgetState>,
+    nextContext: any
+  ): boolean {
+    let { isRoot, dir, getRef, fromNodeKey, toNodeKey } = this.props;
+    log("shouldComponentUpdate %s->%s", fromNodeKey, toNodeKey);
+    if (
+      fromNodeKey !== nextProps.fromNodeKey ||
+      toNodeKey !== nextProps.toNodeKey
+    )
+      return true;
+    log(this.prevPartLayerRect,this.partLayerRect);
+    if (isRoot && !isRectEqual(this.prevPartLayerRect, this.partLayerRect)) {
+      log('is-root');
+      return true;
+    }
+    if (!isRoot && !isRectEqual(this.prevFromChildrenRect, this.fromChildrenRect)) {
+      log('not-root');
+      return true;
+    }
+    this.fromTopicRect = getRef(`topic-${fromNodeKey}`).getBoundingClientRect();
+    this.toTopicRect = getRef(`topic-${toNodeKey}`).getBoundingClientRect();
+    log(
+      "%s->%s",
+      fromNodeKey,
+      toNodeKey,
+      this.prevFromTopicRect,
+      this.fromTopicRect
+    );
+    log(
+      "%s->%s",
+      fromNodeKey,
+      toNodeKey,
+      this.prevToTopicRect,
+      this.toTopicRect
+    );
+    if (
+      isRectEqual(this.prevToTopicRect, this.toTopicRect) &&
+      isRectEqual(this.prevFromTopicRect, this.fromTopicRect)
+    ) {
+      log("rect is equal");
+      return false;
+    }
+    return true;
   }
 
   generatePathString = () => {
@@ -273,8 +331,12 @@ export class LinkWidget<
     }
   };
   render() {
+    this.prevFromChildrenRect = this.fromChildrenRect;
+    this.prevPartLayerRect = this.partLayerRect;
+    this.prevFromTopicRect = this.fromTopicRect;
+    this.prevToTopicRect = this.toTopicRect;
     if (this.state && this.state.width) {
-      log("render link %s => %s", this.props.fromNodeKey, this.props.toNodeKey);
+      logr("link %s->%s", this.props.fromNodeKey, this.props.toNodeKey);
       return (
         <Link>
           <svg

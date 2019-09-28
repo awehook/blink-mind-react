@@ -9,6 +9,7 @@ import styled from "styled-components";
 import debug from "debug";
 
 const log = debug("node:topic");
+const logr = debug("render:topic");
 
 const TopicContent = styled.div`
   display: flex;
@@ -105,7 +106,8 @@ export class TopicContentWidget extends BaseWidget<
       if (!this.isDoubleClick) {
         // log("TopicContentWidget onClick");
         let { diagramState, op, nodeKey } = this.props;
-        if (diagramState.mindMapModel.getEditingContentItemKey() === nodeKey) return;
+        if (diagramState.mindMapModel.getEditingContentItemKey() === nodeKey)
+          return;
         op(OpType.SET_POPUP_MENU_ITEM_KEY, nodeKey);
         this.setState({ showPopMenu: true });
       }
@@ -116,7 +118,8 @@ export class TopicContentWidget extends BaseWidget<
     this.isDoubleClick = true;
     // log('TopicContentWidget onDoubleClick');
     let { diagramState, op, nodeKey } = this.props;
-    if (diagramState.mindMapModel.getEditingContentItemKey() === nodeKey) return;
+    if (diagramState.mindMapModel.getEditingContentItemKey() === nodeKey)
+      return;
     op(OpType.START_EDITING_CONTENT, nodeKey);
   };
 
@@ -156,6 +159,37 @@ export class TopicContentWidget extends BaseWidget<
     }
   };
 
+  shouldComponentUpdate(
+    nextProps: Readonly<TopicContentWidgetProps>,
+    nextState: Readonly<TopicContentWidgetState>,
+    nextContext: any
+  ): boolean {
+    if(this.state.dragEnter!==nextState.dragEnter || this.state.showPopMenu !==nextState.showPopMenu)
+      return true;
+    let { diagramState: ds, nodeKey, dir } = this.props;
+    let {
+      diagramState: nextDS,
+      nodeKey: nextNodeKey,
+      dir: nextDir
+    } = nextProps;
+    if (nodeKey !== nextNodeKey || dir !== nextDir) return true;
+    let mm = ds.mindMapModel;
+    let nextMm = nextDS.mindMapModel;
+    let focusKey = mm.getFocusItemKey();
+    let nextFocusKey = nextMm.getFocusItemKey();
+    if (focusKey === nodeKey || nextFocusKey == nodeKey) {
+      if (nextFocusKey !== focusKey) return true;
+
+      let focusMode = mm.getFocusItemMode();
+      let nextFocusMode = nextMm.getFocusItemMode();
+      if (nextFocusMode !== focusMode) return true;
+    }
+    let content = mm.getItem(nodeKey).getContent();
+    let nextContent = nextMm.getItem(nodeKey).getContent();
+    if (content !== nextContent) return true;
+    return false;
+  }
+
   render() {
     let {
       diagramState,
@@ -166,6 +200,7 @@ export class TopicContentWidget extends BaseWidget<
       saveRef,
       getRef
     } = this.props;
+    logr(nodeKey);
     let { mindMapModel, config: diagramConfig } = diagramState;
     let visualLevel = mindMapModel.getItemVisualLevel(nodeKey);
     let itemStyle;
@@ -216,9 +251,9 @@ export class TopicContentWidget extends BaseWidget<
         {showDescIcon && (
           <DescIcon
             className="iconfont bm-notes"
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation();
-              op(OpType.START_EDITING_DESC,nodeKey);
+              op(OpType.START_EDITING_DESC, nodeKey);
             }}
           />
         )}

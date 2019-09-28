@@ -5,3 +5,14 @@ export function uuidv4() {
     return v.toString(16);
   });
 }
+
+export function isRectEqual(r1, r2) {
+  return (
+    r1 &&
+    r2 &&
+    r1.left === r2.left &&
+    r1.top === r2.top &&
+    r1.width === r2.width &&
+    r1.height === r2.height
+  );
+}
