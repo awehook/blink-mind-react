@@ -3,6 +3,7 @@ import { DefaultNodeContentEditor } from "./DefaultNodeContentEditor";
 import { DefaultNodeDescEditor } from "./DefaultNodeDescEditor";
 import { DefaultFocusItemBorderSvg } from "./DefaultFocusItemBorderSvg";
 import { NodeStyle } from "../types/Node";
+import themeConfigs from "./ThemeConfigs";
 
 export enum DiagramLayoutDirection {
   LEFT_TO_RIGHT,
@@ -18,6 +19,7 @@ export type DiagramConfig = {
   vMargin?: number;
   focusBorderPadding?: number;
   theme?: string;
+  themeConfigs?: object;
   rootItemStyle?: any;
   primaryItemStyle?: any;
   normalItemStyle?: any;
@@ -65,7 +67,8 @@ export const defaultDiagramConfig: DiagramConfig = {
   hMargin: 10,
   vMargin: 10,
   focusBorderPadding: 4,
-  theme: "theme-orange",
+  theme: "theme2",
+  themeConfigs,
   rootItemStyle: {
     fontSize: "24px",
     borderRadius: "10px",

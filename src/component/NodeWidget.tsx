@@ -39,7 +39,7 @@ const CollapseLine = styled.div`
   height: 2px;
   width: 30px;
   //@ts-ignore
-  background: ${props => (props.hide ? "transparent" : "orange")};
+  background: ${props => (props.hide ? "transparent" : props.theme.color.primary)};
 `;
 
 const Icon = styled.div`
@@ -50,7 +50,7 @@ const Icon = styled.div`
   width: 20px;
   height: 20px;
   text-align: center;
-  background-color: orange;
+  background-color: ${props=>props.theme.color.primary};
   cursor: pointer;
   padding: 0;
   font-size: 14px;

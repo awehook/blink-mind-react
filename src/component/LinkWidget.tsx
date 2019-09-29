@@ -68,6 +68,8 @@ export class LinkWidget<
     );
     if (partLayerElement) {
       this.partLayerRect = partLayerElement.getBoundingClientRect();
+      if(isRectEqual(this.prevPartLayerRect,this.partLayerRect))
+        return;
       this.setState({
         width: this.partLayerRect.width,
         height: this.partLayerRect.height
@@ -81,6 +83,8 @@ export class LinkWidget<
     let fromNodeChildren: HTMLElement = getRef(`children-${fromNodeKey}`);
     if (fromNodeChildren) {
       this.fromChildrenRect = fromNodeChildren.getBoundingClientRect();
+      if(isRectEqual(this.prevFromChildrenRect,this.fromChildrenRect))
+        return;
       this.setState({
         width: this.fromChildrenRect.width,
         height: this.fromChildrenRect.height
@@ -93,20 +97,23 @@ export class LinkWidget<
     nextState: Readonly<LinkWidgetState>,
     nextContext: any
   ): boolean {
-    let { isRoot, dir, getRef, fromNodeKey, toNodeKey } = this.props;
-    log("shouldComponentUpdate %s->%s", fromNodeKey, toNodeKey);
+    let { isRoot, getRef, fromNodeKey, toNodeKey,diagramState } = this.props;
+    // log("shouldComponentUpdate %s->%s", fromNodeKey, toNodeKey);
+    logr(diagramState.config.theme,nextProps.diagramState.config.theme);
+    if(diagramState.config.theme!== nextProps.diagramState.config.theme)
+      return true;
     if (
       fromNodeKey !== nextProps.fromNodeKey ||
       toNodeKey !== nextProps.toNodeKey
     )
       return true;
-    log(this.prevPartLayerRect,this.partLayerRect);
+    // log(this.prevPartLayerRect,this.partLayerRect);
     if (isRoot && !isRectEqual(this.prevPartLayerRect, this.partLayerRect)) {
-      log('is-root');
+      // log('is-root');
       return true;
     }
     if (!isRoot && !isRectEqual(this.prevFromChildrenRect, this.fromChildrenRect)) {
-      log('not-root');
+      // log('not-root');
       return true;
     }
     this.fromTopicRect = getRef(`topic-${fromNodeKey}`).getBoundingClientRect();
@@ -337,13 +344,15 @@ export class LinkWidget<
     this.prevToTopicRect = this.toTopicRect;
     if (this.state && this.state.width) {
       logr("link %s->%s", this.props.fromNodeKey, this.props.toNodeKey);
+      let strokeColor = this.props.diagramState.getThemeConfig().color.primary;
+      logr(strokeColor);
       return (
         <Link>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             version="1.1"
             strokeWidth="2px"
-            stroke="orange"
+            stroke={strokeColor}
             fill="none"
             {...this.state}
           >

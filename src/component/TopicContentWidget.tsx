@@ -20,15 +20,20 @@ const TopicContent = styled.div`
   overflow: hidden;
   background: ${props =>
     //@ts-ignore
-    props.dragEnter ? "brown" : props.isRoot ? "orange" : null};
+    props.dragEnter
+      ? props.theme.color.primary
+      //@ts-ignore
+      : props.isRoot
+      ? props.theme.color.primary
+      : null};
   //@ts-ignore
   padding: ${props => (props.isRoot ? "6px 0 6px 20px" : "6px 20px 6px 0")};
-  border: 2px solid orange;
+  border: 2px solid ${props => props.theme.color.primary};
 `;
 
 const DescIcon = styled.div`
   &:hover {
-    color: orange;
+    color: ${props => props.theme.color.primary};
   }
 `;
 
@@ -164,7 +169,10 @@ export class TopicContentWidget extends BaseWidget<
     nextState: Readonly<TopicContentWidgetState>,
     nextContext: any
   ): boolean {
-    if(this.state.dragEnter!==nextState.dragEnter || this.state.showPopMenu !==nextState.showPopMenu)
+    if (
+      this.state.dragEnter !== nextState.dragEnter ||
+      this.state.showPopMenu !== nextState.showPopMenu
+    )
       return true;
     let { diagramState: ds, nodeKey, dir } = this.props;
     let {

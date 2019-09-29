@@ -51,11 +51,12 @@ export class DiagramWidget<P extends MindDiagramWidgetProps> extends BaseWidget<
 
   render() {
     let { diagramState } = this.props;
+    let theme = diagramState.getThemeConfig();
     let editingDescKey = diagramState.mindMapModel.getEditingDescItemKey();
     return (
       <SaveRef>
         {(saveRef, getRef) => (
-          <Theme>
+          <Theme theme={theme}>
             <Diagram
               className={cx({
                 [`${diagramState.config.theme}`]: true

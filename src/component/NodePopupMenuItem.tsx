@@ -10,7 +10,7 @@ const MenuItem = styled.div`
   display: inline-block;
   margin: 10px;
   &:hover {
-    color: orange;
+    color: ${props=>props.theme.color.primary};
   }
   .icon {
     text-align: center;

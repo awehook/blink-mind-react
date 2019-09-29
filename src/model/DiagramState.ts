@@ -3,6 +3,7 @@ import { defaultDiagramConfig, DiagramConfig } from "../config/DiagramConfig";
 import { MindMapModelModifier, OpType } from "./MindMapModelModifier";
 import { NodeKeyType } from "../types/Node";
 import debug from "debug";
+import { ThemeConfig } from "../config/ThemeConfigs";
 const log = debug("model:DiagramState");
 
 export class DiagramState {
@@ -14,11 +15,22 @@ export class DiagramState {
     this.config = config;
   }
 
+  getThemeConfig() : ThemeConfig {
+    return this.config.themeConfigs[this.config.theme];
+  }
+
   static setMindMapModel(
     state: DiagramState,
     model: MindMapModel
   ): DiagramState {
     return new DiagramState(model, state.config);
+  }
+
+  static setConfig(
+    state: DiagramState,
+    config: DiagramConfig
+  ): DiagramState {
+    return new DiagramState(state.mindMapModel,config);
   }
 
   static op(
