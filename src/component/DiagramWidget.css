@@ -4,16 +4,6 @@
   vertical-align: middle;
 }
 
-.none-pointer-events {
-  pointer-events: none;
-}
-.bm-focus-svg {
-  z-index: -1;
-  position: absolute;
-  left: 0;
-  top: 0;
-}
-
 .fXedfB {
   background: inherit;
 }

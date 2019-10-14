@@ -11,7 +11,7 @@ import { OpType } from "../model/MindMapModelModifier";
 import { NodeKeyType } from "../types/Node";
 import Theme from "./Theme";
 import styled from "styled-components";
-import "./DiagramWidget.scss";
+import "./DiagramWidget.css";
 
 const Diagram = styled.div`
   width: 100%;
