@@ -1,12 +1,13 @@
 import * as React from "react";
 import { BaseWidget } from "./common/BaseWidget";
-import { NodeKeyType, NodeStyle, NodeWidgetDirection } from "../types/Node";
+import {DropDirType, NodeKeyType, NodeStyle, NodeWidgetDirection} from "../types/Node";
 import { DiagramState } from "../model/DiagramState";
 import { isRectEqual } from "../util";
 import styled from "styled-components";
 import debug from "debug";
 const log = debug("node:LinkWidget");
 const logr = debug("render:LinkWidget");
+const logd = debug("drop:LinkWidget");
 
 const Link = styled.div`
   z-index: -1;
@@ -24,6 +25,7 @@ interface LinkWidgetProps {
   saveRef?: Function;
   getRef?: Function;
   registerRefListener?: Function;
+  dropDir?: DropDirType;
 }
 
 interface LinkWidgetState {
@@ -62,14 +64,13 @@ export class LinkWidget<
   toTopicRect;
 
   layoutRoot() {
-    let { dir, getRef } = this.props;
+    let { dir, getRef, dropDir } = this.props;
     let partLayerElement: HTMLElement = getRef(
       `bm-node-layer-${dir === NodeWidgetDirection.LEFT ? "left" : "right"}`
     );
     if (partLayerElement) {
       this.partLayerRect = partLayerElement.getBoundingClientRect();
-      if(isRectEqual(this.prevPartLayerRect,this.partLayerRect))
-        return;
+      this.partLayerRect = partLayerElement.getBoundingClientRect();
       this.setState({
         width: this.partLayerRect.width,
         height: this.partLayerRect.height
@@ -78,13 +79,11 @@ export class LinkWidget<
   }
 
   layoutNormal() {
-    let { getRef, fromNodeKey } = this.props;
+    let { getRef, fromNodeKey, dropDir } = this.props;
     // log('layoutNormal %s -> %s',fromNodeKey, toNodeKey);
     let fromNodeChildren: HTMLElement = getRef(`children-${fromNodeKey}`);
     if (fromNodeChildren) {
       this.fromChildrenRect = fromNodeChildren.getBoundingClientRect();
-      if(isRectEqual(this.prevFromChildrenRect,this.fromChildrenRect))
-        return;
       this.setState({
         width: this.fromChildrenRect.width,
         height: this.fromChildrenRect.height
@@ -97,10 +96,21 @@ export class LinkWidget<
     nextState: Readonly<LinkWidgetState>,
     nextContext: any
   ): boolean {
-    let { isRoot, getRef, fromNodeKey, toNodeKey,diagramState } = this.props;
+    let {
+      isRoot,
+      getRef,
+      fromNodeKey,
+      toNodeKey,
+      diagramState,
+      dropDir
+    } = this.props;
+    if (dropDir) {
+      logd("shouldComponentUpdate:", dropDir);
+      return true;
+    }
     // log("shouldComponentUpdate %s->%s", fromNodeKey, toNodeKey);
-    logr(diagramState.config.theme,nextProps.diagramState.config.theme);
-    if(diagramState.config.theme!== nextProps.diagramState.config.theme)
+    logr(diagramState.config.theme, nextProps.diagramState.config.theme);
+    if (diagramState.config.theme !== nextProps.diagramState.config.theme)
       return true;
     if (
       fromNodeKey !== nextProps.fromNodeKey ||
@@ -112,7 +122,10 @@ export class LinkWidget<
       // log('is-root');
       return true;
     }
-    if (!isRoot && !isRectEqual(this.prevFromChildrenRect, this.fromChildrenRect)) {
+    if (
+      !isRoot &&
+      !isRectEqual(this.prevFromChildrenRect, this.fromChildrenRect)
+    ) {
       // log('not-root');
       return true;
     }
@@ -142,18 +155,20 @@ export class LinkWidget<
     return true;
   }
 
-  generatePathString = () => {
+  generatePath = () => {
     if (this.props.isRoot) return this.generatePathStringRoot();
-    if (
-      this.props.diagramState.config.nodeStyle ===
-      NodeStyle.PRIMARY_HAS_BORDER_NORMAL_NO_BORDER
-    )
-      return this.generatePathStringNormal();
     return this.generatePathStringForBorderNode();
   };
 
   generatePathStringForBorderNode = () => {
-    let { fromNodeKey, toNodeKey, getRef, dir, diagramState } = this.props;
+    let {
+      fromNodeKey,
+      toNodeKey,
+      getRef,
+      dir,
+      diagramState,
+      dropDir
+    } = this.props;
     let fromItem = diagramState.mindMapModel.getItem(fromNodeKey);
     let fromItemChildrenCount = fromItem.getSubItemKeys().size;
     let fromTopic: HTMLElement = getRef(`topic-${fromNodeKey}`);
@@ -168,127 +183,49 @@ export class LinkWidget<
     let toElementTopicRect = toElementTopic.getBoundingClientRect();
     let fromTopicRect = fromTopic.getBoundingClientRect();
     let fromX, fromY, toX, toY;
+    let fakeDelta =
+      dropDir != null
+        ? dropDir === "before"
+          ? -(toElementTopicRect.height - 40)
+          : toElementTopicRect.height - 40
+        : 0;
+    fromY = fromTopicRect.top + fromTopicRect.height / 2 - fromChildrenRect.top;
     if (dir === NodeWidgetDirection.RIGHT) {
       fromX = fromItemChildrenCount > 1 ? 1 : 0;
-      fromY = Math.round(
-        fromTopicRect.top + fromTopicRect.height / 2 - fromChildrenRect.top
-      );
+
       toX = toElementTopicRect.left - fromTopicRect.right;
-      toY = Math.round(
+      toY =
         toElementTopicRect.top +
-          toElementTopicRect.height / 2 -
-          fromChildrenRect.top
-      );
+        toElementTopicRect.height / 2 -
+        fromChildrenRect.top +
+        fakeDelta;
     } else {
       fromX =
         fromTopicRect.left -
         fromChildrenRect.left -
         (fromItemChildrenCount > 1 ? 1 : 0);
-      fromY = Math.round(
-        fromTopicRect.top + fromTopicRect.height / 2 - fromChildrenRect.top
-      );
 
-      toX = Math.round(toElementTopicRect.right - fromChildrenRect.left);
-      toY = Math.round(
+      toX = toElementTopicRect.right - fromChildrenRect.left;
+      toY =
         toElementTopicRect.top +
-          toElementTopicRect.height / 2 -
-          fromChildrenRect.top
-      );
+        toElementTopicRect.height / 2 -
+        fromChildrenRect.top +
+        fakeDelta;
     }
-    if (fromY === toY) return `M${fromX},${fromY}L${toX},${toY}`;
-
-    let centerX = (fromX + toX) / 2;
-    let centerY = (fromY + toY) / 2;
-
-    if (dir === NodeWidgetDirection.RIGHT) {
-      return `M${fromX},${fromY}C${fromX},${centerY},${centerX},${toY},${toX},${toY}`;
-    } else {
-      return `M${toX},${toY}C${centerX},${toY},${fromX},${centerY},${fromX},${fromY}`;
-    }
-  };
-
-  generatePathStringNormal = () => {
-    let cornerR = 10;
-    let { fromNodeKey, toNodeKey, getRef, dir, diagramState } = this.props;
-    let { mindMapModel } = diagramState;
-    let fromElementTopic: HTMLElement = getRef(`topic-${fromNodeKey}`);
-    let toElementTopic: HTMLElement = getRef(`topic-${toNodeKey}`);
-    if (!fromElementTopic || !toElementTopic) {
-      return "";
-    }
-    let fromElementLine: HTMLElement = getRef(`line-${fromNodeKey}`);
-    let fromElementChildren: HTMLElement = getRef(`children-${fromNodeKey}`);
-    let toElementTopicRect = toElementTopic.getBoundingClientRect();
-    let fromElementLineRect = fromElementLine.getBoundingClientRect();
-    let fromElementChildrenRect = fromElementChildren.getBoundingClientRect();
-
-    let fromItem = mindMapModel.getItem(fromNodeKey);
-
-    if (dir === NodeWidgetDirection.RIGHT) {
-      let centerX = 0;
-      let centerY = Math.round(
-        fromElementLineRect.top - fromElementChildrenRect.top + 1
-      );
-      let cornerX = Math.round(
-        toElementTopicRect.left - fromElementChildrenRect.left - 10
-      );
-      let cornerY = Math.round(
-        toElementTopicRect.bottom - fromElementChildrenRect.top
-      );
-      let rightX = Math.round(
-        toElementTopicRect.right - fromElementChildrenRect.left - 12
-      );
-      if (
-        fromItem.getSubItemKeys().size === 1 &&
-        mindMapModel.getItemVisualLevel(fromNodeKey) > 1
-      ) {
-        return `M${centerX},${cornerY}H${toElementTopicRect.right -
-          fromElementChildrenRect.left}`;
-      }
-      if (centerY > cornerY)
-        return `M${centerX},${centerY} H${cornerX} V${cornerY +
-          cornerR} Q${cornerX},${cornerY} ${cornerX +
-          cornerR},${cornerY} H${rightX}`;
-      else
-        return `M${centerX},${centerY} H${cornerX} V${cornerY -
-          cornerR} Q${cornerX},${cornerY} ${cornerX +
-          cornerR},${cornerY} H${rightX}`;
-    } else {
-      let centerX = Math.round(
-        fromElementLineRect.left - fromElementChildrenRect.left
-      );
-      let centerY = Math.round(
-        fromElementLineRect.top - fromElementChildrenRect.top + 1
-      );
-      let cornerX = Math.round(
-        toElementTopicRect.right - fromElementChildrenRect.left + 10
-      );
-      let cornerY = Math.round(
-        toElementTopicRect.bottom - fromElementChildrenRect.top
-      );
-      let rightX = Math.round(
-        toElementTopicRect.left - fromElementChildrenRect.left + 12
-      );
-      if (
-        fromItem.getSubItemKeys().size === 1 &&
-        mindMapModel.getItemVisualLevel(fromNodeKey) > 1
-      ) {
-        return `M${centerX},${cornerY}H${fromElementLineRect.left -
-          toElementTopicRect.right}`;
-      }
-      if (centerY > cornerY)
-        return `M${centerX},${centerY} H${cornerX} V${cornerY +
-          cornerR} Q${cornerX},${cornerY} ${cornerX -
-          cornerR},${cornerY} H${rightX}`;
-      else
-        return `M${centerX},${centerY} H${cornerX} V${cornerY -
-          cornerR} Q${cornerX},${cornerY} ${cornerX -
-          cornerR},${cornerY} H${rightX}`;
-    }
+    return this.generatePathStringWithParameter(
+      dir,
+      fromX,
+      fromY,
+      toX,
+      toY,
+      dropDir,
+      toElementTopicRect.width
+    );
   };
 
   generatePathStringRoot = () => {
-    let { fromNodeKey, toNodeKey, getRef, dir } = this.props;
+    let { fromNodeKey, toNodeKey, getRef, dir, dropDir } = this.props;
+    // if (dropDir) logd("generatePathStringRoot");
     let rootTopic: HTMLElement = getRef(`topic-${fromNodeKey}`);
     let toElementTopic: HTMLElement = getRef(`topic-${toNodeKey}`);
     if (!rootTopic || !toElementTopic) {
@@ -296,47 +233,94 @@ export class LinkWidget<
     }
 
     let toElementTopicRect = toElementTopic.getBoundingClientRect();
+    let fakeDelta =
+      dropDir != null
+        ? dropDir === "before"
+          ? -(toElementTopicRect.height - 40)
+          : toElementTopicRect.height - 40
+        : 0;
+    // if (dropDir) logd("fakeDelta:", fakeDelta);
     let rootTopicRect = rootTopic.getBoundingClientRect();
-    let fromX, fromY, toX, toY;
+    let fromX, fromY, toX, toY, partLayerElement, partLayerRect;
     if (dir === NodeWidgetDirection.RIGHT) {
-      let partLayerElement: HTMLElement = getRef("bm-node-layer-right");
-      let partLayerRect = partLayerElement.getBoundingClientRect();
+      partLayerElement = getRef("bm-node-layer-right");
+      partLayerRect = partLayerElement.getBoundingClientRect();
       fromX = 0;
-      fromY = Math.round(
-        rootTopicRect.top - partLayerRect.top + rootTopicRect.height / 2
-      );
+
       toX = toElementTopicRect.left - rootTopicRect.right;
-      toY = Math.round(
-        toElementTopicRect.top -
-          partLayerRect.top +
-          toElementTopicRect.height / 2
-      );
     } else {
-      let partLayerElement: HTMLElement = getRef("bm-node-layer-left");
-      let partLayerRect = partLayerElement.getBoundingClientRect();
+      partLayerElement = getRef("bm-node-layer-left");
+      partLayerRect = partLayerElement.getBoundingClientRect();
       fromX = partLayerRect.right - partLayerRect.left;
-      fromY = Math.round(
-        rootTopicRect.top - partLayerRect.top + rootTopicRect.height / 2
-      );
-
-      toX = Math.round(toElementTopicRect.right - partLayerRect.left);
-      toY = Math.round(
-        toElementTopicRect.top -
-          partLayerRect.top +
-          toElementTopicRect.height / 2
-      );
+      toX = toElementTopicRect.right - partLayerRect.left;
     }
-    if (fromY === toY) return `M${fromX},${fromY}L${toX},${toY}`;
+    fromY = rootTopicRect.top - partLayerRect.top + rootTopicRect.height / 2;
+    toY =
+      toElementTopicRect.top -
+      partLayerRect.top +
+      toElementTopicRect.height / 2 +
+      fakeDelta;
 
-    let centerX = (fromX + toX) / 2;
-    let centerY = (fromY + toY) / 2;
-
-    if (dir === NodeWidgetDirection.RIGHT) {
-      return `M${fromX},${fromY}C${fromX},${centerY},${centerX},${toY},${toX},${toY}`;
-    } else {
-      return `M${toX},${toY}C${centerX},${toY},${fromX},${centerY},${fromX},${fromY}`;
-    }
+    return this.generatePathStringWithParameter(
+      dir,
+      fromX,
+      fromY,
+      toX,
+      toY,
+      dropDir,
+      toElementTopicRect.width
+    );
   };
+
+  generatePathStringWithParameter = (
+    dir,
+    fromX,
+    fromY,
+    toX,
+    toY,
+    dropFakeDir,
+    fakeRectWidth
+  ) => {
+    let curve;
+    if (fromY === toY) {
+      curve = `M${fromX},${fromY}L${toX},${toY}`;
+    } else {
+      let centerX = (fromX + toX) / 2;
+      let centerY = (fromY + toY) / 2;
+
+      if (dir === NodeWidgetDirection.RIGHT) {
+        curve = `M${fromX},${fromY}C${fromX},${centerY},${centerX},${toY},${toX},${toY}`;
+      } else {
+        curve = `M${toX},${toY}C${centerX},${toY},${fromX},${centerY},${fromX},${fromY}`;
+      }
+      log(this.props.toNodeKey, "curve:", curve);
+    }
+    return (
+      <g>
+        <path d={curve} />
+        {dropFakeDir && (
+          <path
+            d={this.generateFakeRectPathString(dir, toX, toY, fakeRectWidth)}
+          />
+        )}
+      </g>
+    );
+  };
+
+  generateFakeRectPathString = (dir, toX, toY, width) => {
+    let res;
+    let halfHeight = 8;
+    if (dir === NodeWidgetDirection.RIGHT) {
+      res = `M${toX},${toY - halfHeight}H${toX + width}V${toY +
+        halfHeight}H${toX}V${toY - halfHeight}`;
+    } else {
+      res = `M${toX},${toY - halfHeight}H${toX - width}V${toY +
+        halfHeight}H${toX}V${toY - halfHeight}`;
+    }
+    logd("generateFakeRectPathString", res);
+    return res;
+  };
+
   render() {
     this.prevFromChildrenRect = this.fromChildrenRect;
     this.prevPartLayerRect = this.partLayerRect;
@@ -352,13 +336,12 @@ export class LinkWidget<
             xmlns="http://www.w3.org/2000/svg"
             version="1.1"
             strokeWidth="2px"
+            strokeDasharray={this.props.dropDir ? "5,5" : null}
             stroke={strokeColor}
             fill="none"
             {...this.state}
           >
-            <g>
-              <path d={this.generatePathString()} />
-            </g>
+            {this.generatePath()}
           </svg>
         </Link>
       );

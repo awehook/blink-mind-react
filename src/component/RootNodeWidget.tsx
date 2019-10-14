@@ -10,6 +10,9 @@ import { LinkWidget } from "./LinkWidget";
 import { TopicContentWidget } from "./TopicContentWidget";
 import { OpFunction } from "../types/FunctionType";
 import styled from "styled-components";
+import { createSubNodesAndSubLinks } from "./utils";
+import debug from "debug";
+const log = debug("render:RootNode");
 
 const NodeLayerPart = styled.div`
   display: flex;
@@ -23,8 +26,8 @@ const NodeLayerPart = styled.div`
   padding: ${props =>
     //@ts-ignore
     props.dir === NodeWidgetDirection.LEFT
-      ? "0px 60px 0px 0px"
-      : "0px 0px 0px 60px"};
+      ? "15px 60px 15px 0px"
+      : "15px 0px 15px 60px"};
 `;
 
 const Topic = styled.div`
@@ -99,65 +102,31 @@ export class RootNodeWidget<
   }
 
   layoutSubLinks = () => {
-    let { diagramState, nodeKey, getRef } = this.props;
-    let { mindMapModel } = diagramState;
-    let node = mindMapModel.getItem(nodeKey);
-    if (node.getSubItemKeys().size > 0 && !node.getCollapse()) {
-      node.getSubItemKeys().forEach(itemKey => {
-        let linkKey = `link-${nodeKey}-${itemKey}`;
-        // @ts-ignore
-        let linkWidget: LinkWidget = getRef(linkKey);
-        linkWidget.layout();
-      });
-    }
+    const { getRef } = this.props;
+    this.subLinksKeys.forEach(linkKey => {
+      // @ts-ignore
+      let linkWidget: LinkWidget = getRef(linkKey);
+      linkWidget && linkWidget.layout();
+    });
   };
 
   collapseIcon: HTMLElement;
   oldCollapseIconRect: ClientRect;
+  subLinksKeys = [];
 
   // 以左右或者上下部分来分别进行渲染
   renderPartItems(items: string[], dir: NodeWidgetDirection) {
-    let {
-      diagramState,
-      op,
-      setViewBoxScroll,
-      setViewBoxScrollDelta,
-      saveRef,
-      getRef
-    } = this.props;
+    let { saveRef } = this.props;
 
     if (items.length === 0) return null;
-    let subItems = [];
-    let subLinks = [];
-    items.forEach(itemKey => {
-      let linkKey = `link-${this.props.nodeKey}-${itemKey}`;
-      subItems.push(
-        <NodeWidget
-          key={itemKey}
-          nodeKey={itemKey}
-          dir={dir}
-          diagramState={diagramState}
-          op={op}
-          setViewBoxScroll={setViewBoxScroll}
-          setViewBoxScrollDelta={setViewBoxScrollDelta}
-          saveRef={saveRef}
-          getRef={getRef}
-        />
-      );
-      subLinks.push(
-        <LinkWidget
-          diagramState={diagramState}
-          key={linkKey}
-          ref={saveRef(linkKey)}
-          fromNodeKey={this.props.nodeKey}
-          toNodeKey={itemKey}
-          dir={dir}
-          saveRef={saveRef}
-          getRef={getRef}
-          isRoot
-        />
-      );
-    });
+    const res = createSubNodesAndSubLinks(
+      { ...this.props, dir, isRoot: true },
+      items
+    );
+    if (!res) return null;
+    const { subItems, subLinks, subLinksKeys } = res;
+    this.subLinksKeys.push(...subLinksKeys);
+
     let cxName = `bm-node-layer-${
       dir === NodeWidgetDirection.LEFT ? "left" : "right"
     }`;
@@ -171,9 +140,11 @@ export class RootNodeWidget<
   }
 
   render() {
+    log("render");
     let { diagramState, op, nodeKey, saveRef, getRef } = this.props;
     let { mindMapModel, config } = diagramState;
     let [leftItems, rightItems] = this.getPartItems(config.direction);
+    this.subLinksKeys = [];
     return (
       <>
         {this.renderPartItems(leftItems, NodeWidgetDirection.LEFT)}

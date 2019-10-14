@@ -1,13 +1,13 @@
 import { MindNodeModel } from "./MindNodeModel";
 import { MindMapModel } from "./MindMapModel";
-import { FocusItemMode, NodeKeyType } from "../types/Node";
+import {DropDirType, FocusItemMode, NodeKeyType} from "../types/Node";
 import { uuidv4 } from "../util";
-import { Stack } from "immutable";
+import { Stack, List } from "immutable";
 import { Value } from "slate";
 import { NodeRelationship } from "./NodeRelationship";
 import debug from "debug";
 
-const log = debug('model:modifier');
+const log = debug("model:modifier");
 export enum OpType {
   UNDO = 1,
   REDO,
@@ -22,6 +22,7 @@ export enum OpType {
   ADD_CHILD,
   ADD_SIBLING,
   DELETE_NODE,
+  SET_DROP_AREA_KEY,
   DRAG_AND_DROP
 }
 
@@ -42,12 +43,13 @@ export class MindMapModelModifier {
     [OpType.SET_ITEM_DESC, MindMapModelModifier.setItemDesc],
     [OpType.FOCUS_ITEM, MindMapModelModifier.focusItem],
     [OpType.START_EDITING_CONTENT, MindMapModelModifier.startEditingContent],
-    [OpType.START_EDITING_DESC,MindMapModelModifier.startEditingDesc],
-    [OpType.END_EDITING,MindMapModelModifier.endEditing],
+    [OpType.START_EDITING_DESC, MindMapModelModifier.startEditingDesc],
+    [OpType.END_EDITING, MindMapModelModifier.endEditing],
     [OpType.SET_POPUP_MENU_ITEM_KEY, MindMapModelModifier.setPopupMenuItemKey],
     [OpType.ADD_CHILD, MindMapModelModifier.addChild],
     [OpType.ADD_SIBLING, MindMapModelModifier.addSibling],
     [OpType.DELETE_NODE, MindMapModelModifier.deleteNode],
+    [OpType.SET_DROP_AREA_KEY, MindMapModelModifier.setDropAreaKey],
     [OpType.DRAG_AND_DROP, MindMapModelModifier.dragAndDrop]
   ]);
 
@@ -142,26 +144,19 @@ export class MindMapModelModifier {
     return model;
   }
 
-  static setFocusItemMode(
-    model: MindMapModel,
-    mode: FocusItemMode
-  ) {
+  static setFocusItemMode(model: MindMapModel, mode: FocusItemMode) {
     if (mode !== model.getFocusItemMode())
       model = model.set("focusItemMode", mode);
     return model;
   }
 
-  static setFocusItemKey(
-    model: MindMapModel,
-    key: NodeKeyType
-  ) {
-    if (key !== model.getFocusItemKey())
-      model = model.set("focusItemKey", key);
+  static setFocusItemKey(model: MindMapModel, key: NodeKeyType) {
+    if (key !== model.getFocusItemKey()) model = model.set("focusItemKey", key);
     return model;
   }
 
   static setPopupMenuItemKey(model: MindMapModel, itemKey: NodeKeyType) {
-    log('set popup menu item key ' ,itemKey);
+    log("set popup menu item key ", itemKey);
     if (itemKey !== model.getPopupMenuItemKey()) {
       if (itemKey !== model.getFocusItemKey())
         model = model.set("focusItemKey", itemKey);
@@ -175,7 +170,7 @@ export class MindMapModelModifier {
     model: MindMapModel,
     itemKey: NodeKeyType,
     content: any
-  ) : MindMapModel {
+  ): MindMapModel {
     let item = model.getItem(itemKey);
     let needPush = false;
     if (item) {
@@ -195,7 +190,11 @@ export class MindMapModelModifier {
     return model;
   }
 
-  static setItemDesc(model: MindMapModel, itemKey: NodeKeyType, desc: any) : MindMapModel{
+  static setItemDesc(
+    model: MindMapModel,
+    itemKey: NodeKeyType,
+    desc: any
+  ): MindMapModel {
     let item = model.getItem(itemKey);
     let needPush = false;
     if (item) {
@@ -217,41 +216,54 @@ export class MindMapModelModifier {
     return model;
   }
 
+  static setDropAreaKey(
+    model: MindMapModel,
+    itemKey: NodeKeyType
+  ): MindMapModel {
+    if (itemKey !== model.getDropAreaKey()) {
+      model = model.set("dropAreaKey", itemKey);
+    }
+    log("setDropAreaKey:", model.getDropAreaKey());
+    return model;
+  }
+
   static startEditingContent(model: MindMapModel, itemKey: NodeKeyType) {
-    log('set editing item key ', itemKey);
+    log("set editing item key ", itemKey);
     if (itemKey !== model.getEditingContentItemKey()) {
-      model = MindMapModelModifier.setFocusItemKey(model,itemKey);
-      model = MindMapModelModifier.setFocusItemMode(model,FocusItemMode.EditingContent);
+      model = MindMapModelModifier.setFocusItemKey(model, itemKey);
+      model = MindMapModelModifier.setFocusItemMode(
+        model,
+        FocusItemMode.EditingContent
+      );
     }
     return model;
   }
 
   static startEditingDesc(
     model: MindMapModel,
-    itemKey: NodeKeyType,
-  ) : MindMapModel {
+    itemKey: NodeKeyType
+  ): MindMapModel {
     let item = model.getItem(itemKey);
     if (item) {
       let desc = item.getDesc();
-      if (desc===null || desc===undefined) {
-        model = MindMapModelModifier.setItemDesc(model,itemKey,"");
+      if (desc === null || desc === undefined) {
+        model = MindMapModelModifier.setItemDesc(model, itemKey, "");
       }
     }
     if (itemKey !== model.getEditingDescItemKey()) {
       model = MindMapModelModifier.setFocusItemKey(model, itemKey);
-      model = MindMapModelModifier.setFocusItemMode(model, FocusItemMode.EditingDesc);
+      model = MindMapModelModifier.setFocusItemMode(
+        model,
+        FocusItemMode.EditingDesc
+      );
     }
     return model;
   }
 
-  static endEditing(
-    model: MindMapModel,
-    itemKey: NodeKeyType,
-  ) : MindMapModel {
-    model = MindMapModelModifier.setFocusItemMode(model,FocusItemMode.Normal);
-    return  model;
+  static endEditing(model: MindMapModel, itemKey: NodeKeyType): MindMapModel {
+    model = MindMapModelModifier.setFocusItemMode(model, FocusItemMode.Normal);
+    return model;
   }
-
 
   static addChild(model: MindMapModel, itemKey: NodeKeyType) {
     let item = model.getItem(itemKey);
@@ -287,7 +299,7 @@ export class MindMapModelModifier {
     return model;
   }
   static deleteNode(model: MindMapModel, itemKey: NodeKeyType) {
-    log('deleteItem ',itemKey);
+    log("deleteItem ", itemKey);
     if (itemKey === model.getRootItemKey()) {
       return model;
     }
@@ -355,38 +367,107 @@ export class MindMapModelModifier {
     return NodeRelationship.None;
   }
 
-  static dragAndDrop(
+  static canDragAndDrop(
     model: MindMapModel,
     srcKey: NodeKeyType,
-    dstKey: NodeKeyType
-  ) {
+    dstKey: NodeKeyType,
+    dir: DropDirType
+  ): boolean {
     if (
       srcKey === model.getEditorRootItemKey() ||
       srcKey === dstKey ||
       MindMapModelModifier.getRelation(model, srcKey, dstKey) ===
         NodeRelationship.Ancestor
     )
-      return model;
+      return false;
 
     let srcItem = model.getItem(srcKey);
+    if (srcItem.getParentKey() === dstKey && dir==='in') return false;
+    return true;
+  }
+
+  static dragAndDrop(
+    model: MindMapModel,
+    srcKey: NodeKeyType,
+    arg: {
+      dstKey: NodeKeyType;
+      dir: DropDirType;
+    }
+  ) {
+    const { dstKey, dir } = arg;
+    if (!MindMapModelModifier.canDragAndDrop(model, srcKey, dstKey,dir))
+      return model;
+    let srcItem = model.getItem(srcKey);
     let dstItem = model.getItem(dstKey);
-    if (srcItem.getParentKey() === dstKey) return model;
 
     let srcParentKey = srcItem.getParentKey();
     let srcParentItem = model.getItem(srcParentKey);
     let srcParentSubItemKeys = srcParentItem.getSubItemKeys();
-    let index = srcParentSubItemKeys.indexOf(srcKey);
+    let srcIndex = srcParentSubItemKeys.indexOf(srcKey);
 
-    srcParentSubItemKeys = srcParentSubItemKeys.delete(index);
+    srcParentSubItemKeys = srcParentSubItemKeys.delete(srcIndex);
 
-    let dstSubItemKeys = dstItem.getSubItemKeys();
-    dstSubItemKeys = dstSubItemKeys.push(srcKey);
-    model = model.withMutations(m => {
-      m.setIn(["itemMap", srcParentKey, "subItemKeys"], srcParentSubItemKeys)
-        .setIn(["itemMap", srcKey, "parentKey"], dstKey)
-        .setIn(["itemMap", dstKey, "subItemKeys"], dstSubItemKeys)
-        .setIn(["itemMap", dstKey, "collapse"], false);
-    });
+    if (dir === "in") {
+      let dstSubItemKeys = dstItem.getSubItemKeys();
+      dstSubItemKeys = dstSubItemKeys.push(srcKey);
+      model = model.withMutations(m => {
+        m.setIn(["itemMap", srcParentKey, "subItemKeys"], srcParentSubItemKeys)
+          .setIn(["itemMap", srcKey, "parentKey"], dstKey)
+          .setIn(["itemMap", dstKey, "subItemKeys"], dstSubItemKeys)
+          .setIn(["itemMap", dstKey, "collapse"], false)
+          .set("dropAreaKey", null);
+      });
+    } else {
+      let dstParentKey = dstItem.getParentKey();
+      let dstParentItem = model.getItem(dstParentKey);
+      let dstParentSubItemKeys = dstParentItem.getSubItemKeys();
+      let dstIndex = dstParentSubItemKeys.indexOf(dstKey);
+      //src 和 dst 的父亲相同，这种情况要做特殊处理
+      if (srcParentKey === dstParentKey) {
+        let newDstParentSubItems = List();
+        dstParentSubItemKeys.forEach(key => {
+          if (key !== srcKey) {
+            if (key === dstKey) {
+              if (dir === "before") {
+                newDstParentSubItems = newDstParentSubItems.push(srcKey).push(key);
+              } else {
+                newDstParentSubItems = newDstParentSubItems.push(key).push(srcKey);
+              }
+            } else {
+              newDstParentSubItems = newDstParentSubItems.push(key);
+            }
+          }
+        });
+        model = model.withMutations(m => {
+          m.setIn(
+            ["itemMap", dstParentKey, "subItemKeys"],
+            newDstParentSubItems
+          ).set("dropAreaKey", null);
+        });
+      } else {
+        if (dir === "before") {
+          dstParentSubItemKeys = dstParentSubItemKeys.insert(dstIndex, srcKey);
+        } else if (dir === "after") {
+          dstParentSubItemKeys = dstParentSubItemKeys.insert(
+            dstIndex + 1,
+            srcKey
+          );
+        }
+        model = model.withMutations(m => {
+          m.setIn(
+            ["itemMap", srcParentKey, "subItemKeys"],
+            srcParentSubItemKeys
+          )
+            .setIn(["itemMap", srcKey, "parentKey"], dstParentKey)
+            .setIn(
+              ["itemMap", dstParentKey, "subItemKeys"],
+              dstParentSubItemKeys
+            )
+            .setIn(["itemMap", dstParentKey, "collapse"], false)
+            .set("dropAreaKey", null);
+        });
+      }
+    }
     return model;
   }
 }

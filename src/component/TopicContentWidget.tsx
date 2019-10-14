@@ -2,7 +2,7 @@ import * as React from "react";
 import { BaseWidget } from "./common/BaseWidget";
 import { NodeKeyType, NodeWidgetDirection } from "../types/Node";
 import { DiagramState } from "../model/DiagramState";
-import { OpType } from "../model/MindMapModelModifier";
+import { MindMapModelModifier, OpType } from "../model/MindMapModelModifier";
 import { NodePopupMenu } from "./NodePopupMenu";
 import { OpFunction } from "../types/FunctionType";
 import styled from "styled-components";
@@ -10,6 +10,7 @@ import debug from "debug";
 
 const log = debug("node:topic");
 const logr = debug("render:topic");
+const logd = debug("drop:topic");
 
 const TopicContent = styled.div`
   display: flex;
@@ -22,8 +23,9 @@ const TopicContent = styled.div`
     //@ts-ignore
     props.dragEnter
       ? props.theme.color.primary
+      : 
       //@ts-ignore
-      : props.isRoot
+      props.isRoot
       ? props.theme.color.primary
       : null};
   //@ts-ignore
@@ -37,6 +39,11 @@ const DescIcon = styled.div`
   }
 `;
 
+const DropArea = styled.div`
+  height: 20px;
+  width: 100%;
+`;
+
 interface TopicContentWidgetProps {
   diagramState: DiagramState;
   op: OpFunction;
@@ -45,6 +52,7 @@ interface TopicContentWidgetProps {
   draggable: boolean;
   saveRef: Function;
   getRef: Function;
+  isRoot?: boolean;
 }
 
 interface TopicContentWidgetState {
@@ -76,14 +84,35 @@ export class TopicContentWidget extends BaseWidget<
     e.preventDefault();
   };
 
-  onDragEnter = () => {
-    this.setState({
-      dragEnter: true
-    });
+  onDragEnter = e => {
+    const { op, nodeKey } = this.props;
+    const tag = e.nativeEvent.target.dataset.tag;
+    if (
+      MindMapModelModifier.canDragAndDrop(
+        this.props.diagramState.mindMapModel,
+        dragSrcItemKey,
+        this.props.nodeKey,
+        tag
+      )
+    ) {
+
+      if (tag) {
+        op(OpType.SET_DROP_AREA_KEY, `${tag}:${nodeKey}`);
+        return;
+      }
+      this.setState({
+        dragEnter: true
+      });
+    }
   };
 
   onDragLeave = e => {
-    const { getRef, nodeKey } = this.props;
+    const { getRef, nodeKey, op } = this.props;
+    const tag = e.nativeEvent.target.dataset.tag;
+    if (tag) {
+      op(OpType.SET_DROP_AREA_KEY, null);
+      return;
+    }
     let relatedTarget = e.nativeEvent.relatedTarget;
     let content = getRef(`content-${nodeKey}`);
     if (content == relatedTarget || content.contains(relatedTarget)) {
@@ -94,13 +123,18 @@ export class TopicContentWidget extends BaseWidget<
     });
   };
 
-  onDrop = () => {
+  onDrop = e => {
     log("onDrop");
     let { nodeKey, op } = this.props;
-    op(OpType.DRAG_AND_DROP, dragSrcItemKey, nodeKey);
-    this.setState({
-      dragEnter: false
-    });
+    const tag = e.nativeEvent.target.dataset.tag;
+    if (tag) {
+      op(OpType.DRAG_AND_DROP, dragSrcItemKey, { dstKey: nodeKey, dir: tag });
+    } else {
+      op(OpType.DRAG_AND_DROP, dragSrcItemKey, { dstKey: nodeKey, dir: "in" });
+      this.setState({
+        dragEnter: false
+      });
+    }
   };
 
   isDoubleClick: boolean;
@@ -233,49 +267,58 @@ export class TopicContentWidget extends BaseWidget<
     const showDescIcon = descString !== null && descString !== "";
 
     return (
-      <TopicContent
-        //@ts-ignore
-        isRoot={dir === NodeWidgetDirection.ROOT}
-        dragEnter={this.state.dragEnter}
-        draggable={draggable}
-        // className={cx("content", {
-        //   [`content-dir-${dir}`]: dir !== NodeWidgetDirection.ROOT,
-        //   "root-topic": visualLevel === 0,
-        //   "primary-topic": visualLevel === 1,
-        //   "normal-topic": visualLevel > 1,
-        //   "content-drag-enter": this.state.dragEnter
-        // })}
-        style={itemStyle}
-        ref={saveRef(`content-${nodeKey}`)}
-        onDragStart={this.onDragStart}
-        onDragEnter={this.onDragEnter}
-        onDragLeave={this.onDragLeave}
-        onDragOver={this.onDragOver}
-        onDrop={this.onDrop}
-        onClick={this.onClick}
-        onDoubleClick={this.onDoubleClick}
-      >
-        {diagramConfig.editorRendererFn(diagramState, op, nodeKey, saveRef)}
-        {showDescIcon && (
-          <DescIcon
-            className="iconfont bm-notes"
-            onClick={e => {
-              e.stopPropagation();
-              op(OpType.START_EDITING_DESC, nodeKey);
-            }}
-          />
-        )}
-        {showPopMenu && (
-          <NodePopupMenu
-            diagramState={diagramState}
-            op={op}
-            nodeKey={nodeKey}
-            visible
-            handleVisibleChange={this.handlePopMenuVisibleChange}
-            getRef={getRef}
-          />
-        )}
-      </TopicContent>
+      <div>
+        <DropArea
+          data-tag="before"
+          onDragEnter={this.onDragEnter}
+          onDragLeave={this.onDragLeave}
+          onDrop={this.onDrop}
+          onDragOver={this.onDragOver}
+        />
+        <TopicContent
+          //@ts-ignore
+          isRoot={dir === NodeWidgetDirection.ROOT}
+          dragEnter={this.state.dragEnter}
+          draggable={draggable}
+          style={itemStyle}
+          ref={saveRef(`content-${nodeKey}`)}
+          onDragStart={this.onDragStart}
+          onDragEnter={this.onDragEnter}
+          onDragLeave={this.onDragLeave}
+          onDragOver={this.onDragOver}
+          onDrop={this.onDrop}
+          onClick={this.onClick}
+          onDoubleClick={this.onDoubleClick}
+        >
+          {diagramConfig.editorRendererFn(diagramState, op, nodeKey, saveRef)}
+          {showDescIcon && (
+            <DescIcon
+              className="iconfont bm-notes"
+              onClick={e => {
+                e.stopPropagation();
+                op(OpType.START_EDITING_DESC, nodeKey);
+              }}
+            />
+          )}
+          {showPopMenu && (
+            <NodePopupMenu
+              diagramState={diagramState}
+              op={op}
+              nodeKey={nodeKey}
+              visible
+              handleVisibleChange={this.handlePopMenuVisibleChange}
+              getRef={getRef}
+            />
+          )}
+        </TopicContent>
+        <DropArea
+          data-tag="after"
+          onDragEnter={this.onDragEnter}
+          onDragLeave={this.onDragLeave}
+          onDrop={this.onDrop}
+          onDragOver={this.onDragOver}
+        />
+      </div>
     );
   }
 }

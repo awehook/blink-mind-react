@@ -8,6 +8,7 @@ type MindMapRecordType = {
   itemMap: Map<NodeKeyType, MindNodeModel>;
   focusItemKey: NodeKeyType;
   focusItemMode: FocusItemMode;
+  dropAreaKey: string;
 };
 
 const defaultMindMapRecord: MindMapRecordType = {
@@ -15,7 +16,8 @@ const defaultMindMapRecord: MindMapRecordType = {
   editorRootItemKey: null,
   itemMap: Map(),
   focusItemKey: null,
-  focusItemMode: FocusItemMode.Normal
+  focusItemMode: FocusItemMode.Normal,
+  dropAreaKey: null
 };
 
 export class MindMapModel extends Record(defaultMindMapRecord) {
@@ -26,8 +28,12 @@ export class MindMapModel extends Record(defaultMindMapRecord) {
     return this.get("rootItemKey");
   }
 
-  getRootItem() : MindNodeModel {
+  getRootItem(): MindNodeModel {
     return this.getItem(this.getRootItemKey());
+  }
+
+  getDropAreaKey(): string {
+    return this.get("dropAreaKey");
   }
 
   getEditorRootItemKey(): NodeKeyType {

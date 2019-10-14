@@ -1,3 +1,7 @@
+# blink-mind-react
+<a href="https://github.com/awehook/blink-mind-react"><img src="https://img.shields.io/github/license/awehook/blink-mind-react.svg" alt="MIT"/></a>
+[![npm version](https://img.shields.io/npm/v/blink-mind-react.svg?style=flat)](https://www.npmjs.com/package/blink-mind-react)
+
 A mind map library for react  write in  typescript which use immutable.js for state management.
 
 The mind map can drag to any area of the view container area. 

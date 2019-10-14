@@ -22,17 +22,17 @@ import DragDropDemo7 from "./demo-drag-drop/Demo7";
 import DragDropDemo8 from "./demo-drag-drop/Demo8";
 
 let debugNameSpaces = [
-  "node:*",
-  "model:*",
-  "render:*"
+  // "node:*",
+  // "model:*",
+  // "node:topic"
+  // "render:*",
+  // "drop:*",
+  // "render:RootNode",
+  // "node:LinkWidget",
   // "-node:LinkWidget"
 ];
 
-localStorage.debug = debugNameSpaces.join(',');
-
-storiesOf("Welcome", module).add("to Storybook", () => (
-  <Welcome showApp={linkTo("Button")} />
-));
+localStorage.debug = debugNameSpaces.join(",");
 
 storiesOf("blink-mind-react-demo", module)
   .add("SimpleDemo", () => <SimpleDemo />)
@@ -52,4 +52,3 @@ storiesOf("drag-drop", module)
   .add("demo6", () => <DragDropDemo6 />)
   .add("demo7", () => <DragDropDemo7 />)
   .add("demo8", () => <DragDropDemo8 />);
-

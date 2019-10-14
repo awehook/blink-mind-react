@@ -9,14 +9,16 @@ import * as cx from "classnames";
 import { OpFunction } from "../types/FunctionType";
 import styled from "styled-components";
 import debug from "debug";
+import { createSubNodesAndSubLinks } from "./utils";
 
 const log = debug("node:NodeWidget");
 const logr = debug("render:NodeWidget");
+const logd = debug("drop:NodeWidget");
 
 const Node = styled.div`
   display: flex;
   align-items: center;
-  padding: 10px;
+  padding: 0px 10px;
   flex-direction: ${props =>
     //@ts-ignore
     props.dir === NodeWidgetDirection.RIGHT ? "row" : "row-reverse"};
@@ -24,6 +26,7 @@ const Node = styled.div`
 
 const NodeChildren = styled.div`
   position: relative;
+  padding: 11px 0px;
 `;
 
 const NodeTopic = styled.div`
@@ -38,8 +41,10 @@ const NodeTopic = styled.div`
 const CollapseLine = styled.div`
   height: 2px;
   width: 30px;
-  //@ts-ignore
-  background: ${props => (props.hide ? "transparent" : props.theme.color.primary)};
+
+  background: ${props =>
+    //@ts-ignore
+    props.hide ? "transparent" : props.theme.color.primary};
 `;
 
 const Icon = styled.div`
@@ -50,7 +55,7 @@ const Icon = styled.div`
   width: 20px;
   height: 20px;
   text-align: center;
-  background-color: ${props=>props.theme.color.primary};
+  background-color: ${props => props.theme.color.primary};
   cursor: pointer;
   padding: 0;
   font-size: 14px;
@@ -115,17 +120,11 @@ export class NodeWidget<
   }
 
   layoutSubLinks = () => {
-    let { diagramState, nodeKey, getRef } = this.props;
-    let { mindMapModel } = diagramState;
-    let node = mindMapModel.getItem(nodeKey);
-    if (node.getSubItemKeys().size > 0 && !node.getCollapse()) {
-      node.getSubItemKeys().forEach(itemKey => {
-        let linkKey = `link-${nodeKey}-${itemKey}`;
-        // @ts-ignore
-        let linkWidget: LinkWidget = getRef(linkKey);
-        linkWidget.layout();
-      });
-    }
+    const { getRef } = this.props;
+    this.subLinksKeys.forEach(linkKey => {
+      let linkWidget = getRef(linkKey);
+      linkWidget.layout();
+    });
   };
 
   collapseIconRef = ref => {
@@ -166,63 +165,26 @@ export class NodeWidget<
     // return false;
   }
 
-  renderSubItems() {
-    let {
-      diagramState,
-      op,
-      nodeKey,
-      dir,
-      setViewBoxScroll,
-      setViewBoxScrollDelta,
-      saveRef,
-      getRef
-    } = this.props;
-    let { mindMapModel } = diagramState;
-    let node = mindMapModel.getItem(nodeKey);
-    if (node.getSubItemKeys().size === 0 || node.getCollapse()) return null;
-    let subItems = [],
-      subLinks = [];
+  subLinksKeys = [];
 
-    node.getSubItemKeys().forEach(itemKey => {
-      subItems.push(
-        <NodeWidget
-          key={itemKey}
-          nodeKey={itemKey}
-          dir={dir}
-          diagramState={diagramState}
-          op={op}
-          setViewBoxScroll={setViewBoxScroll}
-          setViewBoxScrollDelta={setViewBoxScrollDelta}
-          saveRef={saveRef}
-          getRef={getRef}
-        />
-      );
-      let linkKey = `link-${nodeKey}-${itemKey}`;
-      subLinks.push(
-        <LinkWidget
-          diagramState={diagramState}
-          key={linkKey}
-          fromNodeKey={nodeKey}
-          toNodeKey={itemKey}
-          dir={dir}
-          getRef={getRef}
-          ref={saveRef(linkKey)}
-        />
-      );
-    });
+  renderSubItems() {
+    let { diagramState, dir, saveRef, nodeKey } = this.props;
+    const { mindMapModel } = diagramState;
+    const node = mindMapModel.getItem(nodeKey);
     let diagramConfig = diagramState.config;
     let inlineStyle =
       dir === NodeWidgetDirection.LEFT
         ? {
-            // paddingTop: diagramConfig.vMargin,
-            // paddingBottom: diagramConfig.vMargin,
             paddingRight: diagramConfig.hMargin
           }
         : {
-            // paddingTop: diagramConfig.vMargin,
-            // paddingBottom: diagramConfig.vMargin,
             paddingLeft: diagramConfig.hMargin
           };
+    let items = node.getSubItemKeys().toArray();
+    const res = createSubNodesAndSubLinks(this.props,items);
+    if (!res) return null;
+    const { subItems, subLinks, subLinksKeys } = res;
+    this.subLinksKeys = subLinksKeys;
     return (
       <NodeChildren style={inlineStyle} ref={saveRef(`children-${nodeKey}`)}>
         {subItems}
