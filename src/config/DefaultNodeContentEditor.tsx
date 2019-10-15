@@ -60,8 +60,8 @@ export class DefaultNodeContentEditor extends React.Component<
       log('nextNodeKey !== nodeKey');
       return true;
     }
-    const editingKey = ds.getMindMapModel().getEditingContentItemKey();
-    const nextEditingKey = nextDS.getMindMapModel().getEditingContentItemKey();
+    const editingKey = ds.getModel().getEditingContentItemKey();
+    const nextEditingKey = nextDS.getModel().getEditingContentItemKey();
 
     if (
       editingKey !== nextEditingKey &&
@@ -70,8 +70,7 @@ export class DefaultNodeContentEditor extends React.Component<
       return true;
 
     if (
-      ds.getMindMapModel().getItem(nodeKey) !==
-      nextDS.getMindMapModel().getItem(nextNodeKey)
+      ds.getModel().getItem(nodeKey) !== nextDS.getModel().getItem(nextNodeKey)
     ) {
       log(
         'ds.mindMapModel.getItem(nodeKey) !== nextDS.mindMapModel.getItem(nextNodeKey)'
@@ -84,7 +83,7 @@ export class DefaultNodeContentEditor extends React.Component<
   render(): React.ReactNode {
     log('render');
     const { nodeKey, diagramState, saveRef } = this.props;
-    const mindMapModel = diagramState.getMindMapModel();
+    const mindMapModel = diagramState.getModel();
     const nodeModel = mindMapModel.getItem(nodeKey);
     const content = nodeModel.getContent();
     const editingItemKey = mindMapModel.getEditingContentItemKey();

@@ -14,7 +14,7 @@ export function createSubNodesAndSubLinks(props, items) {
     getRef,
     isRoot
   } = props;
-  const { mindMapModel } = diagramState;
+  const mindMapModel = diagramState.getModel();
   const node = mindMapModel.getItem(nodeKey);
   const dropAreaKey = mindMapModel.getDropAreaKey();
   let dropArea;

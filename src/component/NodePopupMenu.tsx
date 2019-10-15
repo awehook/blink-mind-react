@@ -105,7 +105,7 @@ export class NodePopupMenu extends React.Component<
   render() {
     log('render:', this.props.visible);
     const { visible, nodeKey, items, diagramState, op } = this.props;
-    const editorRootKey = diagramState.getMindMapModel().getEditorRootItemKey();
+    const editorRootKey = diagramState.getModel().getEditorRootItemKey();
     const menuItems = items.map(item =>
       nodeKey === editorRootKey && !item.rootCanUse ? null : (
         <NodePopupMenuItem

@@ -9,7 +9,7 @@ export type ToolbarItemConfig = {
   icon: string;
   label: string;
   opType?: OpType;
-  clickHandler?: (diagramState, nodeKey) => void;
+  clickHandler?: (diagramState, nodeKey?) => void;
 };
 
 interface MindToolbarItemProps {
@@ -28,27 +28,15 @@ export class ToolbarItem extends React.Component<
     super(props);
   }
   onClick = () => {
-    let config = this.props.config;
-    if (config.opType) {
+    const {config,diagramState} = this.props;
+    if(config.clickHandler)
+      config.clickHandler(diagramState);
+    else if (config.opType) {
       this.props.op(config.opType, null);
-    } else {
-      switch (config.icon) {
-        case "newfile":
-          break;
-        case "openfile":
-          break;
-        case "export":
-          this.export();
-          break;
-      }
     }
   };
 
-  export = () => {
-    let obj = convertMindMapModelToRaw(this.props.diagramState.getMindMapModel());
-    let json = JSON.stringify(obj);
-    console.log(json);
-  };
+
 
   render() {
     const { config } = this.props;

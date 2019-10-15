@@ -21,6 +21,9 @@ if (production) {
         },
         ecma: 5,
         mangle: true,
+        // mangle: {
+        //   properties: true
+        // },
         warnings: false,
       },
       sourceMap: true

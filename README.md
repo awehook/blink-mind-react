@@ -17,19 +17,19 @@ The online demo is [react-mindmap](https://awehook.github.io/react-mindmap/)
 ### Futures
 1. drag and move
 
-![image](./screenshots/drag-and-move.gif)
+![image](https://user-gold-cdn.xitu.io/2019/10/15/16dcfbdc616f94bd?w=1694&h=601&f=gif&s=567577)
 
 2. drag and drop for reorganize the node relationship
 
-![image](./screenshots/drag-and-drop.gif)
+![image](https://user-gold-cdn.xitu.io/2019/10/15/16dcfbc1663e9d2d?w=1694&h=601&f=gif&s=291767)
 
 3. popup menu for operation the node
 
-![image](./screenshots/node-popup-menu.gif)
+![image](https://user-gold-cdn.xitu.io/2019/10/15/16dcfd8a92afb19e?w=1139&h=550&f=png&s=44095)
 
 4. rich text editor for mind map item
 
-![image](./screenshots/rich-edit.jpg)
+![image](https://user-gold-cdn.xitu.io/2019/10/15/16dcfbba367e7954?w=1593&h=838&f=png&s=91685)
 
 ### Usage
 In your project, run the command

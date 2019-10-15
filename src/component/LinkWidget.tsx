@@ -175,7 +175,7 @@ export class LinkWidget<
       diagramState,
       dropDir
     } = this.props;
-    const fromItem = diagramState.getMindMapModel().getItem(fromNodeKey);
+    const fromItem = diagramState.getModel().getItem(fromNodeKey);
     const fromItemChildrenCount = fromItem.getSubItemKeys().size;
     const fromTopic: HTMLElement = getRef(`topic-${fromNodeKey}`);
     const toElementTopic: HTMLElement = getRef(`topic-${toNodeKey}`);

@@ -23,7 +23,7 @@ export class DefaultFocusItemBorderSvg extends React.Component<
 
   renderFocusItemBorder() {
     const { getRef, diagramState } = this.props;
-    const mindMapModel = diagramState.getMindMapModel();
+    const mindMapModel = diagramState.getModel();
     const config = diagramState.getConfig();
     const { focusBorderPadding } = config;
 

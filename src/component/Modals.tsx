@@ -40,16 +40,14 @@ export class Modals extends React.Component<ModalsProps, ModalsState> {
   };
 
   getActiveModalName = () => {
-    const focusItemMode = this.props.diagramState
-      .getMindMapModel()
-      .getFocusItemMode();
+    const focusItemMode = this.props.diagramState.getModel().getFocusItemMode();
     if (focusItemMode === FocusItemMode.EditingDesc) return 'edit-desc';
     return null;
   };
 
   render() {
     const { diagramState, op, saveRef } = this.props;
-    const mindMapModel = diagramState.getMindMapModel();
+    const mindMapModel = diagramState.getModel();
     const activeModalName = this.getActiveModalName();
     const Modal = ({ name, children, ...rest }) => {
       return (

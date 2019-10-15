@@ -6,7 +6,7 @@ import { DiagramState } from "../../../src/model/DiagramState";
 import { OnChangeFunction } from "../../../src/types/FunctionType";
 import { NodeKeyType } from "../../../src/types/Node";
 
-interface MindToolbarProps {
+export interface MindToolbarProps {
   items?: Array<ToolbarItemConfig>;
   diagramState?: DiagramState;
   onChange?: OnChangeFunction
@@ -37,16 +37,6 @@ export class Toolbar extends React.Component<MindToolbarProps, MindToolbarState>
         // opType: OpType.UNDO
       },
       {
-        icon: "undo",
-        label: "undo",
-        opType: OpType.UNDO,
-      },
-      {
-        icon: "redo",
-        label: "redo",
-        opType: OpType.REDO
-      },
-      {
         icon: "add-sibling",
         label: "add sibling",
         opType: OpType.ADD_SIBLING
@@ -65,14 +55,14 @@ export class Toolbar extends React.Component<MindToolbarProps, MindToolbarState>
   };
 
   op = (opType: OpType, nodeKey:NodeKeyType, arg?)=> {
-    let {diagramState,onChange} = this.props;
-    let newState = DiagramState.op(diagramState,opType,nodeKey,arg);
+    const {diagramState,onChange} = this.props;
+    const newState = DiagramState.op(diagramState,opType,nodeKey,arg);
     onChange(newState);
   };
 
   render(): React.ReactNode {
-    let {items,diagramState} = this.props;
-    let toolbarItems = items.map(item => (
+    const {items,diagramState} = this.props;
+    const toolbarItems = items.map(item => (
       <ToolbarItem config={item} key={item.label} diagramState={diagramState} op={this.op} />
     ));
     return <div className="bm-toolbar">{toolbarItems}</div>;

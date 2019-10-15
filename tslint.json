@@ -7,5 +7,5 @@
     "no-unused-variable": true,
     "no-console": true
   },
-  "rulesDirectory": ["src/"]
+  "rulesDirectory": ["src/","stories/"]
 }

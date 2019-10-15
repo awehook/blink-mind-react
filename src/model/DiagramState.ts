@@ -4,44 +4,109 @@ import { MindMapModelModifier, OpType } from './MindMapModelModifier';
 import { NodeKeyType } from '../types/Node';
 import debug from 'debug';
 import { ThemeConfig } from '../config/ThemeConfigs';
-import { Stack } from 'immutable';
+import { Stack, Record } from 'immutable';
 const log = debug('model:DiagramState');
 
+type DiagramStateRecordType = {
+  model: MindMapModel;
+  config: DiagramConfig;
+  allowUndo: boolean;
+  undoStack: Stack<MindMapModel>;
+  redoStack: Stack<MindMapModel>;
+};
+
+const defaultRecord: DiagramStateRecordType = {
+  model: null,
+  config: null,
+  allowUndo: true,
+  undoStack: Stack(),
+  redoStack: Stack()
+};
+
+const DiagramStateRecord = Record(defaultRecord);
+
 export class DiagramState {
-  private readonly mindMapModel: MindMapModel;
-  private readonly config: DiagramConfig;
+  _immutable: Record<DiagramStateRecordType>;
 
-  undoStack: Stack<MindMapModel> = Stack();
-  redoStack: Stack<MindMapModel> = Stack();
+  constructor(immutable: Record<DiagramStateRecordType>) {
+    this._immutable = immutable;
+  }
 
-  constructor(mindMapModel: MindMapModel, config: DiagramConfig) {
-    this.mindMapModel = mindMapModel;
-    this.config = config;
-    this.undoStack = Stack();
-    this.redoStack = Stack();
+  getImmutable(): Record<DiagramStateRecordType> {
+    return this._immutable;
   }
 
   getThemeConfig(): ThemeConfig {
-    return this.config.themeConfigs[this.config.theme];
+    return this.getConfig().themeConfigs[this.getConfig().theme];
   }
 
-  getMindMapModel(): MindMapModel {
-    return this.mindMapModel;
+  getModel(): MindMapModel {
+    return this.getImmutable().get('model');
   }
 
   getConfig(): DiagramConfig {
-    return this.config;
+    return this.getImmutable().get('config');
   }
 
-  static setMindMapModel(
-    state: DiagramState,
-    model: MindMapModel
-  ): DiagramState {
-    return new DiagramState(model, state.config);
+  getAllowUndo(): boolean {
+    return this.getImmutable().get('allowUndo');
+  }
+
+  getUndoStack(): Stack<MindMapModel> {
+    return this.getImmutable().get('undoStack');
+  }
+  getRedoStack(): Stack<MindMapModel> {
+    return this.getImmutable().get('redoStack');
+  }
+
+  static undo(state: DiagramState): DiagramState {
+    if (!state.getAllowUndo()) {
+      return state;
+    }
+    const undoStack = state.getUndoStack();
+    const newModel = undoStack.peek();
+    if (!newModel) return state;
+    log('undo');
+    return DiagramState.set(state, {
+      model: newModel,
+      undoStack: undoStack.shift(),
+      redoStack: state.getRedoStack().push(state.getModel())
+    });
+  }
+
+  static redo(state: DiagramState): DiagramState {
+    if (!state.getAllowUndo()) {
+      return state;
+    }
+    const redoStack = state.getRedoStack();
+    const newModel = redoStack.peek();
+    if (!newModel) return state;
+
+    log('redo');
+    return DiagramState.set(state, {
+      model: newModel,
+      redoStack: redoStack.shift(),
+      undoStack: state.getUndoStack().push(state.getModel())
+    });
+  }
+
+  static set(state: DiagramState, obj: Object) {
+    log('set start', state.getImmutable());
+    const newInnerState = state.getImmutable().withMutations(innerState => {
+      innerState.merge(obj);
+    });
+    log('set end', newInnerState);
+    return new DiagramState(newInnerState);
+  }
+
+  static setModel(state: DiagramState, model: MindMapModel): DiagramState {
+    const innerState = state.getImmutable().set('model', model);
+    return new DiagramState(innerState);
   }
 
   static setConfig(state: DiagramState, config: DiagramConfig): DiagramState {
-    return new DiagramState(state.getMindMapModel(), config);
+    const innerState = state.getImmutable().set('config', config);
+    return new DiagramState(innerState);
   }
 
   static op(
@@ -52,20 +117,31 @@ export class DiagramState {
   ): DiagramState {
     log(`op:${OpType[opType]}`);
     if (!key && opType !== OpType.FOCUS_ITEM)
-      key = state.getMindMapModel().getFocusItemKey();
-    log('start:', state.getMindMapModel());
-    const mindMapModel = MindMapModelModifier.op(
-      state.getMindMapModel(),
+      key = state.getModel().getFocusItemKey();
+    log('start:', state.getModel(), state.getUndoStack());
+    const { model, needPushUndo } = MindMapModelModifier.op(
+      state.getModel(),
       opType,
       key,
       arg
     );
-    log('end:', mindMapModel);
-    return new DiagramState(mindMapModel, state.config);
+    if (state.getModel() === model) return state;
+    let innerState;
+    innerState = state.getImmutable().set('model', model);
+    if (needPushUndo) {
+      const undoStack = state.getUndoStack().push(state.getModel());
+      innerState = innerState.set('undoStack', undoStack);
+    }
+
+    log('end:', model, innerState.get('undoStack'));
+    return new DiagramState(innerState);
   }
-  static createWith(mindMapModel, config): DiagramState {
+  static createWith(model, config): DiagramState {
     config = Object.assign(defaultDiagramConfig, config);
-    const diagramState = new DiagramState(mindMapModel, config);
-    return diagramState;
+    const innerState = new DiagramStateRecord({
+      model,
+      config
+    });
+    return new DiagramState(innerState);
   }
 }

@@ -2,15 +2,13 @@ import { MindNodeModel } from './MindNodeModel';
 import { MindMapModel } from './MindMapModel';
 import { DropDirType, FocusItemMode, NodeKeyType } from '../types/Node';
 import { uuidv4 } from '../util';
-import { Stack, List } from 'immutable';
-import { Value } from 'slate';
+import { List } from 'immutable';
 import { NodeRelationship } from './NodeRelationship';
+import { Value } from 'slate';
 import debug from 'debug';
 
 const log = debug('model:modifier');
 export enum OpType {
-  UNDO = 1,
-  REDO,
   TOGGLE_COLLAPSE,
   SET_ITEM_CONTENT,
   SET_ITEM_DESC,
@@ -26,6 +24,34 @@ export enum OpType {
   DRAG_AND_DROP
 }
 
+const allowUndoOps: Array<OpType> = [
+  // OpType.SET_ITEM_CONTENT,
+  // OpType.SET_ITEM_DESC,
+  OpType.TOGGLE_COLLAPSE,
+  OpType.ADD_CHILD,
+  OpType.ADD_SIBLING,
+  OpType.DELETE_NODE,
+  OpType.DRAG_AND_DROP
+];
+
+function allowUndo(
+  model: MindMapModel,
+  opType: OpType,
+  itemKey: NodeKeyType,
+  arg: any
+): boolean {
+  //@ts-ignore
+  if (!allowUndoOps.includes(opType)) return false;
+  if (opType === OpType.SET_ITEM_CONTENT || opType === OpType.SET_ITEM_DESC) {
+    const item = model.getItem(itemKey);
+    if (item.getContent() instanceof Value) {
+      const oldContent = item.getContent() as Value;
+      return oldContent.document !== arg.document;
+    }
+  }
+  return true;
+}
+
 type OpFunctionType = (
   model: MindMapModel,
   itemKey: NodeKeyType,
@@ -33,11 +59,7 @@ type OpFunctionType = (
 ) => MindMapModel;
 
 export class MindMapModelModifier {
-  static undoStack: Stack<MindMapModel> = Stack();
-  static redoStack: Stack<MindMapModel> = Stack();
   static opMap = new Map<OpType, OpFunctionType>([
-    [OpType.UNDO, MindMapModelModifier.undo],
-    [OpType.REDO, MindMapModelModifier.redo],
     [OpType.TOGGLE_COLLAPSE, MindMapModelModifier.toggleCollapse],
     [OpType.SET_ITEM_CONTENT, MindMapModelModifier.setItemContent],
     [OpType.SET_ITEM_DESC, MindMapModelModifier.setItemDesc],
@@ -58,61 +80,16 @@ export class MindMapModelModifier {
     opType: OpType,
     itemKey: NodeKeyType,
     arg
-  ): MindMapModel {
+  ): { model: MindMapModel; needPushUndo: boolean } {
     if (opType === OpType.DELETE_NODE) log(opType);
     if (MindMapModelModifier.opMap.has(opType)) {
       const opFunc = MindMapModelModifier.opMap.get(opType);
-      const res = opFunc(model, itemKey, arg);
-      if (
-        opType !== OpType.UNDO &&
-        opType !== OpType.REDO &&
-        opType !== OpType.FOCUS_ITEM &&
-        opType !== OpType.SET_ITEM_CONTENT
-      ) {
-        MindMapModelModifier.undoStack = MindMapModelModifier.undoStack.push(
-          res
-        );
-      }
-      return res;
+      return {
+        model: opFunc(model, itemKey, arg),
+        needPushUndo: allowUndo(model, opType, itemKey, arg)
+      };
     }
-    return model;
-  }
-
-  static undo(model: MindMapModel): MindMapModel {
-    if (MindMapModelModifier.undoStack.size > 1) {
-      model = MindMapModelModifier.popUndoStack();
-      MindMapModelModifier.pushRedoStack(model);
-      model = MindMapModelModifier.undoStack.peek();
-    }
-    return model;
-  }
-
-  static redo(model: MindMapModel): MindMapModel {
-    if (MindMapModelModifier.redoStack.size > 0) {
-      model = MindMapModelModifier.popRedoStack();
-      MindMapModelModifier.pushUndoStack(model);
-    }
-    return model;
-  }
-
-  static pushUndoStack(model: MindMapModel) {
-    MindMapModelModifier.undoStack = MindMapModelModifier.undoStack.push(model);
-  }
-
-  static popUndoStack(): MindMapModel {
-    const model = MindMapModelModifier.undoStack.peek();
-    MindMapModelModifier.undoStack = MindMapModelModifier.undoStack.pop();
-    return model;
-  }
-
-  static pushRedoStack(model: MindMapModel) {
-    MindMapModelModifier.redoStack = MindMapModelModifier.redoStack.push(model);
-  }
-
-  static popRedoStack(): MindMapModel {
-    const model = MindMapModelModifier.redoStack.peek();
-    MindMapModelModifier.redoStack = MindMapModelModifier.redoStack.pop();
-    return model;
+    return { model, needPushUndo: false };
   }
 
   static toggleCollapse(
@@ -172,21 +149,12 @@ export class MindMapModelModifier {
     content: any
   ): MindMapModel {
     let item = model.getItem(itemKey);
-    let needPush = false;
     if (item) {
-      if (MindMapModelModifier.undoStack.size === 0) {
-        MindMapModelModifier.pushUndoStack(model);
-      }
-      if (item.getContent() instanceof Value) {
-        const oldContent = item.getContent() as Value;
-        needPush = oldContent.document !== content.document;
-      }
-
       item = item.merge({ content: content });
       model = MindMapModelModifier.setItem(model, item);
     }
     model = model.set('focusItemKey', itemKey);
-    if (needPush) MindMapModelModifier.pushUndoStack(model);
+    // if (needPush) MindMapModelModifier.pushUndoStack(model);
     return model;
   }
 
@@ -196,23 +164,13 @@ export class MindMapModelModifier {
     desc: any
   ): MindMapModel {
     let item = model.getItem(itemKey);
-    let needPush = false;
     if (item) {
-      if (MindMapModelModifier.undoStack.size === 0) {
-        MindMapModelModifier.pushUndoStack(model);
-      }
-      if (item.getContent() instanceof Value) {
-        const oldContent = item.getContent() as Value;
-        needPush = oldContent.document !== desc.document;
-      }
-
       item = item.merge({ desc });
       model = MindMapModelModifier.setItem(model, item);
     }
     model = model
       .set('focusItemKey', itemKey)
       .set('focusItemMode', FocusItemMode.EditingDesc);
-    if (needPush) MindMapModelModifier.pushUndoStack(model);
     return model;
   }
 

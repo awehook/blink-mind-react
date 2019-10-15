@@ -166,7 +166,7 @@ export class NodeWidget<
 
   renderSubItems() {
     const { diagramState, dir, saveRef, nodeKey } = this.props;
-    const mindMapModel = diagramState.getMindMapModel();
+    const mindMapModel = diagramState.getModel();
     const node = mindMapModel.getItem(nodeKey);
     const diagramConfig = diagramState.getConfig();
     const inlineStyle =
@@ -192,8 +192,9 @@ export class NodeWidget<
 
   render() {
     const { diagramState, op, nodeKey, dir, saveRef, getRef } = this.props;
+    this.subLinksKeys = [];
     logr(nodeKey);
-    const mindMapModel = diagramState.getMindMapModel();
+    const mindMapModel = diagramState.getModel();
     const node = mindMapModel.getItem(nodeKey);
     return (
       <Node

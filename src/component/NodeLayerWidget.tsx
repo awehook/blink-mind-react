@@ -39,7 +39,7 @@ export class NodeLayerWidget<
   }
   renderItems(setViewBoxScroll, setViewBoxScrollDelta) {
     const { diagramState, op, getRef, saveRef } = this.props;
-    const mindMapModel = diagramState.getMindMapModel();
+    const mindMapModel = diagramState.getModel();
     const editorRootItemKey = mindMapModel.getEditorRootItemKey();
     return (
       <RootNodeWidget

@@ -21,15 +21,16 @@ import DragDropDemo6 from "./demo-drag-drop/Demo6";
 import DragDropDemo7 from "./demo-drag-drop/Demo7";
 import DragDropDemo8 from "./demo-drag-drop/Demo8";
 
-let debugNameSpaces = [
+const debugNameSpaces = [
   // "node:*",
-  // "model:*",
+  "model:*",
   // "node:topic"
   // "render:*",
   // "drop:*",
   // "render:RootNode",
   // "node:LinkWidget",
   // "-node:LinkWidget"
+  "app"
 ];
 
 localStorage.debug = debugNameSpaces.join(",");
