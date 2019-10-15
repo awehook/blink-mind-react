@@ -3,6 +3,7 @@
   "name": "blink-mind-react",
   "compilerOptions": {
     "suppressExcessPropertyErrors": true,
+    "allowJs": true,
     "declaration": true,
     "outDir": ".",
     "target": "es5",

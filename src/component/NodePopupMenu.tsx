@@ -1,11 +1,14 @@
-import * as React from "react";
-import { NodeKeyType } from "../types/Node";
-import { DiagramState } from "../model/DiagramState";
-import { NodePopupMenuItem, NodePopupMenuItemConfig } from "./NodePopupMenuItem";
-import { OpType } from "../model/MindMapModelModifier";
-import { OpFunction } from "../types/FunctionType";
-import styled from "styled-components";
-import debug from 'debug'
+import * as React from 'react';
+import { NodeKeyType } from '../types/Node';
+import { DiagramState } from '../model/DiagramState';
+import {
+  NodePopupMenuItem,
+  NodePopupMenuItemConfig
+} from './NodePopupMenuItem';
+import { OpType } from '../model/MindMapModelModifier';
+import { OpFunction } from '../types/FunctionType';
+import styled from 'styled-components';
+import debug from 'debug';
 const log = debug('node:popup-menu');
 
 const PopupMenu = styled.div`
@@ -44,44 +47,44 @@ export class NodePopupMenu extends React.Component<
   static defaultProps = {
     items: [
       {
-        icon: "edit",
-        label: "edit",
+        icon: 'edit',
+        label: 'edit',
         rootCanUse: true,
         opType: OpType.START_EDITING_CONTENT
       },
       {
-        icon: "add-sibling",
-        label: "add sibling",
+        icon: 'add-sibling',
+        label: 'add sibling',
         opType: OpType.ADD_SIBLING
       },
       {
-        icon: "add-child",
-        label: "add child",
+        icon: 'add-child',
+        label: 'add child',
         rootCanUse: true,
         opType: OpType.ADD_CHILD
       },
       {
-        icon: "notes",
-        label: "edit notes",
-        opType: OpType.START_EDITING_DESC,
+        icon: 'notes',
+        label: 'edit notes',
+        opType: OpType.START_EDITING_DESC
       },
       {
-        icon: "delete-node",
-        label: "delete node",
+        icon: 'delete-node',
+        label: 'delete node',
         opType: OpType.DELETE_NODE
       }
     ]
   };
   componentDidMount() {
-    document.addEventListener("click", this._handleClick);
+    document.addEventListener('click', this._handleClick);
   }
 
   componentWillUnmount() {
-    document.removeEventListener("click", this._handleClick);
+    document.removeEventListener('click', this._handleClick);
   }
 
   _handleClick = event => {
-    log("_handleClick");
+    log('_handleClick');
     const { visible } = this.props;
     const wasOutside = !(event.target.contains === this.root);
 
@@ -100,10 +103,10 @@ export class NodePopupMenu extends React.Component<
   };
 
   render() {
-    log("render:", this.props.visible);
-    let { visible, nodeKey, items, diagramState, op } = this.props;
-    let editorRootKey = diagramState.getMindMapModel().getEditorRootItemKey();
-    let menuItems = items.map(item =>
+    log('render:', this.props.visible);
+    const { visible, nodeKey, items, diagramState, op } = this.props;
+    const editorRootKey = diagramState.getMindMapModel().getEditorRootItemKey();
+    const menuItems = items.map(item =>
       nodeKey === editorRootKey && !item.rootCanUse ? null : (
         <NodePopupMenuItem
           config={item}
@@ -114,12 +117,6 @@ export class NodePopupMenu extends React.Component<
         />
       )
     );
-    return (
-      visible && (
-        <PopupMenu ref={this.rootRef}>
-          {menuItems}
-        </PopupMenu>
-      )
-    );
+    return visible && <PopupMenu ref={this.rootRef}>{menuItems}</PopupMenu>;
   }
 }

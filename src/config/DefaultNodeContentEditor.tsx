@@ -1,21 +1,20 @@
-import * as React from "react";
-import * as cx from "classnames";
-import { DiagramState } from "../model/DiagramState";
-import { NodeKeyType } from "../types/Node";
-import RichMarkDownEditor from "awehook-rich-markdown-editor";
-import { OpType } from "../model/MindMapModelModifier";
-import { debounce } from "lodash";
-import { OpFunction } from "../types/FunctionType";
-import styled from "styled-components";
-import debug from "debug";
-const log = debug("node:content-editor");
+import * as React from 'react';
+import { DiagramState } from '../model/DiagramState';
+import { NodeKeyType } from '../types/Node';
+import RichMarkDownEditor from 'awehook-rich-markdown-editor';
+import { OpType } from '../model/MindMapModelModifier';
+import { debounce } from 'lodash';
+import { OpFunction } from '../types/FunctionType';
+import styled from 'styled-components';
+import debug from 'debug';
+const log = debug('node:content-editor');
 
 const NodeContent = styled.div`
   padding: 6px 6px;
   //@ts-ignore
-  background-color: ${props => (props.readOnly ? null : "#e0e0e0")};
+  background-color: ${props => (props.readOnly ? null : '#e0e0e0')};
   //@ts-ignore
-  cursor: ${props => (props.readOnly ? "pointer" : "text")};
+  cursor: ${props => (props.readOnly ? 'pointer' : 'text')};
 `;
 
 interface DefaultNodeContentEditorProps {
@@ -58,7 +57,7 @@ export class DefaultNodeContentEditor extends React.Component<
     const { nodeKey: nextNodeKey, diagramState: nextDS } = nextProps;
     const { nodeKey: nodeKey, diagramState: ds } = this.props;
     if (nextNodeKey !== nodeKey) {
-      log("nextNodeKey !== nodeKey");
+      log('nextNodeKey !== nodeKey');
       return true;
     }
     const editingKey = ds.getMindMapModel().getEditingContentItemKey();
@@ -75,7 +74,7 @@ export class DefaultNodeContentEditor extends React.Component<
       nextDS.getMindMapModel().getItem(nextNodeKey)
     ) {
       log(
-        "ds.mindMapModel.getItem(nodeKey) !== nextDS.mindMapModel.getItem(nextNodeKey)"
+        'ds.mindMapModel.getItem(nodeKey) !== nextDS.mindMapModel.getItem(nextNodeKey)'
       );
       return true;
     }
@@ -83,14 +82,14 @@ export class DefaultNodeContentEditor extends React.Component<
   }
 
   render(): React.ReactNode {
-    log("render");
+    log('render');
     const { nodeKey, diagramState, saveRef } = this.props;
     const mindMapModel = diagramState.getMindMapModel();
     const nodeModel = mindMapModel.getItem(nodeKey);
     const content = nodeModel.getContent();
     const editingItemKey = mindMapModel.getEditingContentItemKey();
 
-    log("getEditingItemKey", editingItemKey);
+    log('getEditingItemKey', editingItemKey);
     const readOnly = !(nodeKey === editingItemKey);
     return (
       <NodeContent

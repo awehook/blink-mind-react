@@ -1,18 +1,16 @@
-import * as React from "react";
-import { NodeKeyType, NodeWidgetDirection } from "../types/Node";
-import { BaseWidget } from "./common/BaseWidget";
-import { DiagramState } from "../model/DiagramState";
-import * as cx from "classnames";
-import { MindNodeModel } from "../model/MindNodeModel";
-import { DiagramLayoutDirection } from "../config/DiagramConfig";
-import { NodeWidget } from "./NodeWidget";
-import { LinkWidget } from "./LinkWidget";
-import { TopicContentWidget } from "./TopicContentWidget";
-import { OpFunction } from "../types/FunctionType";
-import styled from "styled-components";
-import { createSubNodesAndSubLinks } from "./utils";
-import debug from "debug";
-const log = debug("render:RootNode");
+import * as React from 'react';
+import { NodeKeyType, NodeWidgetDirection } from '../types/Node';
+import { BaseWidget } from './common/BaseWidget';
+import { DiagramState } from '../model/DiagramState';
+import { MindNodeModel } from '../model/MindNodeModel';
+import { DiagramLayoutDirection } from '../config/DiagramConfig';
+import { LinkWidget } from './LinkWidget';
+import { TopicContentWidget } from './TopicContentWidget';
+import { OpFunction } from '../types/FunctionType';
+import styled from 'styled-components';
+import { createSubNodesAndSubLinks } from './utils';
+import debug from 'debug';
+const log = debug('render:RootNode');
 
 const NodeLayerPart = styled.div`
   display: flex;
@@ -20,14 +18,14 @@ const NodeLayerPart = styled.div`
 
   align-items: ${props =>
     //@ts-ignore
-    props.dir === NodeWidgetDirection.LEFT ? "flex-end" : "flex-start"};
+    props.dir === NodeWidgetDirection.LEFT ? 'flex-end' : 'flex-start'};
   flex-direction: column;
 
   padding: ${props =>
     //@ts-ignore
     props.dir === NodeWidgetDirection.LEFT
-      ? "15px 60px 15px 0px"
-      : "15px 0px 15px 60px"};
+      ? '15px 60px 15px 0px'
+      : '15px 0px 15px 60px'};
 `;
 
 const Topic = styled.div`
@@ -57,14 +55,14 @@ export class RootNodeWidget<
   }
 
   getNodeModel(): MindNodeModel {
-    let { diagramState, nodeKey } = this.props;
+    const { diagramState, nodeKey } = this.props;
     return diagramState.getMindMapModel().getItem(nodeKey);
   }
 
   getPartItems(dir: DiagramLayoutDirection) {
-    let node = this.getNodeModel();
-    let subItemCount = node.getSubItemKeys().size;
-    let items = node.getSubItemKeys().toArray();
+    const node = this.getNodeModel();
+    const subItemCount = node.getSubItemKeys().size;
+    const items = node.getSubItemKeys().toArray();
     switch (dir) {
       case DiagramLayoutDirection.LEFT_TO_RIGHT:
         return [[], items];
@@ -86,7 +84,7 @@ export class RootNodeWidget<
     snapshot?: any
   ): void {
     if (this.needRelocation) {
-      let newRect = this.collapseIcon.getBoundingClientRect();
+      const newRect = this.collapseIcon.getBoundingClientRect();
       this.props.setViewBoxScrollDelta(
         newRect.left - this.oldCollapseIconRect.left,
         newRect.top - this.oldCollapseIconRect.top
@@ -104,7 +102,7 @@ export class RootNodeWidget<
     const { getRef } = this.props;
     this.subLinksKeys.forEach(linkKey => {
       // @ts-ignore
-      let linkWidget: LinkWidget = getRef(linkKey);
+      const linkWidget: LinkWidget = getRef(linkKey);
       linkWidget && linkWidget.layout();
     });
   };
@@ -115,7 +113,7 @@ export class RootNodeWidget<
 
   // 以左右或者上下部分来分别进行渲染
   renderPartItems(items: string[], dir: NodeWidgetDirection) {
-    let { saveRef } = this.props;
+    const { saveRef } = this.props;
 
     if (items.length === 0) return null;
     const res = createSubNodesAndSubLinks(
@@ -126,8 +124,8 @@ export class RootNodeWidget<
     const { subItems, subLinks, subLinksKeys } = res;
     this.subLinksKeys.push(...subLinksKeys);
 
-    let cxName = `bm-node-layer-${
-      dir === NodeWidgetDirection.LEFT ? "left" : "right"
+    const cxName = `bm-node-layer-${
+      dir === NodeWidgetDirection.LEFT ? 'left' : 'right'
     }`;
     return (
       //@ts-ignore
@@ -139,11 +137,11 @@ export class RootNodeWidget<
   }
 
   render() {
-    log("render");
-    let { diagramState, op, nodeKey, saveRef, getRef } = this.props;
+    log('render');
+    const { diagramState, op, nodeKey, saveRef, getRef } = this.props;
     const mindMapModel = diagramState.getMindMapModel();
     const config = diagramState.getConfig();
-    let [leftItems, rightItems] = this.getPartItems(config.direction);
+    const [leftItems, rightItems] = this.getPartItems(config.direction);
     this.subLinksKeys = [];
     return (
       <>

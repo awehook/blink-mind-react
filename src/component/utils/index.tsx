@@ -1,8 +1,8 @@
-import * as React from "react";
-import { LinkWidget } from "../LinkWidget";
-import { NodeWidget } from "../NodeWidget";
+import * as React from 'react';
+import { LinkWidget } from '../LinkWidget';
+import { NodeWidget } from '../NodeWidget';
 
-export function createSubNodesAndSubLinks(props,items) {
+export function createSubNodesAndSubLinks(props, items) {
   const {
     diagramState,
     op,
@@ -18,9 +18,9 @@ export function createSubNodesAndSubLinks(props,items) {
   const node = mindMapModel.getItem(nodeKey);
   const dropAreaKey = mindMapModel.getDropAreaKey();
   let dropArea;
-  if (dropAreaKey !== null) dropArea = dropAreaKey.split(":");
+  if (dropAreaKey !== null) dropArea = dropAreaKey.split(':');
   if (items.size === 0 || node.getCollapse()) return null;
-  let subItems = [],
+  const subItems = [],
     subLinks = [],
     subLinksKeys = [];
 

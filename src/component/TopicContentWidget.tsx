@@ -1,18 +1,22 @@
-import * as React from "react";
-import { BaseWidget } from "./common/BaseWidget";
-import { NodeKeyType, NodeWidgetDirection } from "../types/Node";
-import { DiagramState } from "../model/DiagramState";
-import { MindMapModelModifier, OpType } from "../model/MindMapModelModifier";
-import { NodePopupMenu } from "./NodePopupMenu";
-import { OpFunction } from "../types/FunctionType";
-import styled from "styled-components";
-import debug from "debug";
+import * as React from 'react';
+import { BaseWidget } from './common/BaseWidget';
+import { NodeKeyType, NodeWidgetDirection } from '../types/Node';
+import { DiagramState } from '../model/DiagramState';
+import { MindMapModelModifier, OpType } from '../model/MindMapModelModifier';
+import { NodePopupMenu } from './NodePopupMenu';
+import { OpFunction } from '../types/FunctionType';
+import styled from 'styled-components';
+import debug from 'debug';
 
-const log = debug("node:topic");
-const logr = debug("render:topic");
-const logd = debug("drop:topic");
+const log = debug('node:topic');
+const logr = debug('render:topic');
 
-const TopicContent = styled.div`
+interface TopicContentProps {
+  dragEnter: boolean;
+  isRoot: boolean;
+}
+
+const TopicContent = styled.div<TopicContentProps>`
   display: flex;
   align-items: center;
   word-wrap: break-word;
@@ -20,16 +24,13 @@ const TopicContent = styled.div`
   cursor: pointer;
   overflow: hidden;
   background: ${props =>
-    //@ts-ignore
     props.dragEnter
       ? props.theme.color.primary
-      : 
-      //@ts-ignore
-      props.isRoot
+      : props.isRoot
       ? props.theme.color.primary
       : null};
   //@ts-ignore
-  padding: ${props => (props.isRoot ? "6px 0 6px 20px" : "6px 20px 6px 0")};
+  padding: ${props => (props.isRoot ? '6px 0 6px 20px' : '6px 20px 6px 0')};
   border: 2px solid ${props => props.theme.color.primary};
 `;
 
@@ -75,7 +76,7 @@ export class TopicContentWidget extends BaseWidget<
   }
 
   onDragStart = e => {
-    log("onDragStart");
+    log('onDragStart');
     dragSrcItemKey = this.props.nodeKey;
     e.stopPropagation();
   };
@@ -112,8 +113,8 @@ export class TopicContentWidget extends BaseWidget<
       op(OpType.SET_DROP_AREA_KEY, null);
       return;
     }
-    let relatedTarget = e.nativeEvent.relatedTarget;
-    let content = getRef(`content-${nodeKey}`);
+    const relatedTarget = e.nativeEvent.relatedTarget;
+    const content = getRef(`content-${nodeKey}`);
     if (content == relatedTarget || content.contains(relatedTarget)) {
       return;
     }
@@ -123,13 +124,13 @@ export class TopicContentWidget extends BaseWidget<
   };
 
   onDrop = e => {
-    log("onDrop");
-    let { nodeKey, op } = this.props;
+    log('onDrop');
+    const { nodeKey, op } = this.props;
     const tag = e.nativeEvent.target.dataset.tag;
     if (tag) {
       op(OpType.DRAG_AND_DROP, dragSrcItemKey, { dstKey: nodeKey, dir: tag });
     } else {
-      op(OpType.DRAG_AND_DROP, dragSrcItemKey, { dstKey: nodeKey, dir: "in" });
+      op(OpType.DRAG_AND_DROP, dragSrcItemKey, { dstKey: nodeKey, dir: 'in' });
       this.setState({
         dragEnter: false
       });
@@ -143,7 +144,7 @@ export class TopicContentWidget extends BaseWidget<
     setTimeout(() => {
       if (!this.isDoubleClick) {
         // log("TopicContentWidget onClick");
-        let { diagramState, op, nodeKey } = this.props;
+        const { diagramState, op, nodeKey } = this.props;
         if (
           diagramState.getMindMapModel().getEditingContentItemKey() === nodeKey
         )
@@ -157,7 +158,7 @@ export class TopicContentWidget extends BaseWidget<
   onDoubleClick = () => {
     this.isDoubleClick = true;
     // log('TopicContentWidget onDoubleClick');
-    let { diagramState, op, nodeKey } = this.props;
+    const { diagramState, op, nodeKey } = this.props;
     if (diagramState.getMindMapModel().getEditingContentItemKey() === nodeKey)
       return;
     op(OpType.START_EDITING_CONTENT, nodeKey);
@@ -174,21 +175,21 @@ export class TopicContentWidget extends BaseWidget<
     prevState: Readonly<TopicContentWidgetState>,
     snapshot?: any
   ): void {
-    let { diagramState, nodeKey } = this.props;
+    const { diagramState, nodeKey } = this.props;
     if (diagramState.getMindMapModel().getEditingContentItemKey() === nodeKey) {
-      document.addEventListener("click", this._handleClick);
+      document.addEventListener('click', this._handleClick);
     } else {
-      document.removeEventListener("click", this._handleClick);
+      document.removeEventListener('click', this._handleClick);
     }
   }
 
   _handleClick = e => {
     log(`_handleClick ${this.props.nodeKey}`);
-    let { getRef, nodeKey } = this.props;
-    let content: HTMLElement = getRef(`content-${nodeKey}`);
-    let contentRect = content.getBoundingClientRect();
-    let extend = 40;
-    let isInExtendBox =
+    const { getRef, nodeKey } = this.props;
+    const content: HTMLElement = getRef(`content-${nodeKey}`);
+    const contentRect = content.getBoundingClientRect();
+    const extend = 40;
+    const isInExtendBox =
       e.clientX > contentRect.left - extend &&
       e.clientX < contentRect.right + extend &&
       e.clientY > contentRect.top &&
@@ -209,32 +210,32 @@ export class TopicContentWidget extends BaseWidget<
       this.state.showPopMenu !== nextState.showPopMenu
     )
       return true;
-    let { diagramState: ds, nodeKey, dir } = this.props;
-    let {
+    const { diagramState: ds, nodeKey, dir } = this.props;
+    const {
       diagramState: nextDS,
       nodeKey: nextNodeKey,
       dir: nextDir
     } = nextProps;
     if (nodeKey !== nextNodeKey || dir !== nextDir) return true;
-    let mm = ds.getMindMapModel();
-    let nextMm = nextDS.getMindMapModel();
-    let focusKey = mm.getFocusItemKey();
-    let nextFocusKey = nextMm.getFocusItemKey();
+    const mm = ds.getMindMapModel();
+    const nextMm = nextDS.getMindMapModel();
+    const focusKey = mm.getFocusItemKey();
+    const nextFocusKey = nextMm.getFocusItemKey();
     if (focusKey === nodeKey || nextFocusKey == nodeKey) {
       if (nextFocusKey !== focusKey) return true;
 
-      let focusMode = mm.getFocusItemMode();
-      let nextFocusMode = nextMm.getFocusItemMode();
+      const focusMode = mm.getFocusItemMode();
+      const nextFocusMode = nextMm.getFocusItemMode();
       if (nextFocusMode !== focusMode) return true;
     }
-    let content = mm.getItem(nodeKey).getContent();
-    let nextContent = nextMm.getItem(nodeKey).getContent();
+    const content = mm.getItem(nodeKey).getContent();
+    const nextContent = nextMm.getItem(nodeKey).getContent();
     if (content !== nextContent) return true;
     return false;
   }
 
   render() {
-    let {
+    const {
       diagramState,
       op,
       nodeKey,
@@ -246,7 +247,7 @@ export class TopicContentWidget extends BaseWidget<
     logr(nodeKey);
     const mindMapModel = diagramState.getMindMapModel();
     const config = diagramState.getConfig();
-    let visualLevel = mindMapModel.getItemVisualLevel(nodeKey);
+    const visualLevel = mindMapModel.getItemVisualLevel(nodeKey);
     let itemStyle;
     switch (visualLevel) {
       case 0:
@@ -266,7 +267,7 @@ export class TopicContentWidget extends BaseWidget<
       // mindMapModel.getPopupMenuItemKey() === nodeKey &&
       this.state.showPopMenu;
     const descString = item.descToString();
-    const showDescIcon = descString !== null && descString !== "";
+    const showDescIcon = descString !== null && descString !== '';
 
     return (
       <div>
@@ -278,7 +279,6 @@ export class TopicContentWidget extends BaseWidget<
           onDragOver={this.onDragOver}
         />
         <TopicContent
-          //@ts-ignore
           isRoot={dir === NodeWidgetDirection.ROOT}
           dragEnter={this.state.dragEnter}
           draggable={draggable}

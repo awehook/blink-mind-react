@@ -16,13 +16,13 @@ type AlignValues =
   | 'flex-end';
 
 type Props = {
-  column?: boolean,
-  shrink?: boolean,
-  align?: AlignValues,
-  justify?: JustifyValues,
-  auto?: boolean,
-  className?: string,
-  children?: React.ReactNode,
+  column?: boolean;
+  shrink?: boolean;
+  align?: AlignValues;
+  justify?: JustifyValues;
+  auto?: boolean;
+  className?: string;
+  children?: React.ReactNode;
 };
 
 export const Flex = (props: Props) => {
@@ -45,4 +45,3 @@ const Container = styled.div`
   min-height: 0;
   min-width: 0;
 `;
-

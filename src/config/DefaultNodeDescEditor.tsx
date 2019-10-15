@@ -1,13 +1,13 @@
-import * as React from "react";
-import { DiagramState } from "../model/DiagramState";
-import { NodeKeyType } from "../types/Node";
-import RichMarkDownEditor from "awehook-rich-markdown-editor";
-import { OpType } from "../model/MindMapModelModifier";
-import { debounce } from "lodash";
-import { OpFunction } from "../types/FunctionType";
-import styled from "styled-components";
-import debug from "debug";
-const log = debug("node:desc-editor");
+import * as React from 'react';
+import { DiagramState } from '../model/DiagramState';
+import { NodeKeyType } from '../types/Node';
+import RichMarkDownEditor from 'awehook-rich-markdown-editor';
+import { OpType } from '../model/MindMapModelModifier';
+import { debounce } from 'lodash';
+import { OpFunction } from '../types/FunctionType';
+import styled from 'styled-components';
+import debug from 'debug';
+const log = debug('node:desc-editor');
 
 const DescEditor = styled.div``;
 
@@ -43,11 +43,11 @@ export class DefaultNodeDescEditor extends React.PureComponent<
 
   render(): React.ReactNode {
     const { nodeKey, diagramState } = this.props;
-    const mindMapModel  = diagramState.getMindMapModel();
+    const mindMapModel = diagramState.getMindMapModel();
     const nodeModel = mindMapModel.getItem(nodeKey);
     const desc = nodeModel.getDesc();
     log(
-      "DefaultNodeDescEditor render",
+      'DefaultNodeDescEditor render',
       mindMapModel.getEditingDescItemKey(),
       desc
     );

@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 
 interface SaveRefProps {
   children: (
@@ -28,8 +28,8 @@ export default class SaveRef extends React.Component<SaveRefProps> {
 
   fireListener = (name: string, ref: HTMLElement) => {
     if (this.observers.has(name)) {
-      let listeners = this.observers.get(name);
-      for (let listener of listeners) {
+      const listeners = this.observers.get(name);
+      for (const listener of listeners) {
         listener(name, ref);
       }
     }

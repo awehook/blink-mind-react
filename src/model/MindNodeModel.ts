@@ -1,5 +1,5 @@
-import { INodeModel, NodeKeyType, INodeRecordType } from "../types/Node";
-import { Record, List } from "immutable";
+import { INodeModel, NodeKeyType, INodeRecordType } from '../types/Node';
+import { Record, List } from 'immutable';
 // @ts-ignore
 import MarkdownSerializer from './encoding/MarkdownSerializer';
 
@@ -27,50 +27,47 @@ export class MindNodeModel extends Record(defaultMindNodeRecord)
     super();
   }
   getKey(): NodeKeyType {
-    return this.get("key");
+    return this.get('key');
   }
 
   getParentKey(): NodeKeyType {
-    return this.get("parentKey");
+    return this.get('parentKey');
   }
 
   getContent(): any {
-    return this.get("content");
+    return this.get('content');
   }
 
   getDesc(): any {
-    return this.get("desc");
+    return this.get('desc');
   }
 
   getSubItemKeys(): List<NodeKeyType> {
-    return this.get("subItemKeys");
+    return this.get('subItemKeys');
   }
 
   getCollapse(): boolean {
-    return this.get("collapse");
+    return this.get('collapse');
   }
 
   contentToString() {
-    let content  = this.getContent();
-    if(typeof content === 'string')
-      return content;
+    const content = this.getContent();
+    if (typeof content === 'string') return content;
     else {
       return MarkdownSerializer.serialize(content);
     }
   }
 
   descToString() {
-    let desc  = this.getDesc();
-    if(desc=== null)
-      return null;
-    if(typeof desc === 'string')
-      return desc;
+    const desc = this.getDesc();
+    if (desc === null) return null;
+    if (typeof desc === 'string') return desc;
     else {
       return MarkdownSerializer.serialize(desc);
     }
   }
 
-  toString()  {
+  toString() {
     return this.toJSON().toString();
   }
 
@@ -81,14 +78,14 @@ export class MindNodeModel extends Record(defaultMindNodeRecord)
       subItemKeys: this.getSubItemKeys(),
       collapse: this.getCollapse(),
       content: this.contentToString(),
-      desc: this.descToString(),
-    }
+      desc: this.descToString()
+    };
   }
 
   static create(
     key: NodeKeyType,
     parentKey = null,
-    content = "new node",
+    content = 'new node',
     subItemKeys = List([]),
     collapse = false
   ): MindNodeModel {

@@ -1,11 +1,11 @@
-import { MindMapModel } from "./MindMapModel";
-import { defaultDiagramConfig, DiagramConfig } from "../config/DiagramConfig";
-import { MindMapModelModifier, OpType } from "./MindMapModelModifier";
-import { NodeKeyType } from "../types/Node";
-import debug from "debug";
-import { ThemeConfig } from "../config/ThemeConfigs";
-import { Stack } from "immutable";
-const log = debug("model:DiagramState");
+import { MindMapModel } from './MindMapModel';
+import { defaultDiagramConfig, DiagramConfig } from '../config/DiagramConfig';
+import { MindMapModelModifier, OpType } from './MindMapModelModifier';
+import { NodeKeyType } from '../types/Node';
+import debug from 'debug';
+import { ThemeConfig } from '../config/ThemeConfigs';
+import { Stack } from 'immutable';
+const log = debug('model:DiagramState');
 
 export class DiagramState {
   private readonly mindMapModel: MindMapModel;
@@ -53,19 +53,19 @@ export class DiagramState {
     log(`op:${OpType[opType]}`);
     if (!key && opType !== OpType.FOCUS_ITEM)
       key = state.getMindMapModel().getFocusItemKey();
-    log("start:", state.getMindMapModel());
-    let mindMapModel = MindMapModelModifier.op(
+    log('start:', state.getMindMapModel());
+    const mindMapModel = MindMapModelModifier.op(
       state.getMindMapModel(),
       opType,
       key,
       arg
     );
-    log("end:", mindMapModel);
+    log('end:', mindMapModel);
     return new DiagramState(mindMapModel, state.config);
   }
   static createWith(mindMapModel, config): DiagramState {
     config = Object.assign(defaultDiagramConfig, config);
-    let diagramState = new DiagramState(mindMapModel, config);
+    const diagramState = new DiagramState(mindMapModel, config);
     return diagramState;
   }
 }

@@ -1,6 +1,6 @@
-import { FocusItemMode, NodeKeyType } from "../types/Node";
-import { Map, Record } from "immutable";
-import { MindNodeModel } from "./MindNodeModel";
+import { FocusItemMode, NodeKeyType } from '../types/Node';
+import { Map, Record } from 'immutable';
+import { MindNodeModel } from './MindNodeModel';
 
 type MindMapRecordType = {
   rootItemKey: NodeKeyType;
@@ -25,7 +25,7 @@ export class MindMapModel extends Record(defaultMindMapRecord) {
     super();
   }
   getRootItemKey(): NodeKeyType {
-    return this.get("rootItemKey");
+    return this.get('rootItemKey');
   }
 
   getRootItem(): MindNodeModel {
@@ -33,11 +33,11 @@ export class MindMapModel extends Record(defaultMindMapRecord) {
   }
 
   getDropAreaKey(): string {
-    return this.get("dropAreaKey");
+    return this.get('dropAreaKey');
   }
 
   getEditorRootItemKey(): NodeKeyType {
-    return this.get("editorRootItemKey");
+    return this.get('editorRootItemKey');
   }
 
   getEditorRootItem(): MindNodeModel {
@@ -45,29 +45,29 @@ export class MindMapModel extends Record(defaultMindMapRecord) {
   }
 
   getItemMap(): Map<NodeKeyType, MindNodeModel> {
-    return this.get("itemMap");
+    return this.get('itemMap');
   }
 
   getFocusItemKey(): NodeKeyType {
-    return this.get("focusItemKey");
+    return this.get('focusItemKey');
   }
 
   getFocusItemMode(): FocusItemMode {
-    return this.get("focusItemMode");
+    return this.get('focusItemMode');
   }
 
   getEditingContentItemKey(): NodeKeyType {
-    if (this.get("focusItemMode") !== FocusItemMode.EditingContent) return null;
+    if (this.get('focusItemMode') !== FocusItemMode.EditingContent) return null;
     return this.getFocusItemKey();
   }
 
   getEditingDescItemKey(): NodeKeyType {
-    if (this.get("focusItemMode") !== FocusItemMode.EditingDesc) return null;
+    if (this.get('focusItemMode') !== FocusItemMode.EditingDesc) return null;
     return this.getFocusItemKey();
   }
 
   getPopupMenuItemKey(): NodeKeyType {
-    if (this.get("focusItemMode") !== FocusItemMode.PopupMenu) return null;
+    if (this.get('focusItemMode') !== FocusItemMode.PopupMenu) return null;
     return this.getFocusItemKey();
   }
 
@@ -76,7 +76,7 @@ export class MindMapModel extends Record(defaultMindMapRecord) {
   }
 
   getParentItem(key: NodeKeyType): MindNodeModel {
-    let item = this.getItem(key);
+    const item = this.getItem(key);
     if (item.getParentKey()) return this.getItem(item.getParentKey());
     return null;
   }
@@ -103,7 +103,7 @@ export class MindMapModel extends Record(defaultMindMapRecord) {
     });
     model = model.withMutations(model => {
       obj.items.forEach(itemObj => {
-        model.update("itemMap", itemMap =>
+        model.update('itemMap', itemMap =>
           itemMap.set(itemObj.key, MindNodeModel.createWith(itemObj))
         );
       });

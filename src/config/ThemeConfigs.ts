@@ -2,24 +2,24 @@ export interface ThemeColor {
   primary: string;
   fontColor: string;
 }
-export interface ThemeConfig  {
+export interface ThemeConfig {
   name: string;
   color: ThemeColor;
 }
 
-const theme1 : ThemeConfig = {
+const theme1: ThemeConfig = {
   name: 'orange',
   color: {
-    primary: "orange",
-    fontColor: "black"
+    primary: 'orange',
+    fontColor: 'black'
   }
 };
 
-const theme2 : ThemeConfig = {
+const theme2: ThemeConfig = {
   name: 'pink',
   color: {
-    primary: "pink",
-    fontColor: "black"
+    primary: 'pink',
+    fontColor: 'black'
   }
 };
 

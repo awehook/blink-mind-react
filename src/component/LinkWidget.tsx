@@ -1,13 +1,13 @@
-import * as React from "react";
-import { BaseWidget } from "./common/BaseWidget";
-import {DropDirType, NodeKeyType, NodeStyle, NodeWidgetDirection} from "../types/Node";
-import { DiagramState } from "../model/DiagramState";
-import { isRectEqual } from "../util";
-import styled from "styled-components";
-import debug from "debug";
-const log = debug("node:LinkWidget");
-const logr = debug("render:LinkWidget");
-const logd = debug("drop:LinkWidget");
+import * as React from 'react';
+import { BaseWidget } from './common/BaseWidget';
+import { DropDirType, NodeKeyType, NodeWidgetDirection } from '../types/Node';
+import { DiagramState } from '../model/DiagramState';
+import { isRectEqual } from '../util';
+import styled from 'styled-components';
+import debug from 'debug';
+const log = debug('node:LinkWidget');
+const logr = debug('render:LinkWidget');
+const logd = debug('drop:LinkWidget');
 
 const Link = styled.div`
   z-index: -1;
@@ -49,7 +49,7 @@ export class LinkWidget<
   };
 
   public layout() {
-    log("layout link %s => %s", this.props.fromNodeKey, this.props.toNodeKey);
+    log('layout link %s => %s', this.props.fromNodeKey, this.props.toNodeKey);
     this.props.isRoot ? this.layoutRoot() : this.layoutNormal();
   }
 
@@ -64,9 +64,9 @@ export class LinkWidget<
   toTopicRect;
 
   layoutRoot() {
-    let { dir, getRef, dropDir } = this.props;
-    let partLayerElement: HTMLElement = getRef(
-      `bm-node-layer-${dir === NodeWidgetDirection.LEFT ? "left" : "right"}`
+    const { dir, getRef } = this.props;
+    const partLayerElement: HTMLElement = getRef(
+      `bm-node-layer-${dir === NodeWidgetDirection.LEFT ? 'left' : 'right'}`
     );
     if (partLayerElement) {
       this.partLayerRect = partLayerElement.getBoundingClientRect();
@@ -79,9 +79,9 @@ export class LinkWidget<
   }
 
   layoutNormal() {
-    let { getRef, fromNodeKey, dropDir } = this.props;
+    const { getRef, fromNodeKey } = this.props;
     // log('layoutNormal %s -> %s',fromNodeKey, toNodeKey);
-    let fromNodeChildren: HTMLElement = getRef(`children-${fromNodeKey}`);
+    const fromNodeChildren: HTMLElement = getRef(`children-${fromNodeKey}`);
     if (fromNodeChildren) {
       this.fromChildrenRect = fromNodeChildren.getBoundingClientRect();
       this.setState({
@@ -96,7 +96,7 @@ export class LinkWidget<
     nextState: Readonly<LinkWidgetState>,
     nextContext: any
   ): boolean {
-    let {
+    const {
       isRoot,
       getRef,
       fromNodeKey,
@@ -105,12 +105,18 @@ export class LinkWidget<
       dropDir
     } = this.props;
     if (dropDir) {
-      logd("shouldComponentUpdate:", dropDir);
+      logd('shouldComponentUpdate:', dropDir);
       return true;
     }
     // log("shouldComponentUpdate %s->%s", fromNodeKey, toNodeKey);
-    logr(diagramState.getConfig().theme, nextProps.diagramState.getConfig().theme);
-    if (diagramState.getConfig().theme !== nextProps.diagramState.getConfig().theme)
+    logr(
+      diagramState.getConfig().theme,
+      nextProps.diagramState.getConfig().theme
+    );
+    if (
+      diagramState.getConfig().theme !==
+      nextProps.diagramState.getConfig().theme
+    )
       return true;
     if (
       fromNodeKey !== nextProps.fromNodeKey ||
@@ -132,14 +138,14 @@ export class LinkWidget<
     this.fromTopicRect = getRef(`topic-${fromNodeKey}`).getBoundingClientRect();
     this.toTopicRect = getRef(`topic-${toNodeKey}`).getBoundingClientRect();
     log(
-      "%s->%s",
+      '%s->%s',
       fromNodeKey,
       toNodeKey,
       this.prevFromTopicRect,
       this.fromTopicRect
     );
     log(
-      "%s->%s",
+      '%s->%s',
       fromNodeKey,
       toNodeKey,
       this.prevToTopicRect,
@@ -149,7 +155,7 @@ export class LinkWidget<
       isRectEqual(this.prevToTopicRect, this.toTopicRect) &&
       isRectEqual(this.prevFromTopicRect, this.fromTopicRect)
     ) {
-      log("rect is equal");
+      log('rect is equal');
       return false;
     }
     return true;
@@ -161,7 +167,7 @@ export class LinkWidget<
   };
 
   generatePathStringForBorderNode = () => {
-    let {
+    const {
       fromNodeKey,
       toNodeKey,
       getRef,
@@ -169,23 +175,23 @@ export class LinkWidget<
       diagramState,
       dropDir
     } = this.props;
-    let fromItem = diagramState.getMindMapModel().getItem(fromNodeKey);
-    let fromItemChildrenCount = fromItem.getSubItemKeys().size;
-    let fromTopic: HTMLElement = getRef(`topic-${fromNodeKey}`);
-    let toElementTopic: HTMLElement = getRef(`topic-${toNodeKey}`);
+    const fromItem = diagramState.getMindMapModel().getItem(fromNodeKey);
+    const fromItemChildrenCount = fromItem.getSubItemKeys().size;
+    const fromTopic: HTMLElement = getRef(`topic-${fromNodeKey}`);
+    const toElementTopic: HTMLElement = getRef(`topic-${toNodeKey}`);
     if (!fromTopic || !toElementTopic) {
-      return "";
+      return '';
     }
-    let fromChildrenRect = getRef(
+    const fromChildrenRect = getRef(
       `children-${fromNodeKey}`
     ).getBoundingClientRect();
 
-    let toElementTopicRect = toElementTopic.getBoundingClientRect();
-    let fromTopicRect = fromTopic.getBoundingClientRect();
+    const toElementTopicRect = toElementTopic.getBoundingClientRect();
+    const fromTopicRect = fromTopic.getBoundingClientRect();
     let fromX, fromY, toX, toY;
-    let fakeDelta =
+    const fakeDelta =
       dropDir != null
-        ? dropDir === "before"
+        ? dropDir === 'before'
           ? -(toElementTopicRect.height - 40)
           : toElementTopicRect.height - 40
         : 0;
@@ -224,32 +230,32 @@ export class LinkWidget<
   };
 
   generatePathStringRoot = () => {
-    let { fromNodeKey, toNodeKey, getRef, dir, dropDir } = this.props;
+    const { fromNodeKey, toNodeKey, getRef, dir, dropDir } = this.props;
     // if (dropDir) logd("generatePathStringRoot");
-    let rootTopic: HTMLElement = getRef(`topic-${fromNodeKey}`);
-    let toElementTopic: HTMLElement = getRef(`topic-${toNodeKey}`);
+    const rootTopic: HTMLElement = getRef(`topic-${fromNodeKey}`);
+    const toElementTopic: HTMLElement = getRef(`topic-${toNodeKey}`);
     if (!rootTopic || !toElementTopic) {
-      return "";
+      return '';
     }
 
-    let toElementTopicRect = toElementTopic.getBoundingClientRect();
-    let fakeDelta =
+    const toElementTopicRect = toElementTopic.getBoundingClientRect();
+    const fakeDelta =
       dropDir != null
-        ? dropDir === "before"
+        ? dropDir === 'before'
           ? -(toElementTopicRect.height - 40)
           : toElementTopicRect.height - 40
         : 0;
     // if (dropDir) logd("fakeDelta:", fakeDelta);
-    let rootTopicRect = rootTopic.getBoundingClientRect();
+    const rootTopicRect = rootTopic.getBoundingClientRect();
     let fromX, fromY, toX, toY, partLayerElement, partLayerRect;
     if (dir === NodeWidgetDirection.RIGHT) {
-      partLayerElement = getRef("bm-node-layer-right");
+      partLayerElement = getRef('bm-node-layer-right');
       partLayerRect = partLayerElement.getBoundingClientRect();
       fromX = 0;
 
       toX = toElementTopicRect.left - rootTopicRect.right;
     } else {
-      partLayerElement = getRef("bm-node-layer-left");
+      partLayerElement = getRef('bm-node-layer-left');
       partLayerRect = partLayerElement.getBoundingClientRect();
       fromX = partLayerRect.right - partLayerRect.left;
       toX = toElementTopicRect.right - partLayerRect.left;
@@ -285,15 +291,15 @@ export class LinkWidget<
     if (fromY === toY) {
       curve = `M${fromX},${fromY}L${toX},${toY}`;
     } else {
-      let centerX = (fromX + toX) / 2;
-      let centerY = (fromY + toY) / 2;
+      const centerX = (fromX + toX) / 2;
+      const centerY = (fromY + toY) / 2;
 
       if (dir === NodeWidgetDirection.RIGHT) {
         curve = `M${fromX},${fromY}C${fromX},${centerY},${centerX},${toY},${toX},${toY}`;
       } else {
         curve = `M${toX},${toY}C${centerX},${toY},${fromX},${centerY},${fromX},${fromY}`;
       }
-      log(this.props.toNodeKey, "curve:", curve);
+      log(this.props.toNodeKey, 'curve:', curve);
     }
     return (
       <g>
@@ -309,7 +315,7 @@ export class LinkWidget<
 
   generateFakeRectPathString = (dir, toX, toY, width) => {
     let res;
-    let halfHeight = 8;
+    const halfHeight = 8;
     if (dir === NodeWidgetDirection.RIGHT) {
       res = `M${toX},${toY - halfHeight}H${toX + width}V${toY +
         halfHeight}H${toX}V${toY - halfHeight}`;
@@ -317,7 +323,7 @@ export class LinkWidget<
       res = `M${toX},${toY - halfHeight}H${toX - width}V${toY +
         halfHeight}H${toX}V${toY - halfHeight}`;
     }
-    logd("generateFakeRectPathString", res);
+    logd('generateFakeRectPathString', res);
     return res;
   };
 
@@ -327,8 +333,9 @@ export class LinkWidget<
     this.prevFromTopicRect = this.fromTopicRect;
     this.prevToTopicRect = this.toTopicRect;
     if (this.state && this.state.width) {
-      logr("link %s->%s", this.props.fromNodeKey, this.props.toNodeKey);
-      let strokeColor = this.props.diagramState.getThemeConfig().color.primary;
+      logr('link %s->%s', this.props.fromNodeKey, this.props.toNodeKey);
+      const strokeColor = this.props.diagramState.getThemeConfig().color
+        .primary;
       logr(strokeColor);
       return (
         <Link>
@@ -336,7 +343,7 @@ export class LinkWidget<
             xmlns="http://www.w3.org/2000/svg"
             version="1.1"
             strokeWidth="2px"
-            strokeDasharray={this.props.dropDir ? "5,5" : null}
+            strokeDasharray={this.props.dropDir ? '5,5' : null}
             stroke={strokeColor}
             fill="none"
             {...this.state}

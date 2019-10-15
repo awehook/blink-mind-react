@@ -1,5 +1,5 @@
-import * as React from "react";
-import { DiagramState } from "../model/DiagramState";
+import * as React from 'react';
+import { DiagramState } from '../model/DiagramState';
 
 interface FocusItemBorderSvgProps {
   diagramState: DiagramState;
@@ -14,7 +14,6 @@ export class DefaultFocusItemBorderSvg extends React.Component<
   FocusItemBorderSvgState
 > {
   render() {
-    console.log("DefaultFocusItemBorderSvg render");
     return this.renderFocusItemBorder();
   }
 
@@ -30,11 +29,11 @@ export class DefaultFocusItemBorderSvg extends React.Component<
 
     const focusItemKey = mindMapModel.getFocusItemKey();
     if (focusItemKey) {
-      let focusTopic: HTMLElement = getRef(`content-${focusItemKey}`);
-      let nodeLayer: HTMLElement = getRef("node-layer");
+      const focusTopic: HTMLElement = getRef(`content-${focusItemKey}`);
+      const nodeLayer: HTMLElement = getRef('node-layer');
       if (focusTopic && nodeLayer) {
-        let focusTopicRect = focusTopic.getBoundingClientRect();
-        let nodeLayerRect = nodeLayer.getBoundingClientRect();
+        const focusTopicRect = focusTopic.getBoundingClientRect();
+        const nodeLayerRect = nodeLayer.getBoundingClientRect();
         return (
           <div className="bm-focus-svg">
             <svg

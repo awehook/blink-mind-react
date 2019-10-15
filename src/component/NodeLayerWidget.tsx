@@ -1,9 +1,9 @@
-import * as React from "react";
-import { BaseWidget } from "./common/BaseWidget";
-import { RootNodeWidget } from "./RootNodeWidget";
-import { DiagramState } from "../model/DiagramState";
-import { OpFunction } from "../types/FunctionType";
-import styled from "styled-components";
+import * as React from 'react';
+import { BaseWidget } from './common/BaseWidget';
+import { RootNodeWidget } from './RootNodeWidget';
+import { DiagramState } from '../model/DiagramState';
+import { OpFunction } from '../types/FunctionType';
+import styled from 'styled-components';
 
 const NodeLayer = styled.div`
   position: relative;
@@ -30,9 +30,9 @@ export class NodeLayerWidget<
   render() {
     // console.error("MindNodeLayer render");
 
-    let { setViewBoxScroll, setViewBoxScrollDelta, saveRef } = this.props;
+    const { setViewBoxScroll, setViewBoxScrollDelta, saveRef } = this.props;
     return (
-      <NodeLayer ref={saveRef("node-layer")}>
+      <NodeLayer ref={saveRef('node-layer')}>
         {this.renderItems(setViewBoxScroll, setViewBoxScrollDelta)}
       </NodeLayer>
     );

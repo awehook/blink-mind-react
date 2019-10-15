@@ -1,5 +1,5 @@
-import { MindMapModel } from "./MindMapModel";
-import { defaultDiagramConfig, DiagramConfig } from "../config/DiagramConfig";
+import { MindMapModel } from './MindMapModel';
+import { defaultDiagramConfig, DiagramConfig } from '../config/DiagramConfig';
 
 export class MindDiagramModel {
   mindMapModel: MindMapModel;

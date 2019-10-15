@@ -1,5 +1,5 @@
-import * as React from "react";
-import { BaseWidget } from "./BaseWidget";
+import * as React from 'react';
+import { BaseWidget } from './BaseWidget';
 
 interface DragDropDestWidgetProps {
   onDragIn: Function;

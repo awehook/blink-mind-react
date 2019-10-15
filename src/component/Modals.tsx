@@ -1,10 +1,10 @@
-import * as React from "react";
-import { BaseModal } from "./common/BaseModal";
-import { DiagramState } from "../model/DiagramState";
-import { OpFunction } from "../types/FunctionType";
-import { FocusItemMode } from "../types/Node";
-import { OpType } from "../model/MindMapModelModifier";
-import styled from "styled-components";
+import * as React from 'react';
+import { BaseModal } from './common/BaseModal';
+import { DiagramState } from '../model/DiagramState';
+import { OpFunction } from '../types/FunctionType';
+import { FocusItemMode } from '../types/Node';
+import { OpType } from '../model/MindMapModelModifier';
+import styled from 'styled-components';
 
 interface ModalsProps {
   diagramState: DiagramState;
@@ -40,10 +40,10 @@ export class Modals extends React.Component<ModalsProps, ModalsState> {
   };
 
   getActiveModalName = () => {
-    let focusItemMode = this.props.diagramState
+    const focusItemMode = this.props.diagramState
       .getMindMapModel()
       .getFocusItemMode();
-    if (focusItemMode === FocusItemMode.EditingDesc) return "edit-desc";
+    if (focusItemMode === FocusItemMode.EditingDesc) return 'edit-desc';
     return null;
   };
 

@@ -1,7 +1,7 @@
 export type NodeKeyType = string;
 
 //节点 Drag and drop 时 Drop 区域的位置
-export type DropDirType = "in" | "before" | "after";
+export type DropDirType = 'in' | 'before' | 'after';
 
 export enum FocusItemMode {
   Normal,

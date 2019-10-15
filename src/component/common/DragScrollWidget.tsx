@@ -1,7 +1,7 @@
-import * as React from "react";
-import { BaseWidget } from "./BaseWidget";
-import ResizeObserver from "resize-observer-polyfill";
-import styled from "styled-components";
+import * as React from 'react';
+import { BaseWidget } from './BaseWidget';
+import ResizeObserver from 'resize-observer-polyfill';
+import styled from 'styled-components';
 
 const DragScrollView = styled.div`
   position: relative;
@@ -16,7 +16,7 @@ const DragScrollContent = styled.div`
 `;
 
 interface DragScrollWidgetProps {
-  mouseKey?: "left" | "right";
+  mouseKey?: 'left' | 'right';
   needKeyPressed?: boolean;
   canDragFunc?: () => Boolean;
   children: (
@@ -30,14 +30,14 @@ export class DragScrollWidget extends BaseWidget<DragScrollWidgetProps> {
     super(props);
     this.state = {
       widgetStyle: {
-        width: "10000px",
-        height: "10000px"
+        width: '10000px',
+        height: '10000px'
       }
     };
   }
 
   static defaultProps = {
-    mouseKey: "left",
+    mouseKey: 'left',
     needKeyPressed: false
   };
 
@@ -46,12 +46,12 @@ export class DragScrollWidget extends BaseWidget<DragScrollWidgetProps> {
     observer: ResizeObserver
   ) => {
     if (this.oldContentRect) {
-      let widgetStyle = {
+      const widgetStyle = {
         width: this.content.clientWidth + this.viewBox.clientWidth * 2,
         height: this.content.clientHeight + this.viewBox.clientHeight * 2
       };
-      this.bigView.style.width = widgetStyle.width + "px";
-      this.bigView.style.height = widgetStyle.height + "px";
+      this.bigView.style.width = widgetStyle.width + 'px';
+      this.bigView.style.height = widgetStyle.height + 'px';
     }
     this.oldContentRect = entries[0].contentRect;
   };
@@ -88,12 +88,12 @@ export class DragScrollWidget extends BaseWidget<DragScrollWidgetProps> {
   setWidgetStyle = () => {
     if (this.content && this.viewBox && this.bigView) {
       this.bigView.style.width =
-        (this.content.clientWidth + this.viewBox.clientWidth) * 2 + "px";
+        (this.content.clientWidth + this.viewBox.clientWidth) * 2 + 'px';
       this.bigView.style.height =
-        (this.content.clientHeight + this.viewBox.clientHeight) * 2 + "px";
+        (this.content.clientHeight + this.viewBox.clientHeight) * 2 + 'px';
 
-      this.content.style.left = this.viewBox.clientWidth + "px";
-      this.content.style.top = this.viewBox.clientHeight + "px";
+      this.content.style.left = this.viewBox.clientWidth + 'px';
+      this.content.style.top = this.viewBox.clientHeight + 'px';
     }
   };
 
@@ -120,11 +120,11 @@ export class DragScrollWidget extends BaseWidget<DragScrollWidgetProps> {
     // mouseKey 表示鼠标按下那个键才可以进行拖动，左键或者右键
     // needKeyPressed 为了支持是否需要按下ctrl键，才可以进行拖动
     // canDragFunc是一个函数，它是为了支持使用者以传入函数的方式，这个函数的返回值表示当前的内容是否可以被拖拽而移动
-    let { mouseKey, needKeyPressed, canDragFunc } = this.props;
+    const { mouseKey, needKeyPressed, canDragFunc } = this.props;
     if (canDragFunc && !canDragFunc()) return;
     if (
-      (e.button === 0 && mouseKey === "left") ||
-      (e.button === 2 && mouseKey === "right")
+      (e.button === 0 && mouseKey === 'left') ||
+      (e.button === 2 && mouseKey === 'right')
     ) {
       if (needKeyPressed) {
         if (!e.ctrlKey) return;
@@ -132,15 +132,15 @@ export class DragScrollWidget extends BaseWidget<DragScrollWidgetProps> {
       this._lastCoordX = this.viewBox.scrollLeft + e.nativeEvent.clientX;
       this._lastCoordY = this.viewBox.scrollTop + e.nativeEvent.clientY;
       // console.log('add listener');
-      window.addEventListener("mousemove", this.onMouseMove);
-      window.addEventListener("mouseup", this.onMouseUp);
+      window.addEventListener('mousemove', this.onMouseMove);
+      window.addEventListener('mouseup', this.onMouseUp);
     }
   };
 
   onMouseUp = e => {
     // log('Drag Scroll onMouseUp');
-    window.removeEventListener("mousemove", this.onMouseMove);
-    window.removeEventListener("mouseup", this.onMouseUp);
+    window.removeEventListener('mousemove', this.onMouseMove);
+    window.removeEventListener('mouseup', this.onMouseUp);
   };
 
   // onDragEnter = e=> {
@@ -167,11 +167,11 @@ export class DragScrollWidget extends BaseWidget<DragScrollWidgetProps> {
 
   componentDidMount(): void {
     this.setWidgetStyle();
-    document.addEventListener("contextmenu", this.handleContextMenu);
+    document.addEventListener('contextmenu', this.handleContextMenu);
   }
 
   componentWillUnmount(): void {
-    document.removeEventListener("contextmenu", this.handleContextMenu);
+    document.removeEventListener('contextmenu', this.handleContextMenu);
   }
 
   render() {

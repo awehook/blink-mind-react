@@ -1,17 +1,16 @@
-import * as React from "react";
-import * as cx from "classnames";
-import * as Keys from "fbjs/lib/Keys";
-import { MindDragScrollWidget } from "./MindDragScrollWidget";
-import { BaseWidget } from "./common/BaseWidget";
-import { Modals } from "./Modals";
-import SaveRef from "./common/SaveRef";
-import { DiagramState } from "../model/DiagramState";
-import { OnChangeFunction } from "../types/FunctionType";
-import { OpType } from "../model/MindMapModelModifier";
-import { NodeKeyType } from "../types/Node";
-import Theme from "./Theme";
-import styled from "styled-components";
-import "./DiagramWidget.css";
+import * as React from 'react';
+import * as cx from 'classnames';
+import { MindDragScrollWidget } from './MindDragScrollWidget';
+import { BaseWidget } from './common/BaseWidget';
+import { Modals } from './Modals';
+import SaveRef from './common/SaveRef';
+import { DiagramState } from '../model/DiagramState';
+import { OnChangeFunction } from '../types/FunctionType';
+import { OpType } from '../model/MindMapModelModifier';
+import { NodeKeyType } from '../types/Node';
+import Theme from './Theme';
+import styled from 'styled-components';
+import './DiagramWidget.css';
 
 const Diagram = styled.div`
   width: 100%;
@@ -31,8 +30,8 @@ export class DiagramWidget<P extends MindDiagramWidgetProps> extends BaseWidget<
   }
 
   op = (opType: OpType, nodeKey?: NodeKeyType, arg?) => {
-    let { diagramState, onChange } = this.props;
-    let newState = DiagramState.op(diagramState, opType, nodeKey, arg);
+    const { diagramState, onChange } = this.props;
+    const newState = DiagramState.op(diagramState, opType, nodeKey, arg);
     onChange(newState);
   };
 
@@ -50,8 +49,8 @@ export class DiagramWidget<P extends MindDiagramWidgetProps> extends BaseWidget<
   // };
 
   render() {
-    let { diagramState } = this.props;
-    let theme = diagramState.getThemeConfig();
+    const { diagramState } = this.props;
+    const theme = diagramState.getThemeConfig();
     return (
       <SaveRef>
         {(saveRef, getRef) => (

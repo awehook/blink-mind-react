@@ -1,19 +1,16 @@
-import * as React from "react";
-import { NodeKeyType, NodeStyle, NodeWidgetDirection } from "../types/Node";
-import { BaseWidget } from "./common/BaseWidget";
-import { LinkWidget } from "./LinkWidget";
-import { TopicContentWidget } from "./TopicContentWidget";
-import { DiagramState } from "../model/DiagramState";
-import { OpType } from "../model/MindMapModelModifier";
-import * as cx from "classnames";
-import { OpFunction } from "../types/FunctionType";
-import styled from "styled-components";
-import debug from "debug";
-import { createSubNodesAndSubLinks } from "./utils";
+import * as React from 'react';
+import { NodeKeyType, NodeWidgetDirection } from '../types/Node';
+import { BaseWidget } from './common/BaseWidget';
+import { TopicContentWidget } from './TopicContentWidget';
+import { DiagramState } from '../model/DiagramState';
+import { OpType } from '../model/MindMapModelModifier';
+import * as cx from 'classnames';
+import { OpFunction } from '../types/FunctionType';
+import styled from 'styled-components';
+import debug from 'debug';
+import { createSubNodesAndSubLinks } from './utils';
 
-const log = debug("node:NodeWidget");
-const logr = debug("render:NodeWidget");
-const logd = debug("drop:NodeWidget");
+const logr = debug('render:NodeWidget');
 
 const Node = styled.div`
   display: flex;
@@ -21,7 +18,7 @@ const Node = styled.div`
   padding: 0px 10px;
   flex-direction: ${props =>
     //@ts-ignore
-    props.dir === NodeWidgetDirection.RIGHT ? "row" : "row-reverse"};
+    props.dir === NodeWidgetDirection.RIGHT ? 'row' : 'row-reverse'};
 `;
 
 const NodeChildren = styled.div`
@@ -35,7 +32,7 @@ const NodeTopic = styled.div`
   align-items: center;
   flex-direction: ${props =>
     //@ts-ignore
-    props.dir === NodeWidgetDirection.RIGHT ? "row" : "row-reverse"};
+    props.dir === NodeWidgetDirection.RIGHT ? 'row' : 'row-reverse'};
 `;
 
 const CollapseLine = styled.div`
@@ -44,7 +41,7 @@ const CollapseLine = styled.div`
 
   background: ${props =>
     //@ts-ignore
-    props.hide ? "transparent" : props.theme.color.primary};
+    props.hide ? 'transparent' : props.theme.color.primary};
 `;
 
 const Icon = styled.div`
@@ -105,7 +102,7 @@ export class NodeWidget<
     snapshot?: any
   ): void {
     if (this.needRelocation) {
-      let newRect = this.collapseIcon.getBoundingClientRect();
+      const newRect = this.collapseIcon.getBoundingClientRect();
       this.props.setViewBoxScrollDelta(
         newRect.left - this.oldCollapseIconRect.left,
         newRect.top - this.oldCollapseIconRect.top
@@ -122,7 +119,7 @@ export class NodeWidget<
   layoutSubLinks = () => {
     const { getRef } = this.props;
     this.subLinksKeys.forEach(linkKey => {
-      let linkWidget = getRef(linkKey);
+      const linkWidget = getRef(linkKey);
       linkWidget.layout();
     });
   };
@@ -168,11 +165,11 @@ export class NodeWidget<
   subLinksKeys = [];
 
   renderSubItems() {
-    let { diagramState, dir, saveRef, nodeKey } = this.props;
+    const { diagramState, dir, saveRef, nodeKey } = this.props;
     const mindMapModel = diagramState.getMindMapModel();
     const node = mindMapModel.getItem(nodeKey);
-    let diagramConfig = diagramState.getConfig();
-    let inlineStyle =
+    const diagramConfig = diagramState.getConfig();
+    const inlineStyle =
       dir === NodeWidgetDirection.LEFT
         ? {
             paddingRight: diagramConfig.hMargin
@@ -180,7 +177,7 @@ export class NodeWidget<
         : {
             paddingLeft: diagramConfig.hMargin
           };
-    let items = node.getSubItemKeys().toArray();
+    const items = node.getSubItemKeys().toArray();
     const res = createSubNodesAndSubLinks(this.props, items);
     if (!res) return null;
     const { subItems, subLinks, subLinksKeys } = res;
@@ -194,11 +191,10 @@ export class NodeWidget<
   }
 
   render() {
-    let { diagramState, op, nodeKey, dir, saveRef, getRef } = this.props;
+    const { diagramState, op, nodeKey, dir, saveRef, getRef } = this.props;
     logr(nodeKey);
     const mindMapModel = diagramState.getMindMapModel();
-    let node = mindMapModel.getItem(nodeKey);
-    let visualLevel = mindMapModel.getItemVisualLevel(nodeKey);
+    const node = mindMapModel.getItem(nodeKey);
     return (
       <Node
         //@ts-ignore
@@ -228,7 +224,7 @@ export class NodeWidget<
                 ref={this.collapseIconRef}
                 className={cx({
                   iconfont: node.getSubItemKeys().size > 0,
-                  [`bm-${node.getCollapse() ? "plus" : "minus"}`]:
+                  [`bm-${node.getCollapse() ? 'plus' : 'minus'}`]:
                     node.getSubItemKeys().size > 0
                 })}
                 onClick={this.onClickCollapse}

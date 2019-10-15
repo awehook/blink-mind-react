@@ -1,9 +1,9 @@
-import * as React from "react";
-import { DefaultNodeContentEditor } from "./DefaultNodeContentEditor";
-import { DefaultNodeDescEditor } from "./DefaultNodeDescEditor";
-import { DefaultFocusItemBorderSvg } from "./DefaultFocusItemBorderSvg";
-import { NodeStyle } from "../types/Node";
-import themeConfigs from "./ThemeConfigs";
+import * as React from 'react';
+import { DefaultNodeContentEditor } from './DefaultNodeContentEditor';
+import { DefaultNodeDescEditor } from './DefaultNodeDescEditor';
+import { DefaultFocusItemBorderSvg } from './DefaultFocusItemBorderSvg';
+import { NodeStyle } from '../types/Node';
+import themeConfigs from './ThemeConfigs';
 
 export enum DiagramLayoutDirection {
   LEFT_TO_RIGHT,
@@ -56,7 +56,7 @@ const defaultFocusItemsBorderRenderFn = (diagramState, saveRef, getRef) => {
       diagramState={diagramState}
       saveRef={saveRef}
       getRef={getRef}
-      ref={saveRef("focusItemBorderSvg")}
+      ref={saveRef('focusItemBorderSvg')}
     />
   );
 };
@@ -67,22 +67,22 @@ export const defaultDiagramConfig: DiagramConfig = {
   hMargin: 10,
   vMargin: 10,
   focusBorderPadding: 4,
-  theme: "theme2",
+  theme: 'theme2',
   themeConfigs,
   rootItemStyle: {
-    fontSize: "24px",
-    borderRadius: "10px",
-    padding: "10px 25px"
+    fontSize: '24px',
+    borderRadius: '10px',
+    padding: '10px 25px'
   },
   primaryItemStyle: {
-    fontSize: "16px",
-    borderRadius: "6px",
-    padding: "0"
+    fontSize: '16px',
+    borderRadius: '6px',
+    padding: '0'
   },
   normalItemStyle: {
-    fontSize: "16px",
-    borderRadius: "6px",
-    padding: "0"
+    fontSize: '16px',
+    borderRadius: '6px',
+    padding: '0'
   },
   editorRendererFn: defaultEditorRendererFn,
   descEditorRenderFn: defaultDescEditorRendererFn,

@@ -27,7 +27,9 @@
     "prepublish": "yarn build",
     "storybook": "start-storybook -p 6006",
     "dev": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "lint": "tslint -c tslint.json --project .",
+    "lint:fix": "tslint --fix -c tslint.json --project ."
   },
   "dependencies": {
     "awehook-rich-markdown-editor": "^1.0.1",

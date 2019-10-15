@@ -1,10 +1,10 @@
-import * as React from "react";
-import * as ReactModal from "react-modal";
-import styled from "styled-components";
-import breakpoint from "styled-components-breakpoint";
-import { Flex } from "./Flex";
+import * as React from 'react';
+import * as ReactModal from 'react-modal';
+import styled from 'styled-components';
+import breakpoint from 'styled-components-breakpoint';
+import { Flex } from './Flex';
 
-ReactModal.setAppElement("#root");
+ReactModal.setAppElement('#root');
 
 const StyledModal = styled(ReactModal)`
   position: absolute;
@@ -38,7 +38,7 @@ const ModalTitle = styled.div`
   align-items: center;
   color: #e4e4e4;
   background: #5b637a;
- 
+
   height: 30px;
 `;
 
@@ -55,7 +55,7 @@ const Close = styled.span`
   }
   
 
-  // ${breakpoint("tablet")`
+  // ${breakpoint('tablet')`
   //   top: 1rem;
   //   right: 1rem;
   // `};
@@ -71,7 +71,7 @@ type Props = {
 export const BaseModal = ({
   children,
   isOpen,
-  title = "Untitled",
+  title = 'Untitled',
   onRequestClose,
   ...rest
 }: Props) => {
@@ -86,7 +86,7 @@ export const BaseModal = ({
       >
         <Content column>
           <ModalTitle>
-            <div/>
+            <div />
             <span>{title}</span>
             <Close onClick={onRequestClose}>
               <div className="iconfont bm-close" />
@@ -99,4 +99,3 @@ export const BaseModal = ({
     </React.Fragment>
   );
 };
-
