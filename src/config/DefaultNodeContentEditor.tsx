@@ -55,14 +55,14 @@ export class DefaultNodeContentEditor extends React.Component<
     nextState: Readonly<DefaultNodeContentEditorState>,
     nextContext: any
   ): boolean {
-    let { nodeKey: nextNodeKey, diagramState: nextDS } = nextProps;
-    let { nodeKey: nodeKey, diagramState: ds } = this.props;
+    const { nodeKey: nextNodeKey, diagramState: nextDS } = nextProps;
+    const { nodeKey: nodeKey, diagramState: ds } = this.props;
     if (nextNodeKey !== nodeKey) {
       log("nextNodeKey !== nodeKey");
       return true;
     }
-    let editingKey = ds.mindMapModel.getEditingContentItemKey();
-    let nextEditingKey = nextDS.mindMapModel.getEditingContentItemKey();
+    const editingKey = ds.getMindMapModel().getEditingContentItemKey();
+    const nextEditingKey = nextDS.getMindMapModel().getEditingContentItemKey();
 
     if (
       editingKey !== nextEditingKey &&
@@ -71,8 +71,8 @@ export class DefaultNodeContentEditor extends React.Component<
       return true;
 
     if (
-      ds.mindMapModel.getItem(nodeKey) !==
-      nextDS.mindMapModel.getItem(nextNodeKey)
+      ds.getMindMapModel().getItem(nodeKey) !==
+      nextDS.getMindMapModel().getItem(nextNodeKey)
     ) {
       log(
         "ds.mindMapModel.getItem(nodeKey) !== nextDS.mindMapModel.getItem(nextNodeKey)"
@@ -85,7 +85,7 @@ export class DefaultNodeContentEditor extends React.Component<
   render(): React.ReactNode {
     log("render");
     const { nodeKey, diagramState, saveRef } = this.props;
-    const { mindMapModel } = diagramState;
+    const mindMapModel = diagramState.getMindMapModel();
     const nodeModel = mindMapModel.getItem(nodeKey);
     const content = nodeModel.getContent();
     const editingItemKey = mindMapModel.getEditingContentItemKey();

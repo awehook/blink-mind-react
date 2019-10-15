@@ -21,7 +21,7 @@ export class MindDragScrollWidget<
 
   componentDidMount(): void {
     let { getRef, diagramState } = this.props;
-    let { mindMapModel } = diagramState;
+    const mindMapModel  = diagramState.getMindMapModel();
     let rootTopic: HTMLElement = getRef(
       `topic-${mindMapModel.getEditorRootItemKey()}`
     );

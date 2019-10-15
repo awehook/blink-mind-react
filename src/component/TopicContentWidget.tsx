@@ -89,13 +89,12 @@ export class TopicContentWidget extends BaseWidget<
     const tag = e.nativeEvent.target.dataset.tag;
     if (
       MindMapModelModifier.canDragAndDrop(
-        this.props.diagramState.mindMapModel,
+        this.props.diagramState.getMindMapModel(),
         dragSrcItemKey,
         this.props.nodeKey,
         tag
       )
     ) {
-
       if (tag) {
         op(OpType.SET_DROP_AREA_KEY, `${tag}:${nodeKey}`);
         return;
@@ -145,7 +144,9 @@ export class TopicContentWidget extends BaseWidget<
       if (!this.isDoubleClick) {
         // log("TopicContentWidget onClick");
         let { diagramState, op, nodeKey } = this.props;
-        if (diagramState.mindMapModel.getEditingContentItemKey() === nodeKey)
+        if (
+          diagramState.getMindMapModel().getEditingContentItemKey() === nodeKey
+        )
           return;
         op(OpType.SET_POPUP_MENU_ITEM_KEY, nodeKey);
         this.setState({ showPopMenu: true });
@@ -157,7 +158,7 @@ export class TopicContentWidget extends BaseWidget<
     this.isDoubleClick = true;
     // log('TopicContentWidget onDoubleClick');
     let { diagramState, op, nodeKey } = this.props;
-    if (diagramState.mindMapModel.getEditingContentItemKey() === nodeKey)
+    if (diagramState.getMindMapModel().getEditingContentItemKey() === nodeKey)
       return;
     op(OpType.START_EDITING_CONTENT, nodeKey);
   };
@@ -174,7 +175,7 @@ export class TopicContentWidget extends BaseWidget<
     snapshot?: any
   ): void {
     let { diagramState, nodeKey } = this.props;
-    if (diagramState.mindMapModel.getEditingContentItemKey() === nodeKey) {
+    if (diagramState.getMindMapModel().getEditingContentItemKey() === nodeKey) {
       document.addEventListener("click", this._handleClick);
     } else {
       document.removeEventListener("click", this._handleClick);
@@ -215,8 +216,8 @@ export class TopicContentWidget extends BaseWidget<
       dir: nextDir
     } = nextProps;
     if (nodeKey !== nextNodeKey || dir !== nextDir) return true;
-    let mm = ds.mindMapModel;
-    let nextMm = nextDS.mindMapModel;
+    let mm = ds.getMindMapModel();
+    let nextMm = nextDS.getMindMapModel();
     let focusKey = mm.getFocusItemKey();
     let nextFocusKey = nextMm.getFocusItemKey();
     if (focusKey === nodeKey || nextFocusKey == nodeKey) {
@@ -243,18 +244,19 @@ export class TopicContentWidget extends BaseWidget<
       getRef
     } = this.props;
     logr(nodeKey);
-    let { mindMapModel, config: diagramConfig } = diagramState;
+    const mindMapModel = diagramState.getMindMapModel();
+    const config = diagramState.getConfig();
     let visualLevel = mindMapModel.getItemVisualLevel(nodeKey);
     let itemStyle;
     switch (visualLevel) {
       case 0:
-        itemStyle = diagramConfig.rootItemStyle;
+        itemStyle = config.rootItemStyle;
         break;
       case 1:
-        itemStyle = diagramConfig.primaryItemStyle;
+        itemStyle = config.primaryItemStyle;
         break;
       default:
-        itemStyle = diagramConfig.normalItemStyle;
+        itemStyle = config.normalItemStyle;
         break;
     }
 
@@ -290,7 +292,7 @@ export class TopicContentWidget extends BaseWidget<
           onClick={this.onClick}
           onDoubleClick={this.onDoubleClick}
         >
-          {diagramConfig.editorRendererFn(diagramState, op, nodeKey, saveRef)}
+          {config.editorRendererFn(diagramState, op, nodeKey, saveRef)}
           {showDescIcon && (
             <DescIcon
               className="iconfont bm-notes"

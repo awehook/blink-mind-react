@@ -23,7 +23,12 @@ const EditDescModal = ({ diagramState, op, nodeKey, saveRef }) => {
   return (
     <React.Fragment>
       <DescWrapper>
-        {diagramState.config.descEditorRenderFn(diagramState, op, nodeKey, saveRef)}
+        {diagramState.config.descEditorRenderFn(
+          diagramState,
+          op,
+          nodeKey,
+          saveRef
+        )}
       </DescWrapper>
     </React.Fragment>
   );
@@ -35,14 +40,16 @@ export class Modals extends React.Component<ModalsProps, ModalsState> {
   };
 
   getActiveModalName = () => {
-    let focusItemMode = this.props.diagramState.mindMapModel.getFocusItemMode();
+    let focusItemMode = this.props.diagramState
+      .getMindMapModel()
+      .getFocusItemMode();
     if (focusItemMode === FocusItemMode.EditingDesc) return "edit-desc";
     return null;
   };
 
   render() {
     const { diagramState, op, saveRef } = this.props;
-    const { mindMapModel, config } = diagramState;
+    const mindMapModel = diagramState.getMindMapModel();
     const activeModalName = this.getActiveModalName();
     const Modal = ({ name, children, ...rest }) => {
       return (
@@ -55,8 +62,6 @@ export class Modals extends React.Component<ModalsProps, ModalsState> {
         </BaseModal>
       );
     };
-
-
 
     return (
       <span>

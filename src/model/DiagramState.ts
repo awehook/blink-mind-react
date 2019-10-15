@@ -4,19 +4,33 @@ import { MindMapModelModifier, OpType } from "./MindMapModelModifier";
 import { NodeKeyType } from "../types/Node";
 import debug from "debug";
 import { ThemeConfig } from "../config/ThemeConfigs";
+import { Stack } from "immutable";
 const log = debug("model:DiagramState");
 
 export class DiagramState {
-  mindMapModel: MindMapModel;
-  config: DiagramConfig;
+  private readonly mindMapModel: MindMapModel;
+  private readonly config: DiagramConfig;
+
+  undoStack: Stack<MindMapModel> = Stack();
+  redoStack: Stack<MindMapModel> = Stack();
 
   constructor(mindMapModel: MindMapModel, config: DiagramConfig) {
     this.mindMapModel = mindMapModel;
     this.config = config;
+    this.undoStack = Stack();
+    this.redoStack = Stack();
   }
 
-  getThemeConfig() : ThemeConfig {
+  getThemeConfig(): ThemeConfig {
     return this.config.themeConfigs[this.config.theme];
+  }
+
+  getMindMapModel(): MindMapModel {
+    return this.mindMapModel;
+  }
+
+  getConfig(): DiagramConfig {
+    return this.config;
   }
 
   static setMindMapModel(
@@ -26,11 +40,8 @@ export class DiagramState {
     return new DiagramState(model, state.config);
   }
 
-  static setConfig(
-    state: DiagramState,
-    config: DiagramConfig
-  ): DiagramState {
-    return new DiagramState(state.mindMapModel,config);
+  static setConfig(state: DiagramState, config: DiagramConfig): DiagramState {
+    return new DiagramState(state.getMindMapModel(), config);
   }
 
   static op(
@@ -41,10 +52,10 @@ export class DiagramState {
   ): DiagramState {
     log(`op:${OpType[opType]}`);
     if (!key && opType !== OpType.FOCUS_ITEM)
-      key = state.mindMapModel.getFocusItemKey();
-    log("start:", state.mindMapModel);
+      key = state.getMindMapModel().getFocusItemKey();
+    log("start:", state.getMindMapModel());
     let mindMapModel = MindMapModelModifier.op(
-      state.mindMapModel,
+      state.getMindMapModel(),
       opType,
       key,
       arg

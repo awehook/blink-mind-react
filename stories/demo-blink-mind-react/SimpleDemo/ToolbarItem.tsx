@@ -45,7 +45,7 @@ export class ToolbarItem extends React.Component<
   };
 
   export = () => {
-    let obj = convertMindMapModelToRaw(this.props.diagramState.mindMapModel);
+    let obj = convertMindMapModelToRaw(this.props.diagramState.getMindMapModel());
     let json = JSON.stringify(obj);
     console.log(json);
   };

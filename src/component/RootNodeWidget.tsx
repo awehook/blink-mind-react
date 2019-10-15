@@ -58,8 +58,7 @@ export class RootNodeWidget<
 
   getNodeModel(): MindNodeModel {
     let { diagramState, nodeKey } = this.props;
-    let { mindMapModel } = diagramState;
-    return mindMapModel.getItem(nodeKey);
+    return diagramState.getMindMapModel().getItem(nodeKey);
   }
 
   getPartItems(dir: DiagramLayoutDirection) {
@@ -142,7 +141,8 @@ export class RootNodeWidget<
   render() {
     log("render");
     let { diagramState, op, nodeKey, saveRef, getRef } = this.props;
-    let { mindMapModel, config } = diagramState;
+    const mindMapModel = diagramState.getMindMapModel();
+    const config = diagramState.getConfig();
     let [leftItems, rightItems] = this.getPartItems(config.direction);
     this.subLinksKeys = [];
     return (

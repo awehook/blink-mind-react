@@ -109,8 +109,8 @@ export class LinkWidget<
       return true;
     }
     // log("shouldComponentUpdate %s->%s", fromNodeKey, toNodeKey);
-    logr(diagramState.config.theme, nextProps.diagramState.config.theme);
-    if (diagramState.config.theme !== nextProps.diagramState.config.theme)
+    logr(diagramState.getConfig().theme, nextProps.diagramState.getConfig().theme);
+    if (diagramState.getConfig().theme !== nextProps.diagramState.getConfig().theme)
       return true;
     if (
       fromNodeKey !== nextProps.fromNodeKey ||
@@ -169,7 +169,7 @@ export class LinkWidget<
       diagramState,
       dropDir
     } = this.props;
-    let fromItem = diagramState.mindMapModel.getItem(fromNodeKey);
+    let fromItem = diagramState.getMindMapModel().getItem(fromNodeKey);
     let fromItemChildrenCount = fromItem.getSubItemKeys().size;
     let fromTopic: HTMLElement = getRef(`topic-${fromNodeKey}`);
     let toElementTopic: HTMLElement = getRef(`topic-${toNodeKey}`);

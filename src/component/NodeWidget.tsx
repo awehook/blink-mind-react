@@ -169,9 +169,9 @@ export class NodeWidget<
 
   renderSubItems() {
     let { diagramState, dir, saveRef, nodeKey } = this.props;
-    const { mindMapModel } = diagramState;
+    const mindMapModel = diagramState.getMindMapModel();
     const node = mindMapModel.getItem(nodeKey);
-    let diagramConfig = diagramState.config;
+    let diagramConfig = diagramState.getConfig();
     let inlineStyle =
       dir === NodeWidgetDirection.LEFT
         ? {
@@ -181,7 +181,7 @@ export class NodeWidget<
             paddingLeft: diagramConfig.hMargin
           };
     let items = node.getSubItemKeys().toArray();
-    const res = createSubNodesAndSubLinks(this.props,items);
+    const res = createSubNodesAndSubLinks(this.props, items);
     if (!res) return null;
     const { subItems, subLinks, subLinksKeys } = res;
     this.subLinksKeys = subLinksKeys;
@@ -196,7 +196,7 @@ export class NodeWidget<
   render() {
     let { diagramState, op, nodeKey, dir, saveRef, getRef } = this.props;
     logr(nodeKey);
-    let { mindMapModel } = diagramState;
+    const mindMapModel = diagramState.getMindMapModel();
     let node = mindMapModel.getItem(nodeKey);
     let visualLevel = mindMapModel.getItemVisualLevel(nodeKey);
     return (

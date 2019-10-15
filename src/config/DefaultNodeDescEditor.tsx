@@ -43,7 +43,7 @@ export class DefaultNodeDescEditor extends React.PureComponent<
 
   render(): React.ReactNode {
     const { nodeKey, diagramState } = this.props;
-    const { mindMapModel } = diagramState;
+    const mindMapModel  = diagramState.getMindMapModel();
     const nodeModel = mindMapModel.getItem(nodeKey);
     const desc = nodeModel.getDesc();
     log(
