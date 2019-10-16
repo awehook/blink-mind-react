@@ -17,7 +17,7 @@ The online demo is [react-mindmap](https://awehook.github.io/react-mindmap/)
 ### Futures
 1. drag and move
 
-![image](https://user-gold-cdn.xitu.io/2019/10/15/16dcfbdc616f94bd?w=1694&h=601&f=gif&s=567577)
+![image](./screenshots/drag-and-move.gif)
 
 2. drag and drop for reorganize the node relationship
 
@@ -25,7 +25,7 @@ The online demo is [react-mindmap](https://awehook.github.io/react-mindmap/)
 
 3. popup menu for operation the node
 
-![image](https://user-gold-cdn.xitu.io/2019/10/15/16dcfd8a92afb19e?w=1139&h=550&f=png&s=44095)
+![image](./screenshots/node-pop-menu.jpg)
 
 4. rich text editor for mind map item
 
