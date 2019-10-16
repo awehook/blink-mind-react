@@ -47,7 +47,7 @@ const DropArea = styled.div`
 
 interface TopicContentWidgetProps {
   diagramState: DiagramState;
-  op: OpFunction;
+  op: (...args: any[]) => void;
   nodeKey: NodeKeyType;
   dir: NodeWidgetDirection;
   draggable: boolean;
@@ -127,10 +127,28 @@ export class TopicContentWidget extends BaseWidget<
     log('onDrop');
     const { nodeKey, op } = this.props;
     const tag = e.nativeEvent.target.dataset.tag;
+    const clearDropArea = {
+      opType: OpType.SET_DROP_AREA_KEY,
+      nodeKey: null
+    };
     if (tag) {
-      op(OpType.DRAG_AND_DROP, dragSrcItemKey, { dstKey: nodeKey, dir: tag });
+      op([
+        clearDropArea,
+        {
+          opType: OpType.DRAG_AND_DROP,
+          nodeKey: dragSrcItemKey,
+          arg: { dstKey: nodeKey, dir: tag }
+        }
+      ]);
     } else {
-      op(OpType.DRAG_AND_DROP, dragSrcItemKey, { dstKey: nodeKey, dir: 'in' });
+      op([
+        clearDropArea,
+        {
+          opType: OpType.DRAG_AND_DROP,
+          nodeKey: dragSrcItemKey,
+          arg: { dstKey: nodeKey, dir: 'in' }
+        }
+      ]);
       this.setState({
         dragEnter: false
       });

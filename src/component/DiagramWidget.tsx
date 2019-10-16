@@ -29,9 +29,29 @@ export class DiagramWidget<P extends MindDiagramWidgetProps> extends BaseWidget<
     super(props);
   }
 
-  op = (opType: OpType, nodeKey?: NodeKeyType, arg?) => {
+  //参数分为两种情况，array 表示批量执行多个操作
+  op = (...args: any[]) => {
+    if (args.length === 0) return;
     const { diagramState, onChange } = this.props;
-    const newState = DiagramState.op(diagramState, opType, nodeKey, arg);
+    let newState;
+    if (Array.isArray(args[0])) {
+      const arr = args[0];
+      newState = diagramState;
+      arr.forEach(operation => {
+        const { opType, nodeKey, arg } = operation;
+        newState = DiagramState.op(newState, opType, nodeKey, arg);
+      });
+    } else {
+      let opType, nodeKey, arg;
+      opType = args[0];
+      if (args.length >= 2) {
+        nodeKey = args[1];
+      }
+      if (args.length >= 3) {
+        arg = args[2];
+      }
+      newState = DiagramState.op(diagramState, opType, nodeKey, arg);
+    }
     onChange(newState);
   };
 
