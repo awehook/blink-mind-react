@@ -23,7 +23,7 @@ const EditDescModal = ({ diagramState, op, nodeKey, saveRef }) => {
   return (
     <React.Fragment>
       <DescWrapper>
-        {diagramState.config.descEditorRenderFn(
+        {diagramState.getConfig().descEditorRenderFn(
           diagramState,
           op,
           nodeKey,
