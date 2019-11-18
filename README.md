@@ -2,6 +2,13 @@
 <a href="https://github.com/awehook/blink-mind-react"><img src="https://img.shields.io/github/license/awehook/blink-mind-react.svg" alt="MIT"/></a>
 [![npm version](https://img.shields.io/npm/v/blink-mind-react.svg?style=flat)](https://www.npmjs.com/package/blink-mind-react)
 
+### Important
+
+I have refactored the library using middleware infrastructure and created a new git repository [blink-mind](https://github.com/awehook/blink-mind). Customization of any desired effect can be achieved by writing a plugin based on the new library.
+
+
+#### Introduction
+
 A mind map library for react  write in  typescript which use immutable.js for state management.
 
 The mind map can drag to any area of the view container area. 
