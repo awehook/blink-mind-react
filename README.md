@@ -1,3 +1,5 @@
+# This project has been moved to https://github.com/awehook/blink-mind .
+
 # blink-mind-react
 <a href="https://github.com/awehook/blink-mind-react"><img src="https://img.shields.io/github/license/awehook/blink-mind-react.svg" alt="MIT"/></a>
 [![npm version](https://img.shields.io/npm/v/blink-mind-react.svg?style=flat)](https://www.npmjs.com/package/blink-mind-react)
@@ -6,6 +8,9 @@
 
 I have refactored the library using middleware infrastructure and created a new git repository [blink-mind](https://github.com/awehook/blink-mind). Customization of any desired effect can be achieved by writing a plugin based on the new library.
 
+### 重要说明
+
+这个项目已经被移动到 https://github.com/awehook/blink-mind.
 
 #### Introduction
 
